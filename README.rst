@@ -4,11 +4,11 @@ mongooplog-alt
 About
 -----
 
-**mongooplog-alt** is the Python remake of `official mongooplog utility`_
-(shipped with MongoDB starting from version 3.2.0). It reads oplog of a remote
+**mongooplog-alt** is the Python remake of `official mongooplog utility`_,
+shipped with MongoDB starting from version 2.2.0. It reads oplog of a remote
 server, and applies operations to the local server. This can be used to keep
-independed replica set loosly synced (sort of one way replication), and may be
-useful in various backup and migration scenarios.
+independed replica set loosly synced in a sort of one way replication, and may
+be useful in various backup and migration scenarios.
 
 ``mongooplog-alt`` implements basic functionality of the official utility and
 adds following features:
