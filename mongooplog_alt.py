@@ -24,6 +24,9 @@ def parse_args():
     parser.add_argument("-f", "--follow", action="store_true",
                         help="wait for new data in oplog, run forever.")
 
+    parser.add_argument("-x", "--exclude", nargs="*",
+                        help="exclude namespaces ('dbname' or 'dbname.coll')")
+
     return parser.parse_args()
 
 def main():
@@ -65,6 +68,10 @@ def main():
                 logging.info("waiting for new data...")
                 time.sleep(1)
                 continue
+
+        if any(op['ns'].startswith(ns) for ns in args.exclude):
+            logging.info("skipping ns %s", op['ns'])
+            continue
 
         if not num % 1000:
             logging.info("%s\t%s", num, op['ts'])
