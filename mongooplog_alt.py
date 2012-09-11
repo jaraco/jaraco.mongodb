@@ -65,12 +65,12 @@ def main():
                 logging.info("all done")
                 return
             else:
-                logging.info("waiting for new data...")
+                logging.debug("waiting for new data...")
                 time.sleep(1)
                 continue
 
         if any(op['ns'].startswith(ns) for ns in args.exclude):
-            logging.info("skipping ns %s", op['ns'])
+            logging.debug("skipping ns %s", op['ns'])
             continue
 
         if not num % 1000:
