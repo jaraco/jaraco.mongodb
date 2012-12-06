@@ -3,6 +3,7 @@ import datetime
 import time
 import logging
 import pymongo
+import bson
 
 def parse_args():
     parser = argparse.ArgumentParser(add_help=False)
