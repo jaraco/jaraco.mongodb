@@ -49,7 +49,8 @@ def main():
 
     logging.info("connected")
 
-    start = datetime.datetime.now() - datetime.timedelta(seconds=args.seconds)
+    start_datetime = datetime.datetime.utcnow() - datetime.timedelta(seconds=args.seconds)
+    start = bson.timestamp.Timestamp(int(start_datetime.strftime("%s")), 0)
     logging.info("starting from %s", start)
 
     q = {"ts": {"$gte": start}}
