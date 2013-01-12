@@ -44,33 +44,37 @@ Using easy_install::
 Command-line options
 --------------------
 
-Options common to original ``mongooplog``:
+Options common to original ``mongooplog``::
 
-.. option:: --host <hostname><:port>, -h
+ --from <hostname><:port>
+    Hostname of the mongod server from which oplog operations are going to be
+    pulled.
+
+ --host <hostname><:port>, -h
 
     Hostname of the mongod server to which oplog operations are going to be
     applied. Default is "localhost"
 
-.. option:: --port <number>
+ --port <number>
 
     Port of the mongod server to which oplog operations are going to be
     applied, if not specified in ``--host``. Default is 27017.
 
-.. option:: --seconds <number>
+ --seconds <number>
     
     Number of seconds of latest operations to pull from the remote host.
     Default is 86400, or 24 hours.
 
 
-Options specific to ``mongooplog-alt``:
+Options specific to ``mongooplog-alt``::
 
-.. option:: --follow, -f
+ --follow, -f
 
    Wait for new data in oplog. Makes the utility polling oplog forever (until
    interrupted). New data is going to be applied immideately with at most one
    second delay.
 
-.. option:: --exclude, -x
+ --exclude, -x
 
     List of space separated namespaces which should be ignored. Can be in form
     of ``dname`` or ``dbname.collection``.
