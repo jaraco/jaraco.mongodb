@@ -43,7 +43,7 @@ def parse_args():
     parser.add_argument("-f", "--follow", action="store_true",
                         help="wait for new data in oplog, run forever.")
 
-    parser.add_argument("-x", "--exclude", nargs="*",
+    parser.add_argument("-x", "--exclude", nargs="*", default=[],
                         help="exclude namespaces ('dbname' or 'dbname.coll')")
 
     return parser.parse_args()
