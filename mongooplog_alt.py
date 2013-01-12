@@ -89,6 +89,9 @@ def main():
                 time.sleep(1)
                 continue
 
+        if op['op'] == 'n':
+            continue
+
         if any(op['ns'].startswith(ns) for ns in args.exclude):
             logging.debug("skipping ns %s", op['ns'])
             continue
