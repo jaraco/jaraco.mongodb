@@ -22,6 +22,10 @@ import bson
 def parse_args():
     parser = argparse.ArgumentParser(add_help=False)
 
+    parser.add_argument("--help",
+                        help="show usage information",
+                        action="help")
+
     parser.add_argument("--from", metavar="host[:port]", dest="fromhost",
                         help="host to pull from")
 
