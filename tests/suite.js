@@ -2,6 +2,7 @@
 function runTests() {
     var cases = [test_basicOperations,
                  test_excludeNamespaces,
+                 test_includeNamespaces,
                 ];
 
     cases.forEach(function(test) {
@@ -87,6 +88,33 @@ function test_excludeNamespaces(rs1, rs2) {
     assert(destDb1.include_coll.count(), 1);
 
     // Changes in excluded namespaces should not be on dest server
+    assert.eq(destDb1.exclude_coll.count(), 0);
+    assert.eq(destDb2.coll.count(), 0);
+}
+
+function test_includeMatchingNamespaces(rs1, rs2) {
+    // Given operations on several different namespaces
+    var srcDb1 = rs1.getPrimary().getDB('testdb');
+    var srcDb2 = rs1.getPrimary().getDB('test_ignored_db');
+
+    srcDb1.include_coll.insert({msg: "This namespace should be transfered"});
+    srcDb1.other_coll.insert({msg: "This namespace should be ignored"});
+    srcDb2.coll.insert({msg: "This whole db should be ignored"});
+
+    // Invoke mongooplog-alt to transfer changes from rs1 to rs2
+    // Process only one namespace (a collection)
+    runMongoProgram('mongooplog-alt',
+                    '--from', rs1.getPrimary().host,
+                    '--host', rs2.getPrimary().host,
+                    '--ns', 'testdb.include_coll');
+
+    // Only changes in namespaces specified in --ns should be delivered
+    var destDb1 = rs2.getPrimary().getDB('testdb');
+    var destDb2 = rs2.getPrimary().getDB('test_ignored_db');
+
+    assert(destDb1.include_coll.count(), 1);
+
+    // All other namespaces should be ignored
     assert.eq(destDb1.exclude_coll.count(), 0);
     assert.eq(destDb2.coll.count(), 0);
 }

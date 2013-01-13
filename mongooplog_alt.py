@@ -43,6 +43,9 @@ def parse_args():
     parser.add_argument("-f", "--follow", action="store_true",
                         help="wait for new data in oplog, run forever.")
 
+    parser.add_argument("--ns", nargs="*", default=[],
+                        help="this namespace(s) only ('dbname' or 'dbname.coll')")
+
     parser.add_argument("-x", "--exclude", nargs="*", default=[],
                         help="exclude namespaces ('dbname' or 'dbname.coll')")
 
@@ -92,13 +95,16 @@ def main():
         if op['op'] == 'n':
             continue
 
-        if any(op['ns'].startswith(ns) for ns in args.exclude):
-            logging.debug("skipping ns %s", op['ns'])
-            continue
-
         if not num % 1000:
             logging.info("%s\t%s", num, op['ts'])
         num += 1
+
+        excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
+        included = any(op['ns'].startswith(ns) for ns in args.ns)
+
+        if excluded or (args.ns and not included):
+            logging.debug("skipping ns %s", op['ns'])
+            continue
 
         dbname = op['ns'].split('.')[0] or "admin"
         dest[dbname].command("applyOps", [op])

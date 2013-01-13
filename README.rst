@@ -79,6 +79,11 @@ Options specific to ``mongooplog-alt``::
     List of space separated namespaces which should be ignored. Can be in form
     of ``dname`` or ``dbname.collection``.
 
+  --ns
+
+    Process only these namespaces, ignoring all others. Space separated list of
+    strings in form of ``dname`` or ``dbname.collection``.
+
 
 Usage
 -----
