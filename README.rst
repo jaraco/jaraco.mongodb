@@ -92,3 +92,19 @@ and apply them to dev. Database ``logdb`` and collection ``transactions`` of
 ``data`` database will be omitted. After operations for the last minutes will
 be applied, command will wait for new changes to come, keep running until
 Ctrl+C or other termination signal recieved.
+
+
+Testing
+-------
+
+Tests for ``mongooplog-alt`` are written in javascript using test harness
+which is used for testing MongoDB iteself. You can run the whole suite with::
+
+    mongo tests/suite.js
+
+Note, that you will need existing writable ``/data/db`` dir.
+
+Tests produce alot of output. Succesfull execution ends with line like this::
+
+    ReplSetTest stopSet *** Shut down repl set - test worked ****
+
