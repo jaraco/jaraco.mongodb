@@ -2,7 +2,8 @@
 function runTests() {
     var cases = [test_basicOperations,
                  test_excludeNamespaces,
-                 test_includeNamespaces,
+                 test_includeMatchingNamespaces,
+                 test_renameNamespaces,
                 ];
 
     cases.forEach(function(test) {
@@ -117,6 +118,38 @@ function test_includeMatchingNamespaces(rs1, rs2) {
     // All other namespaces should be ignored
     assert.eq(destDb1.exclude_coll.count(), 0);
     assert.eq(destDb2.coll.count(), 0);
+}
+
+function test_renameNamespaces(rs1, rs2) {
+
+    // Given operations on different namespaces
+    var srcDb1 = rs1.getPrimary().getDB('renamedb');
+    var srcDb2 = rs1.getPrimary().getDB('testdb');
+
+    srcDb1.coll_1.insert({msg: "All collections in this db "});
+    srcDb1.coll_2.insert({msg: "  should be moved to other db"});
+
+    srcDb2.renameMe.insert({msg: "Only this collection must be renamed"});
+    srcDb2.notMe.insert({msg: "...but not this"});
+
+    // Invoke mongooplog-alt to transfer changes from rs1 to rs2
+    // Rename one db and one collection during transfer
+    runMongoProgram('mongooplog-alt',
+            '--from', rs1.getPrimary().host,
+            '--host', rs2.getPrimary().host,
+            '--rename', 'renamedb=newdb', 'testdb.renameMe=testdb.newMe')
+
+    // Namespaces (databases and collections) given in --rename argument
+    // should be actually renamed on destination server
+    var dest = rs2.getPrimary();
+    assert(dest.getDB('newdb').coll_1.findOne());
+    assert(dest.getDB('newdb').coll_2.findOne());
+    assert(dest.getDB('testdb').newMe.findOne());
+
+    // Old namespaces should not appear on destination server
+    assert(dest.getDB('renamedb').coll_1.findOne() == null);
+    assert(dest.getDB('renamedb').coll_2.findOne() == null);
+    assert(dest.getDB('testdb').renameMe.findOne() == null);
 }
 
 

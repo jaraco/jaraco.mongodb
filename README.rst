@@ -84,6 +84,12 @@ Options specific to ``mongooplog-alt``::
     Process only these namespaces, ignoring all others. Space separated list of
     strings in form of ``dname`` or ``dbname.collection``.
 
+  --rename [ns_old=ns_new [ns_old=ns_new ...]]
+
+    Rename database(s) and/or collection(s). Operations on namespace ``ns_old``
+    from the source server will be applied to namespace ``ns_new`` on the
+    destination server.
+
 
 Usage
 -----
