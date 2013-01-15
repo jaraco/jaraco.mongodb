@@ -16,8 +16,13 @@ adds following features:
 * tailable oplog reader: runs forever polling new oplog event which is extremly
   useful for keeping two independent replica sets in almost real-time sync.
 
+* option to sync only selected databases/collections.
+
 * option to exclude one or more namespaces (i.e. dbs or collections) from
   being synced.
+
+* ability to "rename" dbs/collections on fly, i.e. destination namespaces can
+  differ from the original ones.
 
 * works on mongodb 1.8.x, 2.0.x, and 2.2.x. Official utility supports 2.2.x
   only.
