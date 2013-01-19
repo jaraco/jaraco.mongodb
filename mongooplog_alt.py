@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import argparse
+import calendar
 import datetime
 import time
+import json
 import logging
 import pymongo
 import bson
@@ -38,8 +40,10 @@ def parse_args():
                         default=27017, type=int,
                         help="server port. Can also use --host hostname:port")
 
-    parser.add_argument("-s", "--seconds", type=int, default=86400,
-                        help="seconds to go back. Default is 86400 (24 hours)")
+    parser.add_argument("-s", "--seconds", type=int, default=None,
+                        help="""seconds to go back. If not set, try read
+                        timestamp from --resume-file. If the file not found,
+                        assume --seconds=86400 (24 hours)""")
 
     parser.add_argument("-f", "--follow", action="store_true",
                         help="wait for new data in oplog, run forever.")
@@ -54,18 +58,16 @@ def parse_args():
                         metavar="ns_old=ns_new",
                         help="rename namespaces before processing on dest")
 
+    parser.add_argument("--resume-file", default="mongooplog.ts",
+                        meta="FILENAME",
+                        help="""resume from timestamp read from this file and
+                             write last processed timestamp back to this file
+                             (default is %(default)s).
+                             Pass empty string or 'none' to disable this
+                             feature.
+                             """)
+
     return parser.parse_args()
-
-def setup_logging():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
 
 def main():
     args = parse_args()
@@ -92,59 +94,115 @@ def main():
 
     logging.info("connected")
 
-    start_datetime = datetime.datetime.utcnow() - datetime.timedelta(seconds=args.seconds)
-    start = bson.timestamp.Timestamp(int(start_datetime.strftime("%s")), 0)
-    logging.info("starting from %s", start)
+    # Find out where to start from
+    utcnow = calendar.timegm(time.gmtime())
+    if args.seconds:
+        start = bson.timestamp.Timestamp(utcnow - args.seconds, 0)
+    else:
+        day_ago = bson.timestamp.Timestamp(utcnow - 24*60*60, 0)
+        start = read_ts(args.resume_file) or day_ago
 
+    logging.info("starting from %s", start)
     q = {"ts": {"$gte": start}}
     oplog = (src.local['oplog.rs'].find(q, tailable=True, await_data=True)
                                   .sort("$natural", pymongo.ASCENDING))
     num = 0
+    ts = start
 
-    while oplog.alive:
-        try:
-            op = oplog.next()
-        except StopIteration:
-            if not args.follow:
-                logging.info("all done")
-                return
-            else:
-                logging.debug("waiting for new data...")
-                time.sleep(1)
+    try:
+        while oplog.alive:
+            try:
+                op = oplog.next()
+            except StopIteration:
+                if not args.follow:
+                    logging.info("all done")
+                    return
+                else:
+                    logging.debug("waiting for new data...")
+                    time.sleep(1)
+                    continue
+            except bson.errors.InvalidDocument as e:
+                logging.info(repr(e))
                 continue
-        except bson.errors.InvalidDocument as e:
-            logging.info(repr(e))
-            continue
 
-        # Skip "no operation" items
-        if op['op'] == 'n':
-            continue
+            # Skip "no operation" items
+            if op['op'] == 'n':
+                continue
 
-        if not num % 1000:
-            logging.info("%s\t%s", num, op['ts'])
-        num += 1
+            # Update status
+            ts = op['ts']
+            if not num % 1000:
+                save_ts(ts, args.resume_file)
+                logging.info("%s\t%s\t%s -> %s",
+                             num, ts.as_datetime(),
+                             op.get('op'),
+                             op.get('ns'))
+            num += 1
 
-        # Skip excluded namespaces or namespaces that does not match --ns
-        excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
-        included = any(op['ns'].startswith(ns) for ns in args.ns)
+            # Skip excluded namespaces or namespaces that does not match --ns
+            excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
+            included = any(op['ns'].startswith(ns) for ns in args.ns)
 
-        if excluded or (args.ns and not included):
-            logging.debug("skipping ns %s", op['ns'])
-            continue
+            if excluded or (args.ns and not included):
+                logging.debug("skipping ns %s", op['ns'])
+                continue
 
-        # Rename namespaces
-        for old_ns, new_ns in rename.iteritems():
-            if old_ns.match(op['ns']):
-                ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
-                logging.debug("renaming %s to %s", op['ns'], ns)
-                op['ns'] = ns
+            # Rename namespaces
+            for old_ns, new_ns in rename.iteritems():
+                if old_ns.match(op['ns']):
+                    ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
+                    logging.debug("renaming %s to %s", op['ns'], ns)
+                    op['ns'] = ns
 
-        # Apply operation
-        try:
-            dbname = op['ns'].split('.')[0] or "admin"
-            dest[dbname].command("applyOps", [op])
-        except pymongo.errors.OperationFailure as e:
-            logging.warning(repr(e))
+            # Apply operation
+            try:
+                dbname = op['ns'].split('.')[0] or "admin"
+                dest[dbname].command("applyOps", [op])
+            except pymongo.errors.OperationFailure as e:
+                logging.warning(repr(e))
+
+    except KeyboardInterrupt:
+        logging.info("Got Ctrl+C, exiting...")
+
+    finally:
+        save_ts(ts, args.resume_file)
+
+def setup_logging():
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+def save_ts(ts, filename):
+    """Save last processed timestamp to file. """
+    try:
+        if filename and filename.lower() != 'none':
+            with open(filename, 'w') as f:
+                obj = {"ts": {"time": ts.time, "inc":  ts.inc}}
+                json.dump(obj, f)
+    except IOError:
+        return False
+    else:
+        return True
+
+def read_ts(filename):
+    """Read last processed timestamp from file. Return next timestamp that
+    need to be processed, that is timestamp right after last processed one.
+    """
+    try:
+        with open(filename, 'r') as f:
+            data = json.load(f)['ts']
+            ts = bson.Timestamp(data['time'], data['inc'] + 1)
+            return ts
+
+    except (IOError, KeyError):
+        return None
+
 
 if __name__ == '__main__':
     main()

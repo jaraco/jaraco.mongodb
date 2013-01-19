@@ -4,6 +4,7 @@ function runTests() {
                  test_excludeNamespaces,
                  test_includeMatchingNamespaces,
                  test_renameNamespaces,
+                 test_resumeFromSavedTimestamp,
                 ];
 
     cases.forEach(function(test) {
@@ -152,5 +153,30 @@ function test_renameNamespaces(rs1, rs2) {
     assert(dest.getDB('testdb').renameMe.findOne() == null);
 }
 
+function test_resumeFromSavedTimestamp(rs1, rs2) {
+    var srcDb  = rs1.getPrimary().getDB('testdb');
+    var destDb = rs2.getPrimary().getDB('testdb');
+    var destLocal = rs2.getPrimary().getDB('local');
+
+    // 1. Do some operation on source db and replicate it to the dest db
+    srcDb.test_coll.insert({msg: "Hello world!"});
+    runMongoProgram('mongooplog-alt',
+            '--from', rs1.getPrimary().host,
+            '--host', rs2.getPrimary().host);
+
+    // 2. Notice oplog size on dest server
+    var oplogSizeAfterStep1 = destLocal.oplog.rs.count();
+
+    // 3. Do one more operation on source and replicate it one more time
+    srcDb.test_coll.remove({msg: "Hello world!"});
+    runMongoProgram('mongooplog-alt',
+            '--from', rs1.getPrimary().host,
+            '--host', rs2.getPrimary().host);
+
+    // 4. mongooplog-alt should process only the last one operation.
+    //    Thus, oplog size must increase by 1
+    var oplogSizeAfterStep2 = destLocal.oplog.rs.count();
+    assert.eq(oplogSizeAfterStep2 - oplogSizeAfterStep1, 1);
+}
 
 runTests();
