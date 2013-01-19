@@ -27,10 +27,12 @@ __doc__ = """Improved alternative to official mongooplog utility."""
 doclines = __doc__.splitlines()
 
 setup(name="mongooplog-alt",
-      version="0.1.1-dev",
+      version="0.4",
+      author="Aleksey Sivokon",
+      author_email="aleksey.sivokon@gmail.com",
       maintainer="Aleksey Sivokon",
       maintainer_email="aleksey.sivokon@gmail.com",
-      url = "https://github.com/silver-/mongooplog-alt",
+      url = "https://github.com/publishthis/mongooplog-alt",
       license="http://www.apache.org/licenses/LICENSE-2.0.html",
       platforms=["any"],
       keywords='mongodb, mongo, oplog, mongooplog',
