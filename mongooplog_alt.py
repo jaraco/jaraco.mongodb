@@ -110,6 +110,9 @@ def main():
                 logging.debug("waiting for new data...")
                 time.sleep(1)
                 continue
+        except bson.errors.InvalidDocument as e:
+            logging.info(repr(e))
+            continue
 
         # Skip "no operation" items
         if op['op'] == 'n':
