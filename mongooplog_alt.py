@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument("--from", metavar="host[:port]", dest="fromhost",
                         help="host to pull from")
 
-    parser.add_argument("-h", "--host", metavar="host[:port]",
+    parser.add_argument("-h", "--host", "--to", metavar="host[:port]",
                         default="localhost",
                         help="mongo host to push to (<set name>/s1,s2 for sets)")
 

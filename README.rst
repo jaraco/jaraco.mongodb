@@ -24,8 +24,8 @@ adds following features:
 * ability to "rename" dbs/collections on fly, i.e. destination namespaces can
   differ from the original ones.
 
-* works on mongodb 1.8.x, 2.0.x, and 2.2.x. Official utility supports 2.2.x
-  only.
+* works on mongodb 1.8.x, 2.0.x, and 2.2.x. Official utility only supports
+  version 2.2.x and higher.
 
 * save last processed timestamp to file, resume from saved point later.
 
@@ -75,6 +75,9 @@ Options common to original ``mongooplog``::
 
 Options specific to ``mongooplog-alt``::
 
+ --to
+   An alias for ``--host``.
+
  --follow, -f
 
    Wait for new data in oplog. Makes the utility polling oplog forever (until
@@ -104,12 +107,12 @@ Options specific to ``mongooplog-alt``::
     Pass empty string or 'none' to disable this feature.
 
 
-Usage
------
+Example usages
+--------------
 
 Consider the following sample usage::
 
-    mongooplog-alt --from prod.example.com:28000 --host dev.example.com:28500 -f --exclude logdb data.transactions --seconds 600
+    mongooplog-alt --from prod.example.com:28000 --to dev.example.com:28500 -f --exclude logdb data.transactions --seconds 600
 
 This command is going to take operations from the last 10 minutes from prod,
 and apply them to dev. Database ``logdb`` and collection ``transactions`` of
@@ -131,4 +134,3 @@ Note, that you will need existing writable ``/data/db`` dir.
 Tests produce alot of output. Succesfull execution ends with line like this::
 
     ReplSetTest stopSet *** Shut down repl set - test worked ****
-
