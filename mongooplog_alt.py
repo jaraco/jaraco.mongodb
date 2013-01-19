@@ -135,8 +135,11 @@ def main():
                 op['ns'] = ns
 
         # Apply operation
-        dbname = op['ns'].split('.')[0] or "admin"
-        dest[dbname].command("applyOps", [op])
+        try:
+            dbname = op['ns'].split('.')[0] or "admin"
+            dest[dbname].command("applyOps", [op])
+        except pymongo.errors.OperationFailure as e:
+            logging.warning(repr(e))
 
 if __name__ == '__main__':
     main()
