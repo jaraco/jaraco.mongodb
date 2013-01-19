@@ -56,9 +56,7 @@ def parse_args():
 
     return parser.parse_args()
 
-def main():
-    args = parse_args()
-
+def setup_logging():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
@@ -68,6 +66,10 @@ def main():
     ch.setLevel(logging.INFO)
     ch.setFormatter(formatter)
     logger.addHandler(ch)
+
+def main():
+    args = parse_args()
+    setup_logging()
 
     rename = {}     # maps old namespace (regex) to the new namespace (string)
     for rename_pair in args.rename:
