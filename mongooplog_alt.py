@@ -59,7 +59,7 @@ def parse_args():
                         help="rename namespaces before processing on dest")
 
     parser.add_argument("--resume-file", default="mongooplog.ts",
-                        meta="FILENAME",
+                        metavar="FILENAME",
                         help="""resume from timestamp read from this file and
                              write last processed timestamp back to this file
                              (default is %(default)s).
