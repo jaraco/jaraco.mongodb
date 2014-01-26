@@ -3,9 +3,32 @@ A MongoDB-backed CherryPy session store.
 
 Although this module requires CherryPy, it does not impose the requirement
 on the package, as any user of this module will already require CherryPy.
+
+To enable these sessions, your code must call :meth:`Session.install()` and
+then configure the CherryPy endpoint to use MongoDB sessions. For example::
+
+	jaraco.mongodb.sessions.Session.install()
+
+	session_config = {
+		'sessions.on': True,
+		'sessions.storage_type': 'MongoDB',
+		'sessions.database': pymongo.Connection().database,
+	}
+	config = {
+		'/': session_config,
+	}
+
+	cherrypy.quickstart(..., config=config)
+
+The ``jaraco.modb`` module implements the codec interface, so may be used
+to encode more complex objects in the session::
+
+	session_config.update({
+		'sessions.codec': jaraco.modb,
+	})
+
 """
 
-import importlib
 import datetime
 import time
 import logging
@@ -21,35 +44,40 @@ log = logging.getLogger(__name__)
 
 class LockTimeout(RuntimeError): pass
 
+class NullCodec(object):
+	def decode(self, data):
+		return data
+
+	def encode(self, data):
+		return data
+
 class Session(cherrypy.lib.sessions.Session):
 	"""
 	A MongoDB-backed CherryPy session store. Takes the following params:
 
 		database: the pymongo Database object.
 		collection_name: The name of the collection to use in the db.
-		use_modb: Use `jaraco.modb` package to encode/decode values.
+		codec: An object with 'encode' and 'decode' methods, used to encode
+			objects before saving them to MongoDB and decode them when loaded
+			from MongoDB.
 		lock_timeout: A timedelta or numeric seconds indicating how long
 			to block acquiring a lock. If None (default), acquiring a lock
 			will block indefinitely.
 	"""
+
+	codec = NullCodec()
+	"by default, objects are passed directly to MongoDB"
+
 	def __init__(self, id, **kwargs):
 		kwargs.setdefault('collection_name', 'sessions')
-		kwargs.setdefault('use_modb', False)
 		kwargs.setdefault('lock_timeout', None)
 		super(Session, self).__init__(id, **kwargs)
 		self.setup_expiration()
-		if self.use_modb:
-			modb = importlib.import_module('jaraco.modb')
-			self.encode = modb.encode
-			self.decode = modb.decode
 		if isinstance(self.lock_timeout, (int, float)):
 			self.lock_timeout = datetime.timedelta(seconds=self.lock_timeout)
 		if not isinstance(self.lock_timeout, (datetime.timedelta, type(None))):
 			raise ValueError("Lock timeout must be numeric seconds or "
 				"a timedelta instance.")
-
-	# by default (unless modb is enabled), encode/decode is a no-op.
-	encode = decode = staticmethod(lambda data: data)
 
 	@classmethod
 	def install(cls):
@@ -83,7 +111,7 @@ class Session(cherrypy.lib.sessions.Session):
 		)
 		if not doc: return
 		expiration_time = doc.pop('_expiration_datetime')
-		doc = self.decode(doc)
+		doc = self.codec.decode(doc)
 		return (doc, self._make_local(expiration_time))
 
 	@staticmethod
@@ -110,7 +138,7 @@ class Session(cherrypy.lib.sessions.Session):
 
 	def _save(self, expiration_datetime):
 		data = dict(self._data)
-		data = self.encode(data)
+		data = self.codec.encode(data)
 		# CherryPy defines the expiration in local time, which may be
 		#  different for some hosts. Convert it to UTC before sticking
 		#  it in the database.

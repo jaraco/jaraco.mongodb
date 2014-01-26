@@ -1,4 +1,13 @@
+2.0
+===
+
+Removed references to ``jaraco.modb``. Instead, allow the Sessions object to
+accept a ``codec`` parameter. Applications that currently depend on the
+``use_modb`` functionality must instead use the following in the config::
+
+    "sessions.codec": jaraco.modb
+
 1.0
 ===
 
-Initial release, introducing ``sessions`` module.
+Initial release, introducing ``sessions`` module based on ``yg.mongodb`` 2.9.
