@@ -17,9 +17,17 @@ setup_params = dict(
 	url="https://bitbucket.org/jaraco/jaraco.mongodb",
 	packages=setuptools.find_packages(),
 	namespace_packages=['jaraco'],
-	zip_safe=False,
+	install_requires=[
+		'pymongo',
+		'python-dateutil',
+	],
 	setup_requires=[
 		'hgtools',
+		'pytest-runner',
+	],
+	tests_require=[
+		'pytest',
+		'jaraco.test',
 	],
 )
 if __name__ == '__main__':
