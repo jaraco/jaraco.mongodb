@@ -20,7 +20,13 @@ Topic :: Software Development :: Libraries :: Python Modules
 Operating System :: OS Independent
 """
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from ez_setup import use_setuptools
+    use_setuptools()
+    from setuptools import setup
+
 import sys
 
 __doc__ = """Improved alternative to official mongooplog utility."""
