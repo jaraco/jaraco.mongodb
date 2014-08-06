@@ -10,6 +10,6 @@ services:
   - mongodb
 
 script:
-  - mkdir -p /data/db
+  - sudo mkdir -p /data/db
   - pip install .
   - mongo tests/suite.js
