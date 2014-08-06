@@ -82,6 +82,16 @@ def rename_dict(spec):
         for old_ns, new_ns in pairs
     }
 
+def _calculate_start(args):
+    # Find out where to start from
+    utcnow = calendar.timegm(time.gmtime())
+    if args.seconds:
+        start = bson.timestamp.Timestamp(utcnow - args.seconds, 0)
+    else:
+        day_ago = bson.timestamp.Timestamp(utcnow - 24*60*60, 0)
+        start = read_ts(args.resume_file) or day_ago
+    return start
+
 def main():
     args = parse_args()
     setup_logging()
@@ -100,13 +110,7 @@ def main():
 
     logging.info("connected")
 
-    # Find out where to start from
-    utcnow = calendar.timegm(time.gmtime())
-    if args.seconds:
-        start = bson.timestamp.Timestamp(utcnow - args.seconds, 0)
-    else:
-        day_ago = bson.timestamp.Timestamp(utcnow - 24*60*60, 0)
-        start = read_ts(args.resume_file) or day_ago
+    start = _calculate_start(args)
 
     logging.info("starting from %s", start)
     q = {"ts": {"$gte": start}}
