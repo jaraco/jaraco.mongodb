@@ -6,6 +6,9 @@ python:
   - 3.3
   - 3.4
 
+services:
+  - mongodb
+
 script:
   - pip install .
   - mongo tests/suite.js
