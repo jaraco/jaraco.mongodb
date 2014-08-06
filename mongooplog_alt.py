@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import argparse
-import calendar
-import datetime
 import time
 import json
 import logging
@@ -86,7 +84,7 @@ def _calculate_start(args):
     """
     Return the start time as a bson timestamp.
     """
-    utcnow = calendar.timegm(time.gmtime())
+    utcnow = time.time()
 
     if args.seconds:
         return bson.timestamp.Timestamp(utcnow - args.seconds, 0)
