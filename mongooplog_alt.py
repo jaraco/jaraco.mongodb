@@ -108,8 +108,8 @@ def main():
     logging.info("starting from %s", start)
     q = {"ts": {"$gte": start}}
     oplog_db, sep, oplog_coll = args.oplogns.partition('.')
-    oplog = (src[oplog_db][oplog_coll].find(q, tailable=True, await_data=True)
-                                  .sort("$natural", pymongo.ASCENDING))
+    raw = src[oplog_db][oplog_coll].find(q, tailable=True, await_data=True)
+    oplog = raw.sort("$natural", pymongo.ASCENDING)
     num = 0
     ts = start
 
