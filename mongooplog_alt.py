@@ -69,8 +69,16 @@ def parse_args():
                              Pass empty string or 'none' to disable this
                              feature.
                              """)
+    parser.add_argument('-l', '--log-level', default=logging.INFO,
+        type=log_level, help="Set log level (DEBUG, INFO, WARNING, ERROR)")
 
     return parser.parse_args()
+
+def log_level(level_string):
+    """
+    Return a log level for a string
+    """
+    return getattr(logging, level_string.upper())
 
 def rename_dict(spec):
     """
@@ -98,7 +106,8 @@ def _calculate_start(args):
 
 def main():
     args = parse_args()
-    setup_logging()
+    log_format = '%(asctime)s - %(levelname)s - %(message)s'
+    logging.basicConfig(level=args.log_level, format=log_format)
 
     logging.info("going to connect")
 
@@ -204,17 +213,6 @@ def _iteritems(dict):
         return dict.items()
     else:
         return dict.iteritems()
-
-def setup_logging():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
 
 def save_ts(ts, filename):
     """Save last processed timestamp to file. """
