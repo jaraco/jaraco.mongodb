@@ -88,8 +88,8 @@ def main():
 
     logging.info("going to connect")
 
-    src = pymongo.Connection(args.fromhost)
-    dest = pymongo.Connection(args.host, args.port)
+    src = pymongo.MongoClient(args.fromhost)
+    dest = pymongo.MongoClient(args.host, args.port)
 
     if src == dest:
         if any(not any(exp.match(ns) for exp in args.rename) for ns in args.ns) or not args.ns:
