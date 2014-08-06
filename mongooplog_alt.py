@@ -21,6 +21,7 @@ import logging
 import pymongo
 import bson
 import re
+import sys
 
 def parse_args():
     parser = argparse.ArgumentParser(add_help=False)
@@ -148,7 +149,7 @@ def main():
                 continue
 
             # Rename namespaces
-            for old_ns, new_ns in rename.iteritems():
+            for old_ns, new_ns in _iteritems(rename):
                 if old_ns.match(op['ns']):
                     ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
                     logging.debug("renaming %s to %s", op['ns'], ns)
@@ -166,6 +167,14 @@ def main():
 
     finally:
         save_ts(ts, args.resume_file)
+
+PY3 = sys.version_info > (3,)
+
+def _iteritems(dict):
+    if PY3:
+        return dict.items()
+    else:
+        return dict.iteritems()
 
 def setup_logging():
     logger = logging.getLogger()
