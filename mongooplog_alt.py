@@ -54,8 +54,9 @@ def parse_args():
     parser.add_argument("-x", "--exclude", nargs="*", default=[],
                         help="exclude namespaces ('dbname' or 'dbname.coll')")
 
-    parser.add_argument("--rename", nargs="*", default=[],
+    parser.add_argument("--rename", nargs="*", default={},
                         metavar="ns_old=ns_new",
+                        type=rename_dict,
                         help="rename namespaces before processing on dest")
 
     parser.add_argument("--resume-file", default="mongooplog.ts",
@@ -69,15 +70,21 @@ def parse_args():
 
     return parser.parse_args()
 
+def rename_dict(spec):
+    """
+    Return map of old namespace (regex) to the new namespace (string).
+
+    spec should be a list of pairs separated by equal signs ('=').
+    """
+    pairs = (item.split('=') for item in spec)
+    return {
+        re.compile(r"^{0}(\.|$)".format(re.escape(old_ns))): new_ns + "."
+        for old_ns, new_ns in pairs
+    }
+
 def main():
     args = parse_args()
     setup_logging()
-
-    rename = {}     # maps old namespace (regex) to the new namespace (string)
-    for rename_pair in args.rename:
-        old_ns, new_ns = rename_pair.split("=")
-        old_ns_re = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
-        rename[old_ns_re] = new_ns + "."
 
     logging.info("going to connect")
 
@@ -85,8 +92,7 @@ def main():
     dest = pymongo.Connection(args.host, args.port)
 
     if src == dest:
-        rename_ns = {x.split("=")[0] for x in args.rename}
-        if any(ns not in rename_ns for ns in args.ns) or not args.ns:
+        if any(not any(exp.match(ns) for exp in args.rename) for ns in args.ns) or not args.ns:
             logging.error(
                 "source and destination hosts can be the same only "
                 "when both --ns and --rename arguments are given")
@@ -148,7 +154,7 @@ def main():
                 continue
 
             # Rename namespaces
-            for old_ns, new_ns in rename.iteritems():
+            for old_ns, new_ns in args.rename.iteritems():
                 if old_ns.match(op['ns']):
                     ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
                     logging.debug("renaming %s to %s", op['ns'], ns)
