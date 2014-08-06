@@ -131,7 +131,7 @@ def main():
 def _handle(dest, op, args, num):
     # Skip "no operation" items
     if op['op'] == 'n':
-        continue
+        return
 
     # Update status
     ts = op['ts']
@@ -148,7 +148,7 @@ def _handle(dest, op, args, num):
 
     if excluded or (args.ns and not included):
         logging.debug("skipping ns %s", op['ns'])
-        continue
+        return
 
     # Rename namespaces
     for old_ns, new_ns in args.rename.iteritems():
