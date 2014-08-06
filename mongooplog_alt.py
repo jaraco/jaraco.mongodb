@@ -32,6 +32,9 @@ def parse_args():
     parser.add_argument("--from", metavar="host[:port]", dest="fromhost",
                         help="host to pull from")
 
+    parser.add_argument('--oplogns', default='local.oplog.rs',
+                        help="source namespace for oplog")
+
     parser.add_argument("-h", "--host", "--to", metavar="host[:port]",
                         default="localhost",
                         help="mongo host to push to (<set name>/s1,s2 for sets)")
@@ -104,7 +107,8 @@ def main():
 
     logging.info("starting from %s", start)
     q = {"ts": {"$gte": start}}
-    oplog = (src.local['oplog.rs'].find(q, tailable=True, await_data=True)
+    oplog_db, sep, oplog_coll = args.oplogns.partition('.')
+    oplog = (src[oplog_db][oplog_coll].find(q, tailable=True, await_data=True)
                                   .sort("$natural", pymongo.ASCENDING))
     num = 0
     ts = start
