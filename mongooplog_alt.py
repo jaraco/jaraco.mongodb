@@ -112,7 +112,7 @@ def main():
     try:
         while oplog.alive:
             try:
-                op = oplog.next()
+                op = next(oplog)
             except StopIteration:
                 if not args.follow:
                     logging.info("all done")
