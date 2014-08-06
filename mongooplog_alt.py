@@ -88,7 +88,7 @@ def _calculate_start(args):
     """
     Return the start time as a bson timestamp.
     """
-    utcnow = time.time()
+    utcnow = int(time.time())
 
     if args.seconds:
         return bson.timestamp.Timestamp(utcnow - args.seconds, 0)
