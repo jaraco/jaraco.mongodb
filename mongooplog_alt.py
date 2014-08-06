@@ -71,29 +71,16 @@ def parse_args():
 
     return parser.parse_args()
 
-##########################################
-# from jaraco.util.logging
 def log_level(level_string):
     """
     Return a log level for a string
     """
     return getattr(logging, level_string.upper())
 
-def setup_logging(options, **kwargs):
-    """
-    Setup logging with options or arguments from an OptionParser or
-    ArgumentParser. Also pass any keyword arguments to the basicConfig
-    call.
-    """
-    params = dict(kwargs)
-    params.update(level=options.log_level)
-    logging.basicConfig(**params)
-##########################################
-
 def main():
     args = parse_args()
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
-    setup_logging(args, format=log_format)
+    logging.basicConfig(level=args.log_level, format=log_format)
 
     rename = {}     # maps old namespace (regex) to the new namespace (string)
     for rename_pair in args.rename:
