@@ -19,7 +19,6 @@ import logging
 import pymongo
 import bson
 import re
-import sys
 
 def parse_args():
     parser = argparse.ArgumentParser(add_help=False)
@@ -165,7 +164,7 @@ def _handle(dest, op, args, num):
         return
 
     # Rename namespaces
-    for old_ns, new_ns in _iteritems(args.rename):
+    for old_ns, new_ns in args.rename.items():
         if old_ns.match(op['ns']):
             ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
             logging.debug("renaming %s to %s", op['ns'], ns)
@@ -177,7 +176,6 @@ def _handle(dest, op, args, num):
         dest[dbname].command("applyOps", [op])
     except pymongo.errors.OperationFailure as e:
         logging.warning(repr(e))
-
 
 def get_latest_ts(oplog):
     cur = oplog.find().sort('$natural', pymongo.DESCENDING).limit(-1)
@@ -205,14 +203,6 @@ def query_oplog(oplog, last_ts):
         for doc in cursor:
             yield doc
         time.sleep(1)
-
-PY3 = sys.version_info > (3,)
-
-def _iteritems(dict):
-    if PY3:
-        return dict.items()
-    else:
-        return dict.iteritems()
 
 def save_ts(ts, filename):
     """Save last processed timestamp to file. """
