@@ -52,9 +52,9 @@ def parse_args(*args, **kwargs):
     parser.add_argument("-x", "--exclude", nargs="*", default=[],
                         help="exclude namespaces ('dbname' or 'dbname.coll')")
 
-    parser.add_argument("--rename", nargs="*", default={},
+    parser.add_argument("--rename", nargs="*", default=[],
                         metavar="ns_old=ns_new",
-                        type=rename_dict,
+                        type=rename_item,
                         help="rename namespaces before processing on dest")
 
     parser.add_argument("--resume-file", default="mongooplog.ts",
@@ -66,19 +66,20 @@ def parse_args(*args, **kwargs):
                              feature.
                              """)
 
-    return parser.parse_args(*args, **kwargs)
+    args = parser.parse_args(*args, **kwargs)
+    args.replace = dict(args.replace)
+    return args
 
-def rename_dict(spec):
+def rename_item(spec):
     """
-    Return map of old namespace (regex) to the new namespace (string).
+    Return a pair of old namespace (regex) to the new namespace (string).
 
-    spec should be a list of pairs separated by equal signs ('=').
+    spec should be a pair separated by equal sign ('=').
     """
-    pairs = (item.split('=') for item in spec)
-    return {
-        re.compile(r"^{0}(\.|$)".format(re.escape(old_ns))): new_ns + "."
-        for old_ns, new_ns in pairs
-    }
+    old_ns, new_ns = spec.split('=')
+    regex = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
+
+    return regex, new_ns + "."
 
 def _calculate_start(args):
     """
