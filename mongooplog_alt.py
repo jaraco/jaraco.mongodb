@@ -129,40 +129,40 @@ def main():
             save_ts(doc['ts'], args.resume_file)
 
 def _handle(dest, op, args, num):
-            # Skip "no operation" items
-            if op['op'] == 'n':
-                continue
+    # Skip "no operation" items
+    if op['op'] == 'n':
+        continue
 
-            # Update status
-            ts = op['ts']
-            if not num % 1000:
-                save_ts(ts, args.resume_file)
-                logging.info("%s\t%s\t%s -> %s",
-                             num, ts.as_datetime(),
-                             op.get('op'),
-                             op.get('ns'))
+    # Update status
+    ts = op['ts']
+    if not num % 1000:
+        save_ts(ts, args.resume_file)
+        logging.info("%s\t%s\t%s -> %s",
+                     num, ts.as_datetime(),
+                     op.get('op'),
+                     op.get('ns'))
 
-            # Skip excluded namespaces or namespaces that does not match --ns
-            excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
-            included = any(op['ns'].startswith(ns) for ns in args.ns)
+    # Skip excluded namespaces or namespaces that does not match --ns
+    excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
+    included = any(op['ns'].startswith(ns) for ns in args.ns)
 
-            if excluded or (args.ns and not included):
-                logging.debug("skipping ns %s", op['ns'])
-                continue
+    if excluded or (args.ns and not included):
+        logging.debug("skipping ns %s", op['ns'])
+        continue
 
-            # Rename namespaces
-            for old_ns, new_ns in args.rename.iteritems():
-                if old_ns.match(op['ns']):
-                    ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
-                    logging.debug("renaming %s to %s", op['ns'], ns)
-                    op['ns'] = ns
+    # Rename namespaces
+    for old_ns, new_ns in args.rename.iteritems():
+        if old_ns.match(op['ns']):
+            ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
+            logging.debug("renaming %s to %s", op['ns'], ns)
+            op['ns'] = ns
 
-            # Apply operation
-            try:
-                dbname = op['ns'].split('.')[0] or "admin"
-                dest[dbname].command("applyOps", [op])
-            except pymongo.errors.OperationFailure as e:
-                logging.warning(repr(e))
+    # Apply operation
+    try:
+        dbname = op['ns'].split('.')[0] or "admin"
+        dest[dbname].command("applyOps", [op])
+    except pymongo.errors.OperationFailure as e:
+        logging.warning(repr(e))
 
 
 def get_latest_ts(oplog):
