@@ -124,6 +124,11 @@ Ctrl+C or other termination signal recieved.
 Testing
 -------
 
+|BuildStatus|_
+
+.. |BuildStatus| image:: https://secure.travis-ci.org/jaraco/mongooplog-alt.png
+.. _BuildStatus: http://travis-ci.org/jaraco/mongooplog-alt
+
 Tests for ``mongooplog-alt`` are written in javascript using test harness
 which is used for testing MongoDB iteself. You can run the whole suite with::
 
