@@ -66,27 +66,18 @@ def parse_args():
                              Pass empty string or 'none' to disable this
                              feature.
                              """)
+    parser.add_argument('-l', '--log-level', default=logging.INFO,
+        type=log_level, help="Set log level (DEBUG, INFO, WARNING, ERROR)")
 
     return parser.parse_args()
 
+##########################################
 # from jaraco.util.logging
 def log_level(level_string):
     """
     Return a log level for a string
     """
     return getattr(logging, level_string.upper())
-
-def add_arguments(parser):
-    """
-    Add arguments to an ArgumentParser or OptionParser for purposes of
-    grabbing a logging level.
-    """
-    adder = (
-        getattr(parser, 'add_argument', None)
-        or getattr(parser, 'add_option')
-    )
-    adder('-l', '--log-level', default=logging.INFO, type=log_level,
-        help="Set log level (DEBUG, INFO, WARNING, ERROR)")
 
 def setup(options, **kwargs):
     """
@@ -97,6 +88,7 @@ def setup(options, **kwargs):
     params = dict(kwargs)
     params.update(level=options.log_level)
     logging.basicConfig(**params)
+##########################################
 
 def main():
     args = parse_args()
