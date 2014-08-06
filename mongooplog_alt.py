@@ -79,7 +79,7 @@ def log_level(level_string):
     """
     return getattr(logging, level_string.upper())
 
-def setup(options, **kwargs):
+def setup_logging(options, **kwargs):
     """
     Setup logging with options or arguments from an OptionParser or
     ArgumentParser. Also pass any keyword arguments to the basicConfig
@@ -92,7 +92,8 @@ def setup(options, **kwargs):
 
 def main():
     args = parse_args()
-    setup_logging()
+    log_format = '%(asctime)s - %(levelname)s - %(message)s'
+    setup_logging(args, format=log_format)
 
     rename = {}     # maps old namespace (regex) to the new namespace (string)
     for rename_pair in args.rename:
@@ -187,17 +188,6 @@ def main():
 
     finally:
         save_ts(ts, args.resume_file)
-
-def setup_logging():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
 
 def save_ts(ts, filename):
     """Save last processed timestamp to file. """
