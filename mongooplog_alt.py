@@ -20,7 +20,7 @@ import pymongo
 import bson
 import re
 
-def parse_args():
+def parse_args(*args, **kwargs):
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument("--help",
@@ -66,7 +66,7 @@ def parse_args():
                              feature.
                              """)
 
-    return parser.parse_args()
+    return parser.parse_args(*args, **kwargs)
 
 def rename_dict(spec):
     """
