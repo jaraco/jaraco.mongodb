@@ -113,28 +113,22 @@ def main():
     start = _calculate_start(args)
 
     logging.info("starting from %s", start)
-    q = {"ts": {"$gte": start}}
-    oplog = (src.local['oplog.rs'].find(q, tailable=True, await_data=True)
-                                  .sort("$natural", pymongo.ASCENDING))
+    oplog_coll = src.local['oplog.rs']
     num = 0
-    ts = start
+
+    generator = tail_oplog if args.follow else query_oplog
 
     try:
-        while oplog.alive:
-            try:
-                op = oplog.next()
-            except StopIteration:
-                if not args.follow:
-                    logging.info("all done")
-                    return
-                else:
-                    logging.debug("waiting for new data...")
-                    time.sleep(1)
-                    continue
-            except bson.errors.InvalidDocument as e:
-                logging.info(repr(e))
-                continue
+        for num, doc in enumerate(generator(oplog_coll, start)):
+            _handle(dest, doc, args, num)
+        logging.info("all done")
+    except KeyboardInterrupt:
+        logging.info("Got Ctrl+C, exiting...")
+    finally:
+        if 'doc' in locals():
+            save_ts(doc['ts'], args.resume_file)
 
+def _handle(dest, op, args, num):
             # Skip "no operation" items
             if op['op'] == 'n':
                 continue
@@ -147,7 +141,6 @@ def main():
                              num, ts.as_datetime(),
                              op.get('op'),
                              op.get('ns'))
-            num += 1
 
             # Skip excluded namespaces or namespaces that does not match --ns
             excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
@@ -171,11 +164,6 @@ def main():
             except pymongo.errors.OperationFailure as e:
                 logging.warning(repr(e))
 
-    except KeyboardInterrupt:
-        logging.info("Got Ctrl+C, exiting...")
-
-    finally:
-        save_ts(ts, args.resume_file)
 
 def get_latest_ts(oplog):
     cur = oplog.find().sort('$natural', pymongo.DESCENDING).limit(-1)
@@ -197,6 +185,9 @@ def query_oplog(oplog, last_ts):
     # oplogReplay flag - not exposed in the public API
     cursor.add_option(8)
     while cursor.alive:
+        # todo: trap InvalidDocument errors:
+        # except bson.errors.InvalidDocument as e:
+        #  logging.info(repr(e))
         for doc in cursor:
             yield doc
         time.sleep(1)
