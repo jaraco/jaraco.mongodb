@@ -177,6 +177,29 @@ def main():
     finally:
         save_ts(ts, args.resume_file)
 
+def tail_oplog(db, collection='oplog.rs', last_ts=None):
+    """
+    Tail the oplog, starting from last_ts. If last_ts is None, use the latest
+    doc in the oplog.
+    """
+    oplog = db[collection]
+
+    if last_ts is None:
+        cur = oplog.find().sort('$natural', pymongo.DESCENDING).limit(-1)
+        latest_doc = next(cur)
+        last_ts = latest_doc['ts']
+
+    while True:
+        spec = {'ts': {'$gt': last_ts}}
+        cursor = oplog.find(spec, tailable=True, await_data=True)
+        # oplogReplay flag - not exposed in the public API
+        cursor.add_option(8)
+        while cursor.alive:
+            for doc in cursor:
+                last_ts = doc['ts']
+                yield doc
+            time.sleep(1)
+
 def setup_logging():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
