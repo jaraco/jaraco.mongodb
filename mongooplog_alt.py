@@ -13,8 +13,6 @@
 # limitations under the License.
 
 import argparse
-import calendar
-import datetime
 import time
 import json
 import logging
@@ -58,8 +56,9 @@ def parse_args():
     parser.add_argument("-x", "--exclude", nargs="*", default=[],
                         help="exclude namespaces ('dbname' or 'dbname.coll')")
 
-    parser.add_argument("--rename", nargs="*", default=[],
+    parser.add_argument("--rename", nargs="*", default={},
                         metavar="ns_old=ns_new",
+                        type=rename_dict,
                         help="rename namespaces before processing on dest")
 
     parser.add_argument("--resume-file", default="mongooplog.ts",
@@ -73,24 +72,41 @@ def parse_args():
 
     return parser.parse_args()
 
+def rename_dict(spec):
+    """
+    Return map of old namespace (regex) to the new namespace (string).
+
+    spec should be a list of pairs separated by equal signs ('=').
+    """
+    pairs = (item.split('=') for item in spec)
+    return {
+        re.compile(r"^{0}(\.|$)".format(re.escape(old_ns))): new_ns + "."
+        for old_ns, new_ns in pairs
+    }
+
+def _calculate_start(args):
+    """
+    Return the start time as a bson timestamp.
+    """
+    utcnow = time.time()
+
+    if args.seconds:
+        return bson.timestamp.Timestamp(utcnow - args.seconds, 0)
+
+    day_ago = bson.timestamp.Timestamp(utcnow - 24*60*60, 0)
+    return read_ts(args.resume_file) or day_ago
+
 def main():
     args = parse_args()
     setup_logging()
 
-    rename = {}     # maps old namespace (regex) to the new namespace (string)
-    for rename_pair in args.rename:
-        old_ns, new_ns = rename_pair.split("=")
-        old_ns_re = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
-        rename[old_ns_re] = new_ns + "."
-
     logging.info("going to connect")
 
-    src = pymongo.Connection(args.fromhost)
-    dest = pymongo.Connection(args.host, args.port)
+    src = pymongo.MongoClient(args.fromhost)
+    dest = pymongo.MongoClient(args.host, args.port)
 
     if src == dest:
-        rename_ns = {x.split("=")[0] for x in args.rename}
-        if any(ns not in rename_ns for ns in args.ns) or not args.ns:
+        if any(not any(exp.match(ns) for exp in args.rename) for ns in args.ns) or not args.ns:
             logging.error(
                 "source and destination hosts can be the same only "
                 "when both --ns and --rename arguments are given")
@@ -98,79 +114,88 @@ def main():
 
     logging.info("connected")
 
-    # Find out where to start from
-    utcnow = calendar.timegm(time.gmtime())
-    if args.seconds:
-        start = bson.timestamp.Timestamp(utcnow - args.seconds, 0)
-    else:
-        day_ago = bson.timestamp.Timestamp(utcnow - 24*60*60, 0)
-        start = read_ts(args.resume_file) or day_ago
+    start = _calculate_start(args)
 
     logging.info("starting from %s", start)
-    q = {"ts": {"$gte": start}}
-    oplog_db, sep, oplog_coll = args.oplogns.partition('.')
-    raw = src[oplog_db][oplog_coll].find(q, tailable=True, await_data=True)
-    oplog = raw.sort("$natural", pymongo.ASCENDING)
+    db_name, sep, coll_name = args.oplogns.partition('.')
+    oplog_coll = src[db_name][coll_name]
     num = 0
-    ts = start
+
+    generator = tail_oplog if args.follow else query_oplog
 
     try:
-        while oplog.alive:
-            try:
-                op = next(oplog)
-            except StopIteration:
-                if not args.follow:
-                    logging.info("all done")
-                    return
-                else:
-                    logging.debug("waiting for new data...")
-                    time.sleep(1)
-                    continue
-            except bson.errors.InvalidDocument as e:
-                logging.info(repr(e))
-                continue
-
-            # Skip "no operation" items
-            if op['op'] == 'n':
-                continue
-
-            # Update status
-            ts = op['ts']
-            if not num % 1000:
-                save_ts(ts, args.resume_file)
-                logging.info("%s\t%s\t%s -> %s",
-                             num, ts.as_datetime(),
-                             op.get('op'),
-                             op.get('ns'))
-            num += 1
-
-            # Skip excluded namespaces or namespaces that does not match --ns
-            excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
-            included = any(op['ns'].startswith(ns) for ns in args.ns)
-
-            if excluded or (args.ns and not included):
-                logging.debug("skipping ns %s", op['ns'])
-                continue
-
-            # Rename namespaces
-            for old_ns, new_ns in _iteritems(rename):
-                if old_ns.match(op['ns']):
-                    ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
-                    logging.debug("renaming %s to %s", op['ns'], ns)
-                    op['ns'] = ns
-
-            # Apply operation
-            try:
-                dbname = op['ns'].split('.')[0] or "admin"
-                dest[dbname].command("applyOps", [op])
-            except pymongo.errors.OperationFailure as e:
-                logging.warning(repr(e))
-
+        for num, doc in enumerate(generator(oplog_coll, start)):
+            _handle(dest, doc, args, num)
+        logging.info("all done")
     except KeyboardInterrupt:
         logging.info("Got Ctrl+C, exiting...")
-
     finally:
+        if 'doc' in locals():
+            save_ts(doc['ts'], args.resume_file)
+
+def _handle(dest, op, args, num):
+    # Skip "no operation" items
+    if op['op'] == 'n':
+        continue
+
+    # Update status
+    ts = op['ts']
+    if not num % 1000:
         save_ts(ts, args.resume_file)
+        logging.info("%s\t%s\t%s -> %s",
+                     num, ts.as_datetime(),
+                     op.get('op'),
+                     op.get('ns'))
+
+    # Skip excluded namespaces or namespaces that does not match --ns
+    excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
+    included = any(op['ns'].startswith(ns) for ns in args.ns)
+
+    if excluded or (args.ns and not included):
+        logging.debug("skipping ns %s", op['ns'])
+        continue
+
+    # Rename namespaces
+    for old_ns, new_ns in _iteritems(args.rename):
+        if old_ns.match(op['ns']):
+            ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
+            logging.debug("renaming %s to %s", op['ns'], ns)
+            op['ns'] = ns
+
+    # Apply operation
+    try:
+        dbname = op['ns'].split('.')[0] or "admin"
+        dest[dbname].command("applyOps", [op])
+    except pymongo.errors.OperationFailure as e:
+        logging.warning(repr(e))
+
+
+def get_latest_ts(oplog):
+    cur = oplog.find().sort('$natural', pymongo.DESCENDING).limit(-1)
+    latest_doc = next(cur)
+    return latest_doc['ts']
+
+def tail_oplog(oplog, last_ts):
+    """
+    Tail the oplog, starting from last_ts.
+    """
+    while True:
+        for doc in query_oplog(oplog, last_ts):
+            yield doc
+            last_ts = doc['ts']
+
+def query_oplog(oplog, last_ts):
+    spec = {'ts': {'$gt': last_ts}}
+    cursor = oplog.find(spec, tailable=True, await_data=True)
+    # oplogReplay flag - not exposed in the public API
+    cursor.add_option(8)
+    while cursor.alive:
+        # todo: trap InvalidDocument errors:
+        # except bson.errors.InvalidDocument as e:
+        #  logging.info(repr(e))
+        for doc in cursor:
+            yield doc
+        time.sleep(1)
 
 PY3 = sys.version_info > (3,)
 
