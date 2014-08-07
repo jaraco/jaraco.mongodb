@@ -177,7 +177,7 @@ class Oplog(object):
         return latest_doc['ts']
 
     def query(self, spec):
-        return self.coll.find(spec, tailable=True, await_data=True)
+        return self.coll.find(spec)
 
     def since(self, ts):
         """
