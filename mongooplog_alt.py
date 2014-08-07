@@ -20,7 +20,7 @@ import pymongo
 import bson
 import re
 
-def parse_args():
+def parse_args(*args, **kwargs):
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument("--help",
@@ -55,9 +55,9 @@ def parse_args():
     parser.add_argument("-x", "--exclude", nargs="*", default=[],
                         help="exclude namespaces ('dbname' or 'dbname.coll')")
 
-    parser.add_argument("--rename", nargs="*", default={},
+    parser.add_argument("--rename", nargs="*", default=[],
                         metavar="ns_old=ns_new",
-                        type=rename_dict,
+                        type=rename_item,
                         help="rename namespaces before processing on dest")
 
     parser.add_argument("--resume-file", default="mongooplog.ts",
@@ -71,7 +71,9 @@ def parse_args():
     parser.add_argument('-l', '--log-level', default=logging.INFO,
         type=log_level, help="Set log level (DEBUG, INFO, WARNING, ERROR)")
 
-    return parser.parse_args()
+    args = parser.parse_args(*args, **kwargs)
+    args.rename = dict(args.rename)
+    return args
 
 def log_level(level_string):
     """
@@ -79,17 +81,16 @@ def log_level(level_string):
     """
     return getattr(logging, level_string.upper())
 
-def rename_dict(spec):
+def rename_item(spec):
     """
-    Return map of old namespace (regex) to the new namespace (string).
+    Return a pair of old namespace (regex) to the new namespace (string).
 
-    spec should be a list of pairs separated by equal signs ('=').
+    spec should be a pair separated by equal sign ('=').
     """
-    pairs = (item.split('=') for item in spec)
-    return {
-        re.compile(r"^{0}(\.|$)".format(re.escape(old_ns))): new_ns + "."
-        for old_ns, new_ns in pairs
-    }
+    old_ns, new_ns = spec.split('=')
+    regex = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
+
+    return regex, new_ns + "."
 
 def _calculate_start(args):
     """
@@ -129,10 +130,11 @@ def main():
     oplog_coll = src[db_name][coll_name]
     num = 0
 
-    generator = tail_oplog if args.follow else query_oplog
+    class_ = TailingOplog if args.follow else Oplog
+    generator = class_(oplog_coll)
 
     try:
-        for num, doc in enumerate(generator(oplog_coll, start)):
+        for num, doc in enumerate(generator.since(start)):
             _handle(dest, doc, args, num)
         logging.info("all done")
     except KeyboardInterrupt:
@@ -177,32 +179,50 @@ def _handle(dest, op, args, num):
     except pymongo.errors.OperationFailure as e:
         logging.warning(repr(e))
 
-def get_latest_ts(oplog):
-    cur = oplog.find().sort('$natural', pymongo.DESCENDING).limit(-1)
-    latest_doc = next(cur)
-    return latest_doc['ts']
+class Oplog(object):
+    def __init__(self, coll):
+        self.coll = coll
 
-def tail_oplog(oplog, last_ts):
-    """
-    Tail the oplog, starting from last_ts.
-    """
-    while True:
-        for doc in query_oplog(oplog, last_ts):
-            yield doc
-            last_ts = doc['ts']
+    def get_latest_ts(self):
+        cur = self.coll.find().sort('$natural', pymongo.DESCENDING).limit(-1)
+        latest_doc = next(cur)
+        return latest_doc['ts']
 
-def query_oplog(oplog, last_ts):
-    spec = {'ts': {'$gt': last_ts}}
-    cursor = oplog.find(spec, tailable=True, await_data=True)
-    # oplogReplay flag - not exposed in the public API
-    cursor.add_option(8)
-    while cursor.alive:
-        # todo: trap InvalidDocument errors:
-        # except bson.errors.InvalidDocument as e:
-        #  logging.info(repr(e))
-        for doc in cursor:
-            yield doc
-        time.sleep(1)
+    def query(self, spec):
+        return self.coll.find(spec)
+
+    def since(self, ts):
+        """
+        Query the oplog for items since ts and then return
+        """
+        spec = {'ts': {'$gt': ts}}
+        cursor = self.query(spec)
+        while cursor.alive:
+            # todo: trap InvalidDocument errors:
+            # except bson.errors.InvalidDocument as e:
+            #  logging.info(repr(e))
+            for doc in cursor:
+                yield doc
+            time.sleep(1)
+
+
+class TailingOplog(object):
+    def query(self, spec):
+        cur = self.coll.find(spec, tailable=True, await_data=True)
+        # set the oplogReplay flag - not exposed in the public API
+        cur.add_option(8)
+        return cur
+
+    def since(self, ts):
+        """
+        Tail the oplog, starting from ts.
+        """
+        while True:
+            items = super(TailingOplog, self).since(ts)
+            for doc in items:
+                yield doc
+                ts = doc['ts']
+
 
 def save_ts(ts, filename):
     """Save last processed timestamp to file. """
