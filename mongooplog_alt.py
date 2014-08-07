@@ -67,7 +67,7 @@ def parse_args(*args, **kwargs):
                              """)
 
     args = parser.parse_args(*args, **kwargs)
-    args.replace = dict(args.replace)
+    args.rename = dict(args.rename)
     return args
 
 def rename_item(spec):
