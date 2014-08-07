@@ -197,12 +197,14 @@ class Oplog(object):
         """
         spec = {'ts': {'$gt': ts}}
         cursor = self.query(spec)
-        while cursor.alive:
+        while True:
             # todo: trap InvalidDocument errors:
             # except bson.errors.InvalidDocument as e:
             #  logging.info(repr(e))
             for doc in cursor:
                 yield doc
+            if not cursor.alive:
+                break
             time.sleep(1)
 
 
