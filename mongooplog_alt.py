@@ -194,7 +194,7 @@ class Oplog(object):
             time.sleep(1)
 
 
-class TailingOplog(object):
+class TailingOplog(Oplog):
     def query(self, spec):
         cur = self.coll.find(spec, tailable=True, await_data=True)
         # set the oplogReplay flag - not exposed in the public API
