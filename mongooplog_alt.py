@@ -117,10 +117,11 @@ def main():
     oplog_coll = src.local['oplog.rs']
     num = 0
 
-    generator = tail_oplog if args.follow else query_oplog
+    class_ = TailingOplog if args.follow else Oplog
+    generator = class_(oplog_coll)
 
     try:
-        for num, doc in enumerate(generator(oplog_coll, start)):
+        for num, doc in enumerate(generator.since(start)):
             _handle(dest, doc, args, num)
         logging.info("all done")
     except KeyboardInterrupt:
@@ -166,37 +167,50 @@ def _handle(dest, op, args, num):
         logging.warning(repr(e))
 
 
-def get_latest_ts(oplog):
-    cur = oplog.find().sort('$natural', pymongo.DESCENDING).limit(-1)
-    latest_doc = next(cur)
-    return latest_doc['ts']
+class Oplog(object):
+    def __init__(self, coll):
+        self.coll = coll
 
-def tail_oplog(oplog, last_ts):
-    """
-    Tail the oplog, starting from last_ts.
-    """
-    while True:
-        for doc in query_oplog(oplog, last_ts, on_cursor=set_oplogReplay):
-            yield doc
-            last_ts = doc['ts']
+    def get_latest_ts(self):
+        cur = self.coll.find().sort('$natural', pymongo.DESCENDING).limit(-1)
+        latest_doc = next(cur)
+        return latest_doc['ts']
 
-do_nothing = lambda cursor: None
+    def query(self, spec):
+        return self.coll.find(spec, tailable=True, await_data=True)
 
-def set_oplogReplay(cursor):
-    "set the oplogReplay flag - not exposed in the public API"
-    cursor.add_option(8)
+    def since(self, ts):
+        """
+        Query the oplog for items since ts and then return
+        """
+        spec = {'ts': {'$gt': ts}}
+        cursor = self.query(spec)
+        while cursor.alive:
+            # todo: trap InvalidDocument errors:
+            # except bson.errors.InvalidDocument as e:
+            #  logging.info(repr(e))
+            for doc in cursor:
+                yield doc
+            time.sleep(1)
 
-def query_oplog(oplog, last_ts, on_cursor=do_nothing):
-    spec = {'ts': {'$gt': last_ts}}
-    cursor = oplog.find(spec, tailable=True, await_data=True)
-    on_cursor(cursor)
-    while cursor.alive:
-        # todo: trap InvalidDocument errors:
-        # except bson.errors.InvalidDocument as e:
-        #  logging.info(repr(e))
-        for doc in cursor:
-            yield doc
-        time.sleep(1)
+
+class TailingOplog(object):
+    def query(self, spec):
+        cur = self.coll.find(spec, tailable=True, await_data=True)
+        # set the oplogReplay flag - not exposed in the public API
+        cur.add_option(8)
+        return cur
+
+    def since(self, ts):
+        """
+        Tail the oplog, starting from ts.
+        """
+        while True:
+            items = super(TailingOplog, self).since(ts)
+            for doc in items:
+                yield doc
+                ts = doc['ts']
+
 
 def setup_logging():
     logger = logging.getLogger()
