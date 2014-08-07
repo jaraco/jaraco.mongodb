@@ -176,15 +176,20 @@ def tail_oplog(oplog, last_ts):
     Tail the oplog, starting from last_ts.
     """
     while True:
-        for doc in query_oplog(oplog, last_ts):
+        for doc in query_oplog(oplog, last_ts, on_cursor=set_oplogReplay):
             yield doc
             last_ts = doc['ts']
 
-def query_oplog(oplog, last_ts):
+do_nothing = lambda cursor: None
+
+def set_oplogReplay(cursor):
+    "set the oplogReplay flag - not exposed in the public API"
+    cursor.add_option(8)
+
+def query_oplog(oplog, last_ts, on_cursor=do_nothing):
     spec = {'ts': {'$gt': last_ts}}
     cursor = oplog.find(spec, tailable=True, await_data=True)
-    # oplogReplay flag - not exposed in the public API
-    cursor.add_option(8)
+    on_cursor(cursor)
     while cursor.alive:
         # todo: trap InvalidDocument errors:
         # except bson.errors.InvalidDocument as e:
