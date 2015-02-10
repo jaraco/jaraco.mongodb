@@ -1,5 +1,6 @@
 import six
 
+
 def project(*args, **kwargs):
     """
     Build a projection for MongoDB.
@@ -15,3 +16,19 @@ def project(*args, **kwargs):
     """
     projection = dict(*args, **kwargs)
     return {key: int(value) for key, value in six.iteritems(projection)}
+
+
+def compat_explain(cur):
+    """
+    Simulate MongoDB 3.0 explain result on prior versions.
+    http://docs.mongodb.org/v3.0/reference/explain-results/
+    """
+    res = cur.explain()
+    if 'nscannedObjects' in res:
+        res['executionStats'] = dict(
+            nReturned=res.pop('n'),
+            totalKeysExamined=res.pop('nscanned'),
+            totalDocsExamined=res.pop('nscannedObjects'),
+            executionTimeMillis=res.pop('millis'),
+        )
+    return res

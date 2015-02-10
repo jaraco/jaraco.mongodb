@@ -1,3 +1,13 @@
+2.3
+===
+
+Add ``query.compat_explain``, providing forward compatibility
+for MongoDB 3.0 `explain changes
+<http://docs.mongodb.org/v3.0/reference/explain-results/>`_.
+
+``testing.assert_covered`` uses compat_explain for MongoDB 3.0
+compatibility.
+
 2.2
 ===
 
