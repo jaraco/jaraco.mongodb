@@ -28,6 +28,7 @@ setup_params = dict(
 	tests_require=[
 		'pytest',
 		'jaraco.test>=1.5',
+		'cherrypy',
 	],
 )
 if __name__ == '__main__':
