@@ -27,7 +27,7 @@ setup_params = dict(
 	],
 	tests_require=[
 		'pytest',
-		'jaraco.test',
+		'jaraco.test>=1.5',
 	],
 )
 if __name__ == '__main__':

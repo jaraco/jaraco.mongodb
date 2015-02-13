@@ -9,12 +9,12 @@ from jaraco.mongodb import sessions
 
 
 @py.test.fixture(scope='function')
-def database(request, mongodb):
+def database(request, mongodb_instance):
     """
     Return a MongoDB database suitable for testing auth. Remove the
     collection between every test.
     """
-    database = mongodb.get_connection().sessions_test
+    database = mongodb_instance.get_connection().sessions_test
     request.addfinalizer(database.sessions.remove)
     return database
 
