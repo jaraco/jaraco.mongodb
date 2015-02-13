@@ -8,6 +8,7 @@ def _rep_index_info(coll):
     index_info = coll.index_information()
     return "Indexes are:\n" + pprint.pformat(index_info)
 
+
 def assert_covered(cur):
     """
     Use the best knowledge about Cursor.explain() to ensure that the query
@@ -22,3 +23,21 @@ def assert_covered(cur):
     report += _rep_index_info(cur.collection)
     docs = explanation['executionStats']['totalDocsExamined']
     assert docs == 0, report
+
+
+def assert_distinct_covered(coll, field, query):
+    """
+    Ensure a distinct query is covered by an index.
+    """
+    assert coll.count(), "Unable to assert without a document"
+    db = coll.database
+    res = db.command('distinct', coll.name, key=field, query=query)
+    assert 'stats' in res, "Stats not supplied. Maybe SERVER-9126?"
+    stats = res['stats']
+    tmpl = textwrap.dedent("""
+        Distinct query was not covered:
+        {explanation}
+        """).lstrip()
+    report = tmpl.format(explanation=pprint.pformat(stats))
+    report += _rep_index_info(coll)
+    assert stats['nScannedObjects'] == 0, report
