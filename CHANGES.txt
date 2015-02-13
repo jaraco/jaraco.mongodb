@@ -1,3 +1,8 @@
+2.4
+===
+
+Add ``testing.assert_distinct_covered``.
+
 2.3
 ===
 
