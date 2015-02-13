@@ -40,4 +40,4 @@ def assert_distinct_covered(coll, field, query):
         """).lstrip()
     report = tmpl.format(explanation=pprint.pformat(stats))
     report += _rep_index_info(coll)
-    assert stats['nScannedObjects'] == 0, report
+    assert stats['nscannedObjects'] == 0, report
