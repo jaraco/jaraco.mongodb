@@ -41,3 +41,4 @@ def assert_distinct_covered(coll, field, query):
     report = tmpl.format(explanation=pprint.pformat(stats))
     report += _rep_index_info(coll)
     assert stats['nscannedObjects'] == 0, report
+    assert stats['n'], "No documents matched"
