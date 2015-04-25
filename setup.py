@@ -29,9 +29,13 @@ setup_params = dict(
 	],
 	tests_require=[
 		'pytest',
-		'jaraco.test>=1.5',
 		'cherrypy',
 	],
+	entry_points={
+		'pytest11': [
+			'MongoDB = jaraco.mongodb.fixtures',
+		],
+	},
 )
 if __name__ == '__main__':
 	setuptools.setup(**setup_params)
