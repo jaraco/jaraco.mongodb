@@ -12,7 +12,7 @@ setup_params = dict(
 	use_hg_version=True,
 	author="Jason R. Coombs",
 	author_email="jaraco@jaraco.com",
-	description="jaraco.mongodb",
+	description="Routines and classes supporting MongoDB environments",
 	long_description=long_description,
 	url="https://bitbucket.org/jaraco/jaraco.mongodb",
 	packages=setuptools.find_packages(),
@@ -20,6 +20,8 @@ setup_params = dict(
 	install_requires=[
 		'pymongo',
 		'python-dateutil',
+		'jaraco.services',
+		'portend',
 	],
 	setup_requires=[
 		'hgtools',
