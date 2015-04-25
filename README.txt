@@ -1,6 +1,8 @@
 jaraco.mongodb
 ==============
 
+`Documentation <https://pythonhosted.org/jaraco.mongodb>`_
+
 Provides support for MongoDB environments.
 
 sessions
