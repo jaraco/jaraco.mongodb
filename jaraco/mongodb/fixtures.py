@@ -4,14 +4,14 @@ try:
 except ImportError:
 	pass
 
-from . import services
+from . import service
 
 @pytest.yield_fixture(scope='session')
 def mongodb_instance():
 	if 'pymongo' not in globals():
 		pytest.skip("pymongo not available")
 	try:
-		instance = services.MongoDBInstance()
+		instance = service.MongoDBInstance()
 		instance.log_root = ''
 		instance.start()
 		pymongo.MongoClient(instance.get_connect_hosts())
