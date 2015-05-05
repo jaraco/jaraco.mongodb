@@ -123,7 +123,7 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
     def start(self):
         super(MongoDBReplicaSet, self).start()
         self.data_root = tempfile.mkdtemp()
-        self.instances = map(self.start_instance, range(3))
+        self.instances = list(map(self.start_instance, range(3)))
         # initialize the replica set
         self.instances[0].connect().admin.command(
             'replSetInitiate', self.build_config())
