@@ -200,4 +200,6 @@ InstanceInfoBase = collections.namedtuple('InstanceInfoBase',
 class InstanceInfo(InstanceInfoBase):
     def connect(self):
         hp = 'localhost:{self.port}'.format(**locals())
-        return __import__('pymongo').MongoClient(hp, slave_okay=True)
+        pymongo = __import__('pymongo')
+        rp = pymongo.ReadPreference.PRIMARY_PREFERRED
+        return pymongo.MongoClient(hp, read_preference=rp)

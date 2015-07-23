@@ -12,7 +12,7 @@ then configure the CherryPy endpoint to use MongoDB sessions. For example::
 	session_config = {
 		'sessions.on': True,
 		'sessions.storage_type': 'MongoDB',
-		'sessions.database': pymongo.Connection().database,
+		'sessions.database': pymongo.MongoClient().database,
 	}
 	config = {
 		'/': session_config,
@@ -103,12 +103,12 @@ class Session(cherrypy.lib.sessions.Session):
 		return bool(self.collection.find_one(self.id))
 
 	def _load(self):
-		doc = self.collection.find_one(dict(
+		filter = dict(
 			_id=self.id,
-			_expiration_datetime = {'$exists': True},
-			),
-			fields=dict(_id=False),
+			_expiration_datetime={'$exists': True},
 		)
+		projection=dict(_id=False)
+		doc = self.collection.find_one(filter, projection)
 		if not doc: return
 		expiration_time = doc.pop('_expiration_datetime')
 		doc = self.codec.decode(doc)
@@ -116,7 +116,7 @@ class Session(cherrypy.lib.sessions.Session):
 
 	@staticmethod
 	def _make_aware(local_datetime):
-		return local_datetime.replace(tzinfo = dateutil.tz.tzlocal())
+		return local_datetime.replace(tzinfo=dateutil.tz.tzlocal())
 
 	@staticmethod
 	def _make_utc(local_datetime):
@@ -165,7 +165,7 @@ class Session(cherrypy.lib.sessions.Session):
 		"""
 		# first ensure that a record exists for this session id
 		try:
-			self.collection.insert(dict(_id=self.id), safe=True)
+			self.collection.insert(dict(_id=self.id))
 		except pymongo.errors.DuplicateKeyError:
 			pass
 		unlocked_spec = dict(_id=self.id, locked=None)
@@ -176,7 +176,7 @@ class Session(cherrypy.lib.sessions.Session):
 		)
 		while not lock_timer.expired():
 			locked_spec = {'$set': dict(locked=datetime.datetime.utcnow())}
-			res = self.collection.update(unlocked_spec, locked_spec, safe=True)
+			res = self.collection.update(unlocked_spec, locked_spec)
 			if res['updatedExisting']:
 				# we have the lock
 				break
