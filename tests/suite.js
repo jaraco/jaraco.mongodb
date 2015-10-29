@@ -58,7 +58,7 @@ function test_basicOperations(rs1, rs2) {
     srcColl.update({"answer": "unknown"}, {"$set": {"answer": 42}});
 
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
-    runMongoProgram('mongooplog-alt',
+    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
                     '--from', src.host,
                     '--host', dst.host);
 
@@ -78,7 +78,7 @@ function test_excludeNamespaces(rs1, rs2) {
 
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
     // Ignore two namespaces: a collection and a whole database
-    runMongoProgram('mongooplog-alt',
+    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
                     '--from', rs1.getPrimary().host,
                     '--host', rs2.getPrimary().host,
                     '--exclude', 'testdb.exclude_coll', 'test_ignored_db');
@@ -105,7 +105,7 @@ function test_includeMatchingNamespaces(rs1, rs2) {
 
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
     // Process only one namespace (a collection)
-    runMongoProgram('mongooplog-alt',
+    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
                     '--from', rs1.getPrimary().host,
                     '--host', rs2.getPrimary().host,
                     '--ns', 'testdb.include_coll');
@@ -135,7 +135,7 @@ function test_renameNamespaces(rs1, rs2) {
 
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
     // Rename one db and one collection during transfer
-    runMongoProgram('mongooplog-alt',
+    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
             '--from', rs1.getPrimary().host,
             '--host', rs2.getPrimary().host,
             '--rename', 'renamedb=newdb', 'testdb.renameMe=testdb.newMe')
@@ -160,7 +160,7 @@ function test_resumeFromSavedTimestamp(rs1, rs2) {
 
     // 1. Do some operation on source db and replicate it to the dest db
     srcDb.test_coll.insert({msg: "Hello world!"});
-    runMongoProgram('mongooplog-alt',
+    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
             '--from', rs1.getPrimary().host,
             '--host', rs2.getPrimary().host);
 
@@ -169,7 +169,7 @@ function test_resumeFromSavedTimestamp(rs1, rs2) {
 
     // 3. Do one more operation on source and replicate it one more time
     srcDb.test_coll.remove({msg: "Hello world!"});
-    runMongoProgram('mongooplog-alt',
+    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
             '--from', rs1.getPrimary().host,
             '--host', rs2.getPrimary().host);
 
