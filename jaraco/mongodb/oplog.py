@@ -109,9 +109,13 @@ def _same_instance(client1, client2):
 def _full_rename(args):
     """
     Return True only if the arguments passed specify exact namespaces
-    and to conduct a rename.
+    and to conduct a rename of every namespace.
     """
-    return not any(not any(exp.match(ns) for exp in args.rename) for ns in args.ns) and args.ns
+    ns_renamed = lambda ns: any(exp.match(ns) for exp in args.rename)
+    return (
+        args.ns and
+        all(map(ns_renamed, args.ns))
+    )
 
 
 def main():
