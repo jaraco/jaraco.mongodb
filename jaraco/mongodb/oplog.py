@@ -97,6 +97,15 @@ def _calculate_start(args):
     day_ago = bson.timestamp.Timestamp(utcnow - 24*60*60, 0)
     return read_ts(args.resume_file) or day_ago
 
+
+def _same_instance(client1, client2):
+    """
+    Return True if client1 and client2 appear to reference the same
+    MongoDB instance.
+    """
+    return client1 == client2
+
+
 def main():
     args = parse_args()
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
@@ -107,7 +116,7 @@ def main():
     src = pymongo.MongoClient(args.fromhost)
     dest = pymongo.MongoClient(args.host, args.port)
 
-    if src == dest:
+    if _same_instance(src, dest):
         if any(not any(exp.match(ns) for exp in args.rename) for ns in args.ns) or not args.ns:
             logging.error(
                 "source and destination hosts can be the same only "
