@@ -7,55 +7,60 @@ import logging
 import pymongo
 import bson
 import re
+import textwrap
+
 
 def parse_args(*args, **kwargs):
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument("--help",
-                        help="show usage information",
-                        action="help")
+        help="show usage information",
+        action="help")
 
     parser.add_argument("--from", metavar="host[:port]", dest="fromhost",
-                        help="host to pull from")
+        help="host to pull from")
 
     parser.add_argument('--oplogns', default='local.oplog.rs',
-                        help="source namespace for oplog")
+        help="source namespace for oplog")
 
     parser.add_argument("-h", "--host", "--to", metavar="host[:port]",
-                        default="localhost",
-                        help="mongo host to push to (<set name>/s1,s2 for sets)")
+        default="localhost",
+        help="mongo host to push to (<set name>/s1,s2 for sets)")
 
     parser.add_argument("-p", "--port", metavar="host[:port]",
-                        default=27017, type=int,
-                        help="server port. Can also use --host hostname:port")
+        default=27017, type=int,
+        help="server port. Can also use --host hostname:port")
 
     parser.add_argument("-s", "--seconds", type=int, default=None,
-                        help="""seconds to go back. If not set, try read
-                        timestamp from --resume-file. If the file not found,
-                        assume --seconds=86400 (24 hours)""")
+        help="""seconds to go back. If not set, try read
+        timestamp from --resume-file. If the file not found,
+        assume --seconds=86400 (24 hours)""")
 
     parser.add_argument("-f", "--follow", action="store_true",
-                        help="wait for new data in oplog, run forever.")
+        help="wait for new data in oplog, run forever.")
 
     parser.add_argument("--ns", nargs="*", default=[],
-                        help="this namespace(s) only ('dbname' or 'dbname.coll')")
+        help="this namespace(s) only ('dbname' or 'dbname.coll')")
 
     parser.add_argument("-x", "--exclude", nargs="*", default=[],
-                        help="exclude namespaces ('dbname' or 'dbname.coll')")
+        help="exclude namespaces ('dbname' or 'dbname.coll')")
 
     parser.add_argument("--rename", nargs="*", default=[],
-                        metavar="ns_old=ns_new",
-                        type=rename_item,
-                        help="rename namespaces before processing on dest")
+        metavar="ns_old=ns_new",
+        type=rename_item,
+        help="rename namespaces before processing on dest")
 
+    help = textwrap.dedent("""
+        resume from timestamp read from this file and
+        write last processed timestamp back to this file
+        (default is %(default)s).
+        Pass empty string or 'none' to disable this
+        feature.
+        """)
     parser.add_argument("--resume-file", default="mongooplog.ts",
-                        metavar="FILENAME",
-                        help="""resume from timestamp read from this file and
-                             write last processed timestamp back to this file
-                             (default is %(default)s).
-                             Pass empty string or 'none' to disable this
-                             feature.
-                             """)
+        metavar="FILENAME",
+        help=help,
+    )
     parser.add_argument('-l', '--log-level', default=logging.INFO,
         type=log_level, help="Set log level (DEBUG, INFO, WARNING, ERROR)")
 
@@ -140,10 +145,12 @@ def _handle(dest, op, args, num):
     ts = op['ts']
     if not num % 1000:
         save_ts(ts, args.resume_file)
-        logging.info("%s\t%s\t%s -> %s",
-                     num, ts.as_datetime(),
-                     op.get('op'),
-                     op.get('ns'))
+        logging.info(
+            "%s\t%s\t%s -> %s",
+            num, ts.as_datetime(),
+            op.get('op'),
+            op.get('ns'),
+        )
 
     # Skip excluded namespaces or namespaces that does not match --ns
     excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
