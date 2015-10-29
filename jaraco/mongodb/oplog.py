@@ -106,6 +106,14 @@ def _same_instance(client1, client2):
     return client1._topology_settings.seeds == client2._topology_settings.seeds
 
 
+def _full_rename(args):
+    """
+    Return True only if the arguments passed specify exact namespaces
+    and to conduct a rename.
+    """
+    return not any(not any(exp.match(ns) for exp in args.rename) for ns in args.ns) and args.ns
+
+
 def main():
     args = parse_args()
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
@@ -116,8 +124,7 @@ def main():
     src = pymongo.MongoClient(args.fromhost)
     dest = pymongo.MongoClient(args.host, args.port)
 
-    if _same_instance(src, dest):
-        if any(not any(exp.match(ns) for exp in args.rename) for ns in args.ns) or not args.ns:
+    if _same_instance(src, dest) and not _full_rename(args):
             logging.error(
                 "source and destination hosts can be the same only "
                 "when both --ns and --rename arguments are given")
