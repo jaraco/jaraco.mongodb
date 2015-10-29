@@ -129,10 +129,10 @@ def main():
     dest = pymongo.MongoClient(args.host, args.port)
 
     if _same_instance(src, dest) and not _full_rename(args):
-            logging.error(
-                "source and destination hosts can be the same only "
-                "when both --ns and --rename arguments are given")
-            return 1
+        logging.error(
+            "source and destination hosts can be the same only "
+            "when both --ns and --rename arguments are given")
+        return 1
 
     logging.info("connected")
 
