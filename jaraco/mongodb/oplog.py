@@ -132,7 +132,7 @@ def main():
         logging.error(
             "source and destination hosts can be the same only "
             "when both --ns and --rename arguments are given")
-        return 1
+        raise SystemExit(1)
 
     logging.info("connected")
 
