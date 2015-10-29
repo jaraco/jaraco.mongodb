@@ -1,3 +1,8 @@
+2.8
+===
+
+Adopt abandoned ``mongooplog_alt`` as ``jaraco.mongodb.oplog``.
+
 2.7
 ===
 
