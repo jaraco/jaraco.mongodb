@@ -103,7 +103,7 @@ def _same_instance(client1, client2):
     Return True if client1 and client2 appear to reference the same
     MongoDB instance.
     """
-    return client1 == client2
+    return client1._topology_settings.seeds == client2._topology_settings.seeds
 
 
 def main():
