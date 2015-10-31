@@ -6,13 +6,7 @@ python:
   - 3.3
   - 3.4
 
-services:
-  - mongodb
-
 script:
   - python setup.py test
-  - sudo mkdir -p /data/db -m 777
-  - pip install 'portend>=1.1'
-  - python -m portend --timeout 15 localhost:27017 occupied
   - pip install -e .
-  - mongo tests/suite.js
+  - mongo --nodb tests/suite.js
