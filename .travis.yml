@@ -14,3 +14,4 @@ script:
   - pip install . 'portend>=1.1'
   - python -m portend --timeout 15 localhost:27017 occupied
   - mongo tests/suite.js
+  - python setup.py test
