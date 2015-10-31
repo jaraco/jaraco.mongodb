@@ -9,6 +9,8 @@ import bson
 import re
 import textwrap
 
+from pymongo.cursor import CursorType
+
 
 def parse_args(*args, **kwargs):
     parser = argparse.ArgumentParser(add_help=False)
@@ -225,10 +227,8 @@ class Oplog(object):
 
 class TailingOplog(Oplog):
     def query(self, spec):
-        cur = self.coll.find(spec, tailable=True, await_data=True)
-        # set the oplogReplay flag - not exposed in the public API
-        cur.add_option(8)
-        return cur
+        return self.coll.find(spec, cursor_type=CursorType.TAILABLE_AWAIT,
+            oplog_replay=True)
 
     def since(self, ts):
         """
