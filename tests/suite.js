@@ -1,11 +1,12 @@
 /** Test suite runner. */
 function runTests() {
-    var cases = [test_basicOperations,
-                 test_excludeNamespaces,
-                 test_includeMatchingNamespaces,
-                 test_renameNamespaces,
-                 test_resumeFromSavedTimestamp,
-                ];
+    var cases = [
+        test_basicOperations,
+        test_excludeNamespaces,
+        test_includeMatchingNamespaces,
+        test_renameNamespaces,
+        test_resumeFromSavedTimestamp,
+    ];
 
     cases.forEach(function(test) {
         var env = setUp();
@@ -19,12 +20,16 @@ function runTests() {
 
 /** Initialize test environment. */
 function setUp() {
-    var rs1 = new ReplSetTest({name: 'rs1',
-                           nodes: [{nojournal: ''}],
-                           startPort:31001});
-    var rs2 = new ReplSetTest({name: 'rs2',
-                           nodes: [{nojournal: ''}],
-                           startPort:31002});
+    var rs1 = new ReplSetTest({
+        name: 'rs1',
+        nodes: [{nojournal: ''}],
+        startPort: 31001
+    });
+    var rs2 = new ReplSetTest({
+        name: 'rs2',
+        nodes: [{nojournal: ''}],
+        startPort: 31002
+    });
 
     rs1.startSet({oplogSize: 1})
     rs1.initiate();
@@ -58,9 +63,11 @@ function test_basicOperations(rs1, rs2) {
     srcColl.update({"answer": "unknown"}, {"$set": {"answer": 42}});
 
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
-    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
-                    '--source', src.host,
-                    '--dest', dst.host);
+    runMongoProgram(
+        'python', '-m', 'jaraco.mongodb.oplog',
+        '--source', src.host,
+        '--dest', dst.host
+    );
 
     // Check that all operations got applied
     assert(dstColl.findOne());
@@ -78,10 +85,12 @@ function test_excludeNamespaces(rs1, rs2) {
 
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
     // Ignore two namespaces: a collection and a whole database
-    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
-                    '--source', rs1.getPrimary().host,
-                    '--dest', rs2.getPrimary().host,
-                    '--exclude', 'testdb.exclude_coll', 'test_ignored_db');
+    runMongoProgram(
+        'python', '-m', 'jaraco.mongodb.oplog',
+        '--source', rs1.getPrimary().host,
+        '--dest', rs2.getPrimary().host,
+        '--exclude', 'testdb.exclude_coll', 'test_ignored_db'
+    );
 
     // Changes in namespaces that are not in --exclude list should be delivered
     var destDb1 = rs2.getPrimary().getDB('testdb');
@@ -105,10 +114,12 @@ function test_includeMatchingNamespaces(rs1, rs2) {
 
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
     // Process only one namespace (a collection)
-    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
-                    '--source', rs1.getPrimary().host,
-                    '--dest', rs2.getPrimary().host,
-                    '--ns', 'testdb.include_coll');
+    runMongoProgram(
+        'python', '-m', 'jaraco.mongodb.oplog',
+        '--source', rs1.getPrimary().host,
+        '--dest', rs2.getPrimary().host,
+        '--ns', 'testdb.include_coll'
+    );
 
     // Only changes in namespaces specified in --ns should be delivered
     var destDb1 = rs2.getPrimary().getDB('testdb');
@@ -135,10 +146,12 @@ function test_renameNamespaces(rs1, rs2) {
 
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
     // Rename one db and one collection during transfer
-    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
-            '--source', rs1.getPrimary().host,
-            '--dest', rs2.getPrimary().host,
-            '--rename', 'renamedb=newdb', 'testdb.renameMe=testdb.newMe')
+    runMongoProgram(
+        'python', '-m', 'jaraco.mongodb.oplog',
+        '--source', rs1.getPrimary().host,
+        '--dest', rs2.getPrimary().host,
+        '--rename', 'renamedb=newdb', 'testdb.renameMe=testdb.newMe'
+    )
 
     // Namespaces (databases and collections) given in --rename argument
     // should be actually renamed on destination server
@@ -160,18 +173,22 @@ function test_resumeFromSavedTimestamp(rs1, rs2) {
 
     // 1. Do some operation on source db and replicate it to the dest db
     srcDb.test_coll.insert({msg: "Hello world!"});
-    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
-            '--source', rs1.getPrimary().host,
-            '--dest', rs2.getPrimary().host);
+    runMongoProgram(
+        'python', '-m', 'jaraco.mongodb.oplog',
+        '--source', rs1.getPrimary().host,
+        '--dest', rs2.getPrimary().host
+    );
 
     // 2. Notice oplog size on dest server
     var oplogSizeAfterStep1 = destLocal.oplog.rs.count();
 
     // 3. Do one more operation on source and replicate it one more time
     srcDb.test_coll.remove({msg: "Hello world!"});
-    runMongoProgram('python', '-m', 'jaraco.mongodb.oplog',
-            '--source', rs1.getPrimary().host,
-            '--dest', rs2.getPrimary().host);
+    runMongoProgram(
+        'python', '-m', 'jaraco.mongodb.oplog',
+        '--source', rs1.getPrimary().host,
+        '--dest', rs2.getPrimary().host
+    );
 
     // 4. mongooplog-alt should process only the last one operation.
     //    Thus, oplog size must increase by 1
