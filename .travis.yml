@@ -10,8 +10,9 @@ services:
   - mongodb
 
 script:
-  - sudo mkdir -p /data/db -m 777
-  - pip install . 'portend>=1.1'
-  - python -m portend --timeout 15 localhost:27017 occupied
-  - mongo tests/suite.js
   - python setup.py test
+  - sudo mkdir -p /data/db -m 777
+  - pip install 'portend>=1.1'
+  - python -m portend --timeout 15 localhost:27017 occupied
+  - pip install -e .
+  - mongo tests/suite.js
