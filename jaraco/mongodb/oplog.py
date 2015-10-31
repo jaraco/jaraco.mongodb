@@ -221,7 +221,7 @@ class Oplog(object):
         """
         Query the oplog for items since ts and then return
         """
-        spec = {'ts': {'$gt': ts}}
+        spec = {'ts': {'$gte': ts}}
         cursor = self.query(spec)
         while True:
             # todo: trap InvalidDocument errors:
