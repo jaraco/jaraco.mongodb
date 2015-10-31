@@ -23,12 +23,12 @@ function setUp() {
     var rs1 = new ReplSetTest({
         name: 'rs1',
         nodes: [{nojournal: ''}],
-        startPort: 31001
+        startPort: 31001,
     });
     var rs2 = new ReplSetTest({
         name: 'rs2',
         nodes: [{nojournal: ''}],
-        startPort: 31002
+        startPort: 31002,
     });
 
     rs1.startSet({oplogSize: 1})
