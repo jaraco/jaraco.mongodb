@@ -118,12 +118,14 @@ def _full_rename(args):
 
 def _resolve_shard(client):
     """
-    TODO:
     The destination cannot be a mongoS instance, as applyOps is
     not an allowable command for mongoS instances, so if the
     client is a connection to a mongoS instance, raise an error
     or resolve the replica set.
     """
+    status = client.admin.command('serverStatus')
+    if status['process'] == 'mongos':
+        raise RuntimeError("Destination cannot be mongos")
     return client
 
 
