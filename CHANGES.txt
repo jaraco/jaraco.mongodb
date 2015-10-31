@@ -1,3 +1,11 @@
+3.0
+===
+
+Oplog command no longer accepts '-h', '--host', '--to', '--port', '-p',
+or '--from', but
+instead accepts '--source' and '--dest' options for specifying source
+and destination hosts/ports.
+
 2.8
 ===
 

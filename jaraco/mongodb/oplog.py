@@ -19,19 +19,15 @@ def parse_args(*args, **kwargs):
         help="show usage information",
         action="help")
 
-    parser.add_argument("--from", metavar="host[:port]", dest="fromhost",
+    parser.add_argument("--source", metavar="host[:port]",
         help="host to pull from")
 
     parser.add_argument('--oplogns', default='local.oplog.rs',
         help="source namespace for oplog")
 
-    parser.add_argument("-h", "--host", "--to", metavar="host[:port]",
+    parser.add_argument("--dest", metavar="host[:port]",
         default="localhost",
-        help="mongo host to push to (<set name>/s1,s2 for sets)")
-
-    parser.add_argument("-p", "--port", metavar="host[:port]",
-        default=27017, type=int,
-        help="server port. Can also use --host hostname:port")
+        help="host to push to (<set name>/s1,s2 for sets)")
 
     parser.add_argument("-s", "--seconds", type=int, default=None,
         help="""seconds to go back. If not set, try read
@@ -127,8 +123,8 @@ def main():
 
     logging.info("going to connect")
 
-    src = pymongo.MongoClient(args.fromhost)
-    dest = pymongo.MongoClient(args.host, args.port)
+    src = pymongo.MongoClient(args.source)
+    dest = pymongo.MongoClient(args.dest)
 
     if _same_instance(src, dest) and not _full_rename(args):
         logging.error(
