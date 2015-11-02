@@ -277,9 +277,7 @@ def read_ts(filename):
     try:
         with open(filename, 'r') as f:
             data = json.load(f)['ts']
-            ts = bson.Timestamp(data['time'], data['inc'] + 1)
-            return ts
-
+        return bson.Timestamp(data['time'], data['inc'] + 1)
     except (IOError, KeyError):
         pass
 
