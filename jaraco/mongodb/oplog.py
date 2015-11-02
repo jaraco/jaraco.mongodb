@@ -56,7 +56,7 @@ def parse_args(*args, **kwargs):
         feature.
         """)
     parser.add_argument("--resume-file", default="mongooplog.ts",
-        metavar="FILENAME",
+        metavar="FILENAME", type=string_none,
         help=help,
     )
     parser.add_argument('-l', '--log-level', default=logging.INFO,
@@ -65,6 +65,15 @@ def parse_args(*args, **kwargs):
     args = parser.parse_args(*args, **kwargs)
     args.rename = dict(args.rename)
     return args
+
+
+def string_none(value):
+    """
+    Convert the string 'none' to None
+    """
+    is_string_none = not value or value.lower() == 'none'
+    return None if is_string_none else value
+
 
 def log_level(level_string):
     """
@@ -253,7 +262,7 @@ class TailingOplog(Oplog):
 def save_ts(ts, filename):
     """Save last processed timestamp to file. """
     try:
-        if filename and filename.lower() != 'none':
+        if filename:
             with open(filename, 'w') as f:
                 obj = {"ts": {"time": ts.time, "inc":  ts.inc}}
                 json.dump(obj, f)
