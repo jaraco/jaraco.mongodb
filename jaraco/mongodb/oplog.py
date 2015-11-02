@@ -217,6 +217,8 @@ def _handle(dest, op, args, num):
         logging.warning(repr(e))
 
 class Oplog(object):
+    find_params = {}
+
     def __init__(self, coll):
         self.coll = coll
 
@@ -226,7 +228,7 @@ class Oplog(object):
         return latest_doc['ts']
 
     def query(self, spec):
-        return self.coll.find(spec)
+        return self.coll.find(spec, **self.find_params)
 
     def since(self, ts):
         """
@@ -246,9 +248,10 @@ class Oplog(object):
 
 
 class TailingOplog(Oplog):
-    def query(self, spec):
-        return self.coll.find(spec, cursor_type=CursorType.TAILABLE_AWAIT,
-            oplog_replay=True)
+    find_params = dict(
+        cursor_type=CursorType.TAILABLE_AWAIT,
+        oplog_replay=True,
+    )
 
     def since(self, ts):
         """
