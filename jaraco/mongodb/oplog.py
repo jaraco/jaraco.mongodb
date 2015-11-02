@@ -267,9 +267,8 @@ def save_ts(ts, filename):
                 obj = {"ts": {"time": ts.time, "inc":  ts.inc}}
                 json.dump(obj, f)
     except IOError:
-        return False
-    else:
-        return True
+        pass
+
 
 def read_ts(filename):
     """Read last processed timestamp from file. Return next timestamp that
@@ -282,7 +281,7 @@ def read_ts(filename):
             return ts
 
     except (IOError, KeyError):
-        return None
+        pass
 
 
 if __name__ == '__main__':
