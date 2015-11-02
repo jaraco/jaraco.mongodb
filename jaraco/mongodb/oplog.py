@@ -160,7 +160,7 @@ def main():
 
     start = _calculate_start(args)
 
-    logging.info("starting from %s", start)
+    logging.info("starting from %s (%s)", start, start.as_datetime())
     db_name, sep, coll_name = args.oplogns.partition('.')
     oplog_coll = src[db_name][coll_name]
     num = 0
