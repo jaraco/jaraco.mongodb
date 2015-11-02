@@ -102,7 +102,9 @@ def _calculate_start(args):
         return bson.timestamp.Timestamp(utcnow - args.seconds, 0)
 
     day_ago = bson.timestamp.Timestamp(utcnow - 24*60*60, 0)
-    return read_ts(args.resume_file) or day_ago
+    saved_ts = read_ts(args.resume_file)
+    spec_ts = increment_ts(saved_ts) if saved_ts else None
+    return spec_ts or day_ago
 
 
 def _same_instance(client1, client2):
@@ -277,9 +279,16 @@ def read_ts(filename):
     try:
         with open(filename, 'r') as f:
             data = json.load(f)['ts']
-        return bson.Timestamp(data['time'], data['inc'] + 1)
+        return bson.Timestamp(data['time'], data['inc'])
     except (IOError, KeyError):
         pass
+
+
+def increment_ts(ts):
+    """
+    Return a new ts with an incremented .inc.
+    """
+    return bson.Timestamp(ts.time, ts.inc + 1)
 
 
 if __name__ == '__main__':
