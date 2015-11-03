@@ -48,6 +48,10 @@ def parse_args(*args, **kwargs):
         type=rename_item,
         help="rename namespaces before processing on dest")
 
+    parser.add_arguments("--dry-run", default=False,
+        action="store_true",
+        help="suppress application of ops")
+
     help = textwrap.dedent("""
         resume from timestamp read from this file and
         write last processed timestamp back to this file
@@ -212,6 +216,9 @@ def _handle(dest, op, args, num):
     # Apply operation
     try:
         dbname = op['ns'].split('.')[0] or "admin"
+        logging.debug("applying op %s", op)
+        if args.dry_run:
+            return
         dest[dbname].command("applyOps", [op])
     except pymongo.errors.OperationFailure as e:
         logging.warning(repr(e))
