@@ -9,11 +9,9 @@ python:
   - 3.4
 
 before_script:
-  - "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10"
-  - "echo 'deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse' | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list"
-  - "sudo apt-get update"
-  - "sudo apt-get install -y mongodb-org"
-  # - "until nc -z localhost 27017; do echo Waiting for MongoDB; sleep 1; done"
+  - mkdir mongodb
+  - wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.0.7.tgz -q -O - | tar xz -C mongodb --strip-components=1
+  - export PATH=`pwd`/mongodb/bin:$PATH
 
 script:
   - python setup.py test
