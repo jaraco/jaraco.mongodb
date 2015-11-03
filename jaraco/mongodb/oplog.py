@@ -48,7 +48,7 @@ def parse_args(*args, **kwargs):
         type=rename_item,
         help="rename namespaces before processing on dest")
 
-    parser.add_arguments("--dry-run", default=False,
+    parser.add_argument("--dry-run", default=False,
         action="store_true",
         help="suppress application of ops")
 
