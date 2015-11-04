@@ -55,7 +55,7 @@ adds following features:
 Invoke the command as a module script: ``python -m jaraco.mongodb.oplog``.
 
 Command-line options
-*******************
+********************
 
 Options common to original ``mongooplog``::
 
