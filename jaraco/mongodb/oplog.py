@@ -82,6 +82,10 @@ class Renamer(dict):
     >>> renames(op)
     >>> op['ns']
     'b.a'
+    >>> renames.affects('alpha.foo')
+    True
+    >>> renames.affects('b.gamma')
+    False
     """
 
     def invoke(self, op):
@@ -106,6 +110,12 @@ class Renamer(dict):
         regex = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
 
         return regex, new_ns + "."
+
+    def affects(self, ns):
+        """
+        Return True if this renamer affects the indicated namespace.
+        """
+        return any(exp.match(ns) for exp in self)
 
 
 def string_none(value):
@@ -151,10 +161,9 @@ def _full_rename(args):
     Return True only if the arguments passed specify exact namespaces
     and to conduct a rename of every namespace.
     """
-    ns_renamed = lambda ns: any(exp.match(ns) for exp in args.rename)
     return (
         args.ns and
-        all(map(ns_renamed, args.ns))
+        all(map(args.rename.affects, args.ns))
     )
 
 
