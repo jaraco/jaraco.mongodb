@@ -10,6 +10,7 @@ import re
 import textwrap
 
 from pymongo.cursor import CursorType
+from jaraco.itertools import always_iterable
 
 
 def parse_args(*args, **kwargs):
@@ -98,6 +99,10 @@ class Renamer(dict):
                 logging.debug("renaming %s to %s", op['ns'], ns)
                 op['ns'] = ns
     __call__ = invoke
+
+    @classmethod
+    def from_specs(cls, specs):
+        return cls(map(cls.item, always_iterable(specs)))
 
     @staticmethod
     def item(spec):
