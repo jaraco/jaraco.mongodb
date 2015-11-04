@@ -36,7 +36,7 @@ setup_params = dict(
 		'setuptools_scm',
 	] + pytest_runner + sphinx,
 	tests_require=[
-		'pytest',
+		'pytest>=2.8',
 		'cherrypy',
 	],
 	classifiers=[
