@@ -14,6 +14,8 @@ before_script:
   - export PATH=`pwd`/mongodb/bin:$PATH
 
 script:
+  # force pytest upgrade to avoid VersionConflict
+  - pip install -U pytest
   - python setup.py test
   - pip install -e .
   - mongo --nodb tests/suite.js
