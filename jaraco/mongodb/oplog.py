@@ -45,7 +45,7 @@ def parse_args(*args, **kwargs):
 
     parser.add_argument("--rename", nargs="*", default=[],
         metavar="ns_old=ns_new",
-        type=rename_item,
+        type=Renamer.item,
         help="rename namespaces before processing on dest")
 
     parser.add_argument("--dry-run", default=False,
@@ -67,8 +67,33 @@ def parse_args(*args, **kwargs):
         type=log_level, help="Set log level (DEBUG, INFO, WARNING, ERROR)")
 
     args = parser.parse_args(*args, **kwargs)
-    args.rename = dict(args.rename)
+    args.rename = Renamer(args.rename)
     return args
+
+
+class Renamer(dict):
+    def invoke(self, op):
+        """
+        Replace namespaces in op based on keys/values in self.
+        """
+        for old_ns, new_ns in self.items():
+            if old_ns.match(op['ns']):
+                ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
+                logging.debug("renaming %s to %s", op['ns'], ns)
+                op['ns'] = ns
+    __call__ = invoke
+
+    @staticmethod
+    def item(spec):
+        """
+        Return a pair of old namespace (regex) to the new namespace (string).
+
+        spec should be a pair separated by equal sign ('=').
+        """
+        old_ns, new_ns = spec.split('=')
+        regex = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
+
+        return regex, new_ns + "."
 
 
 def string_none(value):
@@ -85,16 +110,6 @@ def log_level(level_string):
     """
     return getattr(logging, level_string.upper())
 
-def rename_item(spec):
-    """
-    Return a pair of old namespace (regex) to the new namespace (string).
-
-    spec should be a pair separated by equal sign ('=').
-    """
-    old_ns, new_ns = spec.split('=')
-    regex = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
-
-    return regex, new_ns + "."
 
 def _calculate_start(args):
     """
@@ -206,12 +221,7 @@ def _handle(dest, op, args, num):
         logging.debug("skipping ns %s", op['ns'])
         return
 
-    # Rename namespaces
-    for old_ns, new_ns in args.rename.items():
-        if old_ns.match(op['ns']):
-            ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
-            logging.debug("renaming %s to %s", op['ns'], ns)
-            op['ns'] = ns
+    args.rename(op)
 
     # Apply operation
     try:
