@@ -1,3 +1,8 @@
+3.4
+===
+
+#1: Rename a namespace in index operations.
+
 3.3
 ===
 
