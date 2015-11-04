@@ -30,6 +30,7 @@ setup_params = dict(
 		'python-dateutil',
 		'jaraco.services',
 		'portend',
+		'jaraco.itertools',
 	],
 	setup_requires=[
 		'setuptools_scm',
