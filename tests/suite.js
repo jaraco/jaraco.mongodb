@@ -5,6 +5,7 @@ function runTests() {
         test_excludeNamespaces,
         test_includeMatchingNamespaces,
         test_renameNamespaces,
+        test_renameNamespacesIndexes,
         test_resumeFromSavedTimestamp,
     ];
 
@@ -165,6 +166,35 @@ function test_renameNamespaces(rs1, rs2) {
     assert(dest.getDB('renamedb').coll_1.findOne() == null);
     assert(dest.getDB('renamedb').coll_2.findOne() == null);
     assert(dest.getDB('testdb').renameMe.findOne() == null);
+}
+
+function test_renameNamespacesIndexes(rs1, rs2) {
+
+    // Given operations on different namespaces
+    var srcDb1 = rs1.getPrimary().getDB('testdb');
+
+    srcDb1.coll_1.ensureIndex({'msg': 1})
+    srcDb1.coll_1.insert({msg: "This message is indexed"});
+
+    // Invoke mongooplog-alt to transfer changes from rs1 to rs2
+    // Rename one db and one collection during transfer
+    runMongoProgram(
+        'python', '-m', 'jaraco.mongodb.oplog',
+        '--source', rs1.getPrimary().host,
+        '--dest', rs2.getPrimary().host,
+        '--rename', 'testdb.coll_1=testdb.coll_new'
+    )
+
+    // Namespaces in index operation
+    // should be actually renamed on destination server
+    var dest = rs2.getPrimary();
+    assert(dest.getDB('testdb').coll_new.findOne());
+
+    // The index should have been created on the new collection
+    assert(dest.getDB('testdb').coll_new.getIndexes()[1]['name'] == 'msg_1');
+
+    // Old namespaces should not appear on destination server
+    assert(dest.getDB('testdb').coll_1.findOne() == null);
 }
 
 function test_resumeFromSavedTimestamp(rs1, rs2) {
