@@ -72,6 +72,18 @@ def parse_args(*args, **kwargs):
 
 
 class Renamer(dict):
+    """
+    >>> specs = [
+    ...      'a=b',
+    ...      'alpha=gamma',
+    ...  ]
+    >>> renames = Renamer(map(Renamer.item, specs))
+    >>> op = dict(ns='a.a')
+    >>> renames(op)
+    >>> op['ns']
+    'b.a'
+    """
+
     def invoke(self, op):
         """
         Replace namespaces in op based on keys/values in self.
