@@ -98,6 +98,9 @@ class Renamer(dict):
                 ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
                 logging.debug("renaming %s to %s", op['ns'], ns)
                 op['ns'] = ns
+            if op.get('op') == 'i':
+                # index operation; update ns in the op also.
+                self.invoke(op['o'])
     __call__ = invoke
 
     @classmethod
