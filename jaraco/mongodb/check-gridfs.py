@@ -12,6 +12,7 @@ import gridfs
 import pymongo
 from jaraco.ui import progress
 from more_itertools.recipes import consume
+from jaraco.itertools import Counter
 
 from jaraco.mongodb import helper
 from jaraco.context import ExceptionTrap
@@ -58,7 +59,10 @@ def run():
 
 	processed_files = map(checker.process, bar.iterate(files))
 	errors = filter(None, processed_files)
-	consume(map(checker.handle_trap, errors))
+	counter = Counter(errors)
+	consume(map(checker.handle_trap, counter))
+
+	print("Encountered", counter.count, "errors")
 
 
 if __name__ == '__main__':
