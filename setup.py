@@ -33,6 +33,7 @@ setup_params = dict(
 		'portend',
 		'jaraco.itertools',
 		'jaraco.functools',
+		'jaraco.ui',
 	],
 	setup_requires=[
 		'setuptools_scm',
