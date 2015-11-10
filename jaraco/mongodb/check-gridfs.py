@@ -6,6 +6,8 @@ import sys
 import logging
 import argparse
 
+from six.moves import filter, map
+
 import gridfs
 import pymongo
 from jaraco.ui import progress
@@ -35,9 +37,12 @@ class FileChecker:
 		file = self.gfs.get_last_version(filename)
 		with ExceptionTrap(pymongo.errors.PyMongoError) as trap:
 			file.read(self.depth)
-		if trap:
-			exc, cls, tb = trap.exc_info
-			log.error("Failed to read %s (%s)", filename, exc)
+		trap.filename = filename
+		return trap
+
+	def handle_trap(self, trap):
+		exc, cls, tb = trap.exc_info
+		log.error("Failed to read %s (%s)", trap.filename, exc)
 
 
 def run():
@@ -50,7 +55,7 @@ def run():
 
 	checker = FileChecker(gfs, args.depth)
 
-	list(map(checker.process, bar.iterate(files)))
+	list(map(checker.handle_trap, filter(None, map(checker.process, bar.iterate(files)))))
 
 
 if __name__ == '__main__':
