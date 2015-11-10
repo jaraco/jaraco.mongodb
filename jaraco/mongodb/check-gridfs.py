@@ -5,7 +5,6 @@ Script to check a GridFS instance for corrupted records.
 import sys
 import logging
 import argparse
-import functools
 
 import gridfs
 import pymongo
@@ -27,13 +26,18 @@ def get_args():
 	return parser.parse_args()
 
 
-def process_file(gfs, depth, filename):
-	file = gfs.get_last_version(filename)
-	with ExceptionTrap(pymongo.errors.PyMongoError) as trap:
-		file.read(depth)
-	if trap:
-		exc, cls, tb = trap.exc_info
-		log.error("Failed to read %s (%s)", filename, exc)
+class FileChecker:
+	def __init__(self, gfs, depth):
+		self.gfs = gfs
+		self.depth = depth
+
+	def process(self, filename):
+		file = self.gfs.get_last_version(filename)
+		with ExceptionTrap(pymongo.errors.PyMongoError) as trap:
+			file.read(self.depth)
+		if trap:
+			exc, cls, tb = trap.exc_info
+			log.error("Failed to read %s (%s)", filename, exc)
 
 
 def run():
@@ -44,9 +48,9 @@ def run():
 	files = gfs.list()
 	bar = progress.TargetProgressBar(len(files))
 
-	handle = functools.partial(process_file, gfs, args.depth)
+	checker = FileChecker(gfs, args.depth)
 
-	list(map(handle, bar.iterate(files)))
+	list(map(checker.process, bar.iterate(files)))
 
 
 if __name__ == '__main__':
