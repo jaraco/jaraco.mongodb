@@ -7,6 +7,7 @@ import logging
 import argparse
 
 import gridfs
+import pymongo
 from jaraco.ui import progress
 
 from jaraco.mongodb import helper
@@ -36,7 +37,7 @@ def run():
 		file = gfs.get_last_version(filename)
 		try:
 			file.read(args.depth)
-		except Exception as exc:
+		except pymongo.errors.PyMongoError as exc:
 			log.error("Failed to read %s (%s)", filename, exc)
 
 
