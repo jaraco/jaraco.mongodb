@@ -27,10 +27,12 @@ setup_params = dict(
 	namespace_packages=['jaraco'],
 	install_requires=[
 		'pymongo',
+		'six',
 		'python-dateutil',
 		'jaraco.services',
 		'portend',
 		'jaraco.itertools',
+		'jaraco.functools',
 	],
 	setup_requires=[
 		'setuptools_scm',
