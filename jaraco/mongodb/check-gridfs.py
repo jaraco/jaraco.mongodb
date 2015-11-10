@@ -7,16 +7,12 @@ import logging
 import argparse
 
 import gridfs
-import pymongo
 from jaraco.ui import progress
+
+from jaraco.mongodb import helper
 
 
 log = logging.getLogger()
-
-
-def connect_db(uri):
-	host, sep, db_name = uri.rpartition('/')
-	return pymongo.MongoClient(host)[db_name]
 
 
 def get_args():
@@ -24,7 +20,7 @@ def get_args():
 	parser.add_argument('--depth', default=1024,
 		help="Bytes to read into each file during check",
 	)
-	parser.add_argument('db', type=connect_db)
+	parser.add_argument('db', type=helper.connect_db)
 	return parser.parse_args()
 
 
