@@ -36,8 +36,8 @@ def run():
 		file = gfs.get_last_version(filename)
 		try:
 			file.read(args.depth)
-		except Exception:
-			log.exception("Failed to read %s", filename)
+		except Exception as exc:
+			log.error("Failed to read %s (%s)", filename, exc)
 
 
 if __name__ == '__main__':
