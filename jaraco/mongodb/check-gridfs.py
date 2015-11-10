@@ -43,7 +43,7 @@ class FileChecker:
 		return trap
 
 	def handle_trap(self, trap):
-		exc, cls, tb = trap.exc_info
+		cls, exc, tb = trap.exc_info
 		log.error("Failed to read %s (%s)", trap.filename, exc)
 
 
