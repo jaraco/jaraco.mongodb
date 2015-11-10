@@ -11,6 +11,7 @@ from six.moves import filter, map
 import gridfs
 import pymongo
 from jaraco.ui import progress
+from more_itertools.recipes import consume
 
 from jaraco.mongodb import helper
 from jaraco.context import ExceptionTrap
@@ -55,7 +56,9 @@ def run():
 
 	checker = FileChecker(gfs, args.depth)
 
-	list(map(checker.handle_trap, filter(None, map(checker.process, bar.iterate(files)))))
+	processed_files = map(checker.process, bar.iterate(files))
+	errors = filter(None, processed_files)
+	consume(map(checker.handle_trap, errors))
 
 
 if __name__ == '__main__':
