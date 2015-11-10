@@ -11,6 +11,7 @@ import pymongo
 from jaraco.ui import progress
 
 from jaraco.mongodb import helper
+from jaraco.context import ExceptionTrap
 
 
 log = logging.getLogger()
@@ -35,9 +36,10 @@ def run():
 
 	for filename in bar.iterate(files):
 		file = gfs.get_last_version(filename)
-		try:
+		with ExceptionTrap(pymongo.errors.PyMongoError) as trap:
 			file.read(args.depth)
-		except pymongo.errors.PyMongoError as exc:
+		if trap:
+			exc, cls, tb = trap.exc_info
 			log.error("Failed to read %s (%s)", filename, exc)
 
 

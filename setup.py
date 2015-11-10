@@ -34,6 +34,7 @@ setup_params = dict(
 		'jaraco.itertools',
 		'jaraco.functools',
 		'jaraco.ui',
+		'jaraco.context',
 	],
 	setup_requires=[
 		'setuptools_scm',
