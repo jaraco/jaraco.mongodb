@@ -1,3 +1,9 @@
+3.8
+===
+
+``repair-gridfs`` command now saves documents before removing
+files.
+
 3.7
 ===
 
