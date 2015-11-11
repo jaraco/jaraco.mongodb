@@ -31,6 +31,10 @@ def get_args():
 class FileRepair:
 	def __init__(self, gfs):
 		self.gfs = gfs
+		db = gfs._GridFS__database
+		coll = gfs._GridFS__collection
+		bu_coll_name = coll.name + '-saved'
+		self.backup_coll = db[bu_coll_name]
 
 	def run(self):
 		files = self.gfs.list()
@@ -50,8 +54,13 @@ class FileRepair:
 
 	def handle_trap(self, trap):
 		cls, exc, tb = trap.exc_info
-		log.info("Removing %s (%s)", trap.filename, exc)
 		spec = dict(filename=trap.filename)
+		for file_doc in self.gfs._GridFS__files.find(spec):
+			self.backup_coll.files.insert(file_doc)
+			chunk_spec = dict(files_id=file_doc['_id'])
+			for chunk in self.gfs._GridFS__chunks.find(chunk_spec):
+				self.backup_coll.chunks.insert(chunk)
+		log.info("Removing %s (%s)", trap.filename, exc)
 		self.gfs.delete(spec)
 
 
