@@ -34,6 +34,15 @@ class FileChecker:
 		self.gfs = gfs
 		self.depth = depth
 
+	def run(self):
+		files = self.gfs.list()
+		bar = progress.TargetProgressBar(len(files))
+		processed_files = map(self.process, bar.iterate(files))
+		errors = filter(None, processed_files)
+		counter = Counter(errors)
+		consume(map(self.handle_trap, counter))
+		return counter
+
 	def process(self, filename):
 		file = self.gfs.get_last_version(filename)
 		with ExceptionTrap(pymongo.errors.PyMongoError) as trap:
@@ -50,16 +59,8 @@ def run():
 	logging.basicConfig(stream=sys.stderr)
 	args = get_args()
 
-	gfs = args.db
-	files = gfs.list()
-	bar = progress.TargetProgressBar(len(files))
-
-	checker = FileChecker(gfs, args.depth)
-
-	processed_files = map(checker.process, bar.iterate(files))
-	errors = filter(None, processed_files)
-	counter = Counter(errors)
-	consume(map(checker.handle_trap, counter))
+	checker = FileChecker(args.db, args.depth)
+	counter = checker.run()
 
 	print("Encountered", counter.count, "errors")
 
