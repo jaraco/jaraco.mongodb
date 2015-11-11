@@ -56,7 +56,7 @@ class FileRepair:
 
 
 def run():
-	logging.basicConfig(stream=sys.stderr)
+	logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 	args = get_args()
 
 	repair = FileRepair(args.db)
