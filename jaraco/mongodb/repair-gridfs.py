@@ -10,7 +10,7 @@ import argparse
 
 from six.moves import filter, map
 
-import pymongo
+import gridfs
 from jaraco.ui import progress
 from more_itertools.recipes import consume
 from jaraco.itertools import Counter
@@ -43,7 +43,7 @@ class FileRepair:
 
 	def process(self, filename):
 		file = self.gfs.get_last_version(filename)
-		with ExceptionTrap(pymongo.errors.CorruptGridFile) as trap:
+		with ExceptionTrap(gridfs.errors.CorruptGridFile) as trap:
 			file.read(1)
 		trap.filename = filename
 		return trap
