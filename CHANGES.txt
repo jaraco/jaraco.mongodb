@@ -3,6 +3,9 @@
 
 Add ``helper.connect_gridfs`` function.
 
+Add script for removing corrupt GridFS files:
+``jaraco.mongodb.repair-gridfs``.
+
 3.6
 ===
 
