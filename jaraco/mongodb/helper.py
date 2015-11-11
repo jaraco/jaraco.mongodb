@@ -5,6 +5,7 @@ Helper functions to augment PyMongo
 import warnings
 
 import pymongo
+import gridfs
 
 
 def filter_warnings():
@@ -61,3 +62,12 @@ def connect_db(uri, default_db_name=None, **kwargs):
         raise ValueError("A database name must be supplied")
     conn = connect(uri, **kwargs)
     return conn[db_name]
+
+
+def connect_gridfs(uri, db=None):
+    """
+    Construct a GridFS instance for a MongoDB URI.
+    """
+    db = db or connect_db(uri)
+    collection = pymongo.uri_parser.parse_uri(uri)['collection']
+    return gridfs.GridFS(db, collection=collection or 'fs')

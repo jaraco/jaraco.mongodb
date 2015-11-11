@@ -8,7 +8,6 @@ import argparse
 
 from six.moves import filter, map
 
-import gridfs
 import pymongo
 from jaraco.ui import progress
 from more_itertools.recipes import consume
@@ -26,7 +25,7 @@ def get_args():
 	parser.add_argument('--depth', default=1024,
 		help="Bytes to read into each file during check",
 	)
-	parser.add_argument('db', type=helper.connect_db)
+	parser.add_argument('db', type=helper.connect_gridfs)
 	return parser.parse_args()
 
 
@@ -51,7 +50,7 @@ def run():
 	logging.basicConfig(stream=sys.stderr)
 	args = get_args()
 
-	gfs = gridfs.GridFS(args.db)
+	gfs = args.db
 	files = gfs.list()
 	bar = progress.TargetProgressBar(len(files))
 
