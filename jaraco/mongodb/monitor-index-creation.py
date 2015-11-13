@@ -14,7 +14,8 @@ def run():
 		index_op = next(filter(is_index_op, ops))
 		msg = index_op['msg']
 		name = index_op['query']['indexes'][0]['name']
-		msg = re.sub('Index Build( \(background\))?', name, msg)
+		pat = re.compile('Index Build( \(background\))?')
+		msg = pat.sub(name, msg, count=1)
 		print(msg, end='\r')
 		time.sleep(5)
 
