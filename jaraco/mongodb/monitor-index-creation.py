@@ -10,5 +10,8 @@ db = helper.connect_db(sys.argv[1])
 while True:
     ops = db.current_op()['inprog']
     index_op = next(filter(is_index_op, ops))
-    print(index_op['msg'], end='\r')
+    msg = index_op['msg']
+    name = index_op['query']['indexes'][0]['name']
+    msg = re.replace('Index Build (\(background\))?', name, msg)
+    print(msg, end='\r')
     time.sleep(5)
