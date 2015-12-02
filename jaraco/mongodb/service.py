@@ -69,6 +69,8 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 is_virtualenv = lambda: hasattr(sys, 'real_prefix')
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
+    data_dir = None
+
     @staticmethod
     def get_data_dir():
         data_dir = None
@@ -81,7 +83,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
 
     def start(self):
         super(MongoDBInstance, self).start()
-        self.data_dir = self.get_data_dir()
+        self.data_dir = self.data_dir or self.get_data_dir()
         if not hasattr(self, 'port') or not self.port:
             self.port = self.find_free_port()
         cmd = [
@@ -115,6 +117,13 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     def stop(self):
         super(MongoDBInstance, self).stop()
         shutil.rmtree(self.data_dir)
+        del self.data_dir
+
+    def soft_stop(self):
+        """
+        Stop the process, but retain the data_dir.
+        """
+        super(MongoDBInstance, self).stop()
 
 
 class MongoDBReplicaSet(MongoDBFinder, services.Service):

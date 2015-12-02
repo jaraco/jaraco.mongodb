@@ -1,3 +1,9 @@
+3.10
+====
+
+MongoDBInstance now allows for a ``.soft_stop`` and subsequent ``.start``
+to restart the instance against the same data_dir.
+
 3.8
 ===
 
