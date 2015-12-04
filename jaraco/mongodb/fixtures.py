@@ -16,8 +16,8 @@ def mongodb_instance():
 		instance.start()
 		pymongo.MongoClient(instance.get_connect_hosts())
 		yield instance
-	except Exception:
-		pytest.skip("MongoDB not available")
+	except Exception as err:
+		pytest.skip("MongoDB not available ({err})".format(**locals()))
 	instance.stop()
 
 @pytest.fixture(scope='session')

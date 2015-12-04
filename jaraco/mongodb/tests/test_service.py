@@ -28,3 +28,6 @@ def test_MongoDBReplicaSet_starts_quickly():
         assert elapsed < limit
     finally:
         rs.stop()
+
+def test_fixture(mongodb_instance):
+    "Cause the fixture to be invoked"
