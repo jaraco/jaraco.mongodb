@@ -1,13 +1,19 @@
-import sys
 import time
 import re
+import argparse
+
 from jaraco.mongodb import helper
 
 def is_index_op(op):
 	return op.get('query', {}).get('createIndexes')
 
+def get_args():
+	parser = argparse.ArgumentParser()
+	parser.add_argument('db')
+	return parser.parse_args()
+
 def run():
-	db = helper.connect_db(sys.argv[1])
+	db = helper.connect_db(get_args().db)
 
 	while True:
 		ops = db.current_op()['inprog']
