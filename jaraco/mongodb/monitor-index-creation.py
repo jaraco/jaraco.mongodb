@@ -11,7 +11,10 @@ def run():
 
 	while True:
 		ops = db.current_op()['inprog']
-		index_op = next(filter(is_index_op, ops))
+		index_op = next(filter(is_index_op, ops), None)
+		if not index_op:
+			print("No index operations in progress")
+			break
 		msg = index_op['msg']
 		name = index_op['query']['indexes'][0]['name']
 		pat = re.compile('Index Build( \(background\))?')
