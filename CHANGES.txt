@@ -1,3 +1,8 @@
+3.12
+====
+
+Minor usability improvements in monitor-index-creation script.
+
 3.11
 ====
 
