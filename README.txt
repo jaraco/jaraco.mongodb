@@ -16,6 +16,13 @@ be inserted into a MongoDB collection naturally.
 
 To support richer objects, one may configure the codec to use ``jaraco.modb``.
 
+monitor-index-creation
+----------------------
+
+To monitor an ongoing index operation in a server, simply invoke:
+
+    python -m jaraco.mongodb.monitor-index-creation mongodb://host/db
+
 oplog
 -----
 
