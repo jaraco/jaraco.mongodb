@@ -5,4 +5,6 @@ def test_purge_all_databases(mongodb_instance):
 	client.test_db.test_coll.insert({'a': 1})
 	client.test_db2.test_coll.insert({'b': 2})
 	manage.purge_all_databases(client)
-	assert client.database_names() == ['local']
+	indexes = {'system.indexes'}
+	assert set(client.test_db.collection_names()) <= indexes
+	assert set(client.test_db2.collection_names()) <= indexes
