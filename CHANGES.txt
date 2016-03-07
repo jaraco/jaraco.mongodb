@@ -2,6 +2,7 @@
 ====
 
 Added ``manage`` module with support for purging all databases.
+Added ``.purge_all_databases`` to MongoDBInstance.
 
 3.12
 ====

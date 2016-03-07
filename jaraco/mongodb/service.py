@@ -12,6 +12,7 @@ import logging
 import portend
 from jaraco.services import paths
 from jaraco import services
+from . import manage
 
 
 log = logging.getLogger(__name__)
@@ -107,6 +108,9 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     def get_connection(self):
         pymongo = importlib.import_module('pymongo')
         return pymongo.MongoClient('localhost', self.port)
+
+    def purge_all_databases(self):
+        manage.purge_all_databases(self.get_connection())
 
     def get_connect_hosts(self):
         return ['localhost:{self.port}'.format(**locals())]
