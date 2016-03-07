@@ -1,13 +1,13 @@
 3.14
 ====
 
-Exposed ``mongod_parameters`` on ``MongoDBInstance``
+Exposed ``mongod_args`` on ``MongoDBInstance``
 and ``MongoDBReplicaSet``.
 
 Allow arbitrary arguments to be included as mongodb
-parameters with pytest plugin. For example::
+args with pytest plugin. For example::
 
-    py.test --mongod-parameters=--storageEngine=wiredTiger
+    py.test --mongod-args=--storageEngine=wiredTiger
 
 3.13
 ====

@@ -72,7 +72,7 @@ is_virtualenv = lambda: hasattr(sys, 'real_prefix')
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     data_dir = None
 
-    mongod_parameters = (
+    mongod_args = (
         '--noprealloc',
         '--nojournal',
         '--nohttpinterface',
@@ -101,7 +101,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
             self.find_binary(),
             '--dbpath', self.data_dir,
             '--port', str(self.port),
-        ] + list(self.mongod_parameters)
+        ] + list(self.mongod_args)
         if hasattr(self, 'bind_ip') and not '--bind_ip' in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
         self.process = subprocess.Popen(cmd, stdout=self.get_log())
