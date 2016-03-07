@@ -1,3 +1,8 @@
+3.13
+====
+
+Added ``manage`` module with support for purging all databases.
+
 3.12
 ====
 
