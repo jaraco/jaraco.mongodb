@@ -72,6 +72,16 @@ is_virtualenv = lambda: hasattr(sys, 'real_prefix')
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     data_dir = None
 
+    mongod_parameters = (
+        '--noprealloc',
+        '--nojournal',
+        '--nohttpinterface',
+        '--syncdelay', '0',
+        '--ipv6',
+        '--noauth',
+        '--setParameter', 'textSearchEnabled=true',
+    )
+
     @staticmethod
     def get_data_dir():
         data_dir = None
@@ -91,15 +101,8 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
             self.find_binary(),
             '--dbpath', self.data_dir,
             '--port', str(self.port),
-            '--noprealloc',
-            '--nojournal',
-            '--nohttpinterface',
-            '--syncdelay', '0',
-            '--ipv6',
-            '--noauth',
-            '--setParameter', 'textSearchEnabled=true',
-        ]
-        if hasattr(self, 'bind_ip'):
+        ] + list(self.mongod_parameters)
+        if hasattr(self, 'bind_ip') and not '--bind_ip' in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
         self.process = subprocess.Popen(cmd, stdout=self.get_log())
         portend.occupied('localhost', self.port, timeout=3)
@@ -133,6 +136,12 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
 class MongoDBReplicaSet(MongoDBFinder, services.Service):
     replica_set_name = 'test'
 
+    mongod_parameters = (
+        '--noprealloc',
+        '--smallfiles',
+        '--oplogSize', '10',
+    )
+
     def start(self):
         super(MongoDBReplicaSet, self).start()
         self.data_root = tempfile.mkdtemp()
@@ -160,13 +169,10 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         os.mkdir(data_dir)
         cmd = [
             self.find_binary(),
-            '--replSet', self.replica_set_name,
-            '--noprealloc',
-            '--smallfiles',
-            '--oplogSize', '10',
             '--dbpath', data_dir,
             '--port', str(port),
-        ]
+            '--replSet', self.replica_set_name,
+        ] + list(self.mongod_parameters)
         log_file = self.get_log(number)
         process = subprocess.Popen(cmd, stdout=log_file)
         portend.occupied('localhost', port, timeout=50)

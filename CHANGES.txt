@@ -1,3 +1,9 @@
+3.14
+====
+
+Exposed ``mongod_parameters`` on ``MongoDBInstance``
+and ``MongoDBReplicaSet``.
+
 3.13
 ====
 
