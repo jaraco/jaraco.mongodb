@@ -4,6 +4,11 @@
 Exposed ``mongod_parameters`` on ``MongoDBInstance``
 and ``MongoDBReplicaSet``.
 
+Allow arbitrary arguments to be included as mongodb
+parameters with pytest plugin. For example::
+
+    py.test --mongod-parameters=--storageEngine=wiredTiger
+
 3.13
 ====
 
