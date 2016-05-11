@@ -1,3 +1,9 @@
+3.15.1
+======
+
+Set a small batch size on fs query for move-gridfs to
+prevent the cursor timing out while chunks are moved.
+
 3.15
 ====
 

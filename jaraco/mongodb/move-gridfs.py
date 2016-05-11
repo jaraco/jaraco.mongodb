@@ -56,7 +56,8 @@ class FileMove:
 		return self.dest_gfs._GridFS__collection
 
 	def run(self):
-		files = self.source_coll.files.find(self.filter)
+		files = self.source_coll.files.find(self.filter
+			batch_size=1)
 		limit_files = itertools.islice(files, self.limit)
 		count = min(files.count(), self.limit or float('inf'))
 		bar = progress.TargetProgressBar(count)
