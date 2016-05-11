@@ -23,6 +23,16 @@ To monitor an ongoing index operation in a server, simply invoke:
 
     python -m jaraco.mongodb.monitor-index-creation mongodb://host/db
 
+move-gridfs
+-----------
+
+To move files from one gridfs collection to another, invoke:
+
+    python -m jaraco.mongodb.move-gridfs --help
+
+And follow the usage for moving all or some gridfs files and
+optionally deleting the files after.
+
 oplog
 -----
 

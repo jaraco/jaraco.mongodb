@@ -1,3 +1,8 @@
+3.15
+====
+
+Add ``jaraco.mongodb.move-gridfs`` command.
+
 3.14
 ====
 
