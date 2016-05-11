@@ -20,3 +20,13 @@ script:
   - python setup.py test
   - pip install -e .
   - mongo --nodb tests/suite.js
+
+deploy:
+  provider: pypi
+  on:
+    tags: true
+    all_branches: true
+    python: 3.5
+  user: jaraco
+  # supply password with `travis encrypt --add deploy.password`
+  distributions: release
