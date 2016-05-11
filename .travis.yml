@@ -1,26 +1,21 @@
 language: python
-
 dist: trusty
-
 python:
-  - 2.7
-  - 3.2
-  - 3.3
-  - 3.4
-  - 3.5
-
+- 2.7
+- 3.2
+- 3.3
+- 3.4
+- 3.5
 before_script:
-  - mkdir mongodb
-  - wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.0.7.tgz -q -O - | tar xz -C mongodb --strip-components=1
-  - export PATH=`pwd`/mongodb/bin:$PATH
-
+- mkdir mongodb
+- wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.0.7.tgz -q -O - | tar
+  xz -C mongodb --strip-components=1
+- export PATH=`pwd`/mongodb/bin:$PATH
 script:
-  # force pytest upgrade to avoid VersionConflict
-  - pip install -U pytest
-  - python setup.py test
-  - pip install -e .
-  - mongo --nodb tests/suite.js
-
+- pip install -U pytest
+- python setup.py test
+- pip install -e .
+- mongo --nodb tests/suite.js
 deploy:
   provider: pypi
   on:
@@ -28,5 +23,6 @@ deploy:
     all_branches: true
     python: 3.5
   user: jaraco
-  # supply password with `travis encrypt --add deploy.password`
   distributions: release
+  password:
+    secure: LqAY+QqOlo5aaD+MO5vt8ueTfhR+gFSHMuxOCYZaz8q9j9Y5A96n0p/L7MCf086UIpMEZBuxZUUa3JOQsJ5VNKAyox/knxikuvq/bR4Qt0jfg/BICwfRbwTt6UXZ8J92BcGc+T6TsMztfZtSEsEiA3FH8c+ixiiYH632Z1LVeWZTuAyLWIt3i7Bn99hO5/xV6/bbW7kYUZurl+cFCcm/FZTRaXDpDsO/75G8K2OCHRMe2zXLb3w7X8IMsIptvn73+9HgDQgBwzDKeAtqGOdeNw9RQV2uloGJfrrc+ecqUooXvE2LcFYNID9UbStYrU8ruRALm5z/FaBYsZDY/TetbihOqqXG/5VTSS9nmJOfhS0SS7qyGGpyLj+HNfuswaBd9xECYdFoZLMeT3zvGHXgU94MKz+nu2KoOSgI0f2o03i/6rRdmzp2WN06IgR9VPdcVwgSbzvpwxo+b3aOYBvQzGtIi3P1C4AXc0AclfP5U7FF30+7uS1pallY6gAlAeHrbATh4qT3Cvo1PQYmXS+3KQN0KOFxmoMPAY6yUMF7PIWiavoZjpUP9WTHBMxD6WtWhlMJASAryF0SCWiwRMn/HjuM3mkPPBOaRw3Rne6lIXeykbQ2GJJfI21l16uDKohKl4yqPg2L+EdTrRzynXobSzAlqMoK3l6E9OXskF+BxoA=
