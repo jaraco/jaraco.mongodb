@@ -17,6 +17,16 @@ Welcome to jaraco.mongodb documentation!
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: jaraco.mongodb.oplog
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.mongodb.sessions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Indices and tables
 ==================
