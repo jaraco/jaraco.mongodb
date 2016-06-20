@@ -16,6 +16,9 @@ script:
 - python setup.py test
 - pip install -e .
 - mongo --nodb tests/suite.js
+branches:
+  except:
+    - skeleton
 deploy:
   provider: pypi
   on:
