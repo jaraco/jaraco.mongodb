@@ -5,6 +5,16 @@ jaraco.mongodb
 
 Provides support for MongoDB environments.
 
+migration manager
+-----------------
+
+``jaraco.mongodb.migration`` implements the Migration Manager as featured
+at the `MongoWorld 2016 <https://www.mongodb.com/world16>`_ presentation
+`From the Polls to the Trolls
+<https://rawgit.com/yougov/mongoworld-2016/merged/index.html>`_. Use
+it to load documents of various schema versions into a target version that
+your application expects.
+
 sessions
 --------
 

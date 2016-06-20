@@ -1,3 +1,9 @@
+3.16
+====
+
+Extract migration manager functionality from YouGov's
+cases migration.
+
 3.15.2
 ======
 
