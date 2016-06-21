@@ -1,3 +1,8 @@
+3.17
+====
+
+Add Trove classifier for Pytest Framework.
+
 3.16
 ====
 
