@@ -65,7 +65,7 @@ setup_params = dict(
 			'MongoDB = jaraco.mongodb.fixtures',
 		],
 		'pmxbot_handlers': [
-			'create in MongoDB shard = jaraco.mongodb.sharding',
+			'create in MongoDB shard = jaraco.mongodb.pmxbot',
 		],
 	},
 )

@@ -1,25 +1,11 @@
 import socket
 import operator
-import shlex
 
 import pymongo
 from jaraco.text import namespace_format as nf
 
 hostname = socket.gethostname()
 by_id = operator.itemgetter('_id')
-
-
-try:
-        import pmxbot
-        @pmxbot.core.command("create-db-in-shard")
-        def cdbs(client, event, channel, nick, rest):
-                """
-                Create a database in a shard. !create-db-in-shard {db name} {shard name}
-                """
-                db_name, shard = shlex.split(rest)
-                return create_db_in_shard(db_name, shard)
-except ImportError:
-        pass
 
 
 def get_ids(collection):
