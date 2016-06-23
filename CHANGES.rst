@@ -1,3 +1,9 @@
+3.18
+====
+
+Added ``sharding`` module with ``create_db_in_shard``
+function and pmxbot command.
+
 3.17
 ====
 

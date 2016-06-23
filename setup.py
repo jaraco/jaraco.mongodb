@@ -64,6 +64,9 @@ setup_params = dict(
 		'pytest11': [
 			'MongoDB = jaraco.mongodb.fixtures',
 		],
+		'pmxbot_handlers': [
+			'create in MongoDB shard = jaraco.mongodb.sharding',
+		],
 	},
 )
 if __name__ == '__main__':
