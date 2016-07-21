@@ -12,6 +12,11 @@ Welcome to jaraco.mongodb documentation!
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: jaraco.mongodb.helper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: jaraco.mongodb.migration
     :members:
     :undoc-members:

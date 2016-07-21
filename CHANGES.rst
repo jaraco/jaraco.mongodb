@@ -1,3 +1,8 @@
+3.18.1
+======
+
+Add helper module to docs.
+
 3.18
 ====
 
