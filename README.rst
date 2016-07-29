@@ -86,14 +86,14 @@ Command-line options
 
 Options common to original ``mongooplog``::
 
-  --from <hostname><:port>
+  --source <hostname><:port>
     Hostname of the mongod server from which oplog operations are going to be
-    pulled.
+    pulled. Called "--from" in mongooplog.
 
-  --host <hostname><:port>, -h
+  --dest <hostname><:port>, -h
 
     Hostname of the mongod server to which oplog operations are going to be
-    applied. Default is "localhost"
+    applied. Default is "localhost". Called "--host" in mongooplog.
 
   --port <number>
 
