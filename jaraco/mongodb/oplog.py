@@ -13,7 +13,35 @@ from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
 
 
+class Extend(argparse.Action):
+    """
+    Argparse action to take an nargs=* argument
+    and add any values to the existing value.
+    """
+    def __call__(self, parser, namespace, values, option_string=None):
+        getattr(namespace, self.dest).extend(values)
+
+
 def parse_args(*args, **kwargs):
+    """
+    Parse the args for the command.
+
+    It should be possible for one to specify '--ns', '-x', and '--rename'
+    multiple times:
+
+    >>> args = parse_args(['--ns', 'foo', 'bar', '--ns', 'baz'])
+    >>> args.ns
+    ['foo', 'bar', 'baz']
+
+    >>> parse_args(['-x', '--exclude']).exclude
+    []
+
+    >>> renames = parse_args(['--rename', 'a=b', '--rename', 'b=c']).rename
+    >>> len(renames)
+    2
+    >>> type(renames)
+    <class 'jaraco.mongodb.oplog.Renamer'>
+    """
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument("--help",
@@ -39,14 +67,17 @@ def parse_args(*args, **kwargs):
         help="wait for new data in oplog, run forever.")
 
     parser.add_argument("--ns", nargs="*", default=[],
+        action=Extend,
         help="this namespace(s) only ('dbname' or 'dbname.coll')")
 
     parser.add_argument("-x", "--exclude", nargs="*", default=[],
+        action=Extend,
         help="exclude namespaces ('dbname' or 'dbname.coll')")
 
     parser.add_argument("--rename", nargs="*", default=[],
         metavar="ns_old=ns_new",
         type=Renamer.item,
+        action=Extend,
         help="rename namespaces before processing on dest")
 
     parser.add_argument("--dry-run", default=False,

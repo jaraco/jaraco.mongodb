@@ -1,3 +1,15 @@
+4.1
+===
+
+``oplog`` command now accepts multiple indications of the
+following arguments::
+
+ - --ns
+ - --exclude
+ - --rename
+
+See the docstring for the implications of this change.
+
 4.0
 ===
 

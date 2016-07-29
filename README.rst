@@ -120,18 +120,19 @@ Options specific to this implementation::
  --exclude, -x
 
     List of space separated namespaces which should be ignored. Can be in form
-    of ``dname`` or ``dbname.collection``.
+    of ``dname`` or ``dbname.collection``. May be specified multiple times.
 
   --ns
 
     Process only these namespaces, ignoring all others. Space separated list of
-    strings in form of ``dname`` or ``dbname.collection``.
+    strings in form of ``dname`` or ``dbname.collection``. May be specified
+    multiple times.
 
   --rename [ns_old=ns_new [ns_old=ns_new ...]]
 
     Rename database(s) and/or collection(s). Operations on namespace ``ns_old``
     from the source server will be applied to namespace ``ns_new`` on the
-    destination server.
+    destination server. May be specified multiple times.
 
   --resume-file FILENAME
 
