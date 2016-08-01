@@ -214,6 +214,14 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         return ['localhost:{instance.port}'.format(**locals())
             for instance in self.instances]
 
+    def get_uri(self):
+        return 'mongodb://' + ','.join(self.get_connect_hosts())
+
+    def get_connection(self):
+        pymongo = importlib.import_module('pymongo')
+        return pymongo.MongoClient(self.get_uri())
+
+
 InstanceInfoBase = collections.namedtuple('InstanceInfoBase',
     'path port process log_file')
 class InstanceInfo(InstanceInfoBase):
