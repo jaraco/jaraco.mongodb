@@ -1,8 +1,8 @@
 import time
 
 import bson
-import pymongo
 import pytest
+import jaraco.itertools
 
 from jaraco.mongodb import oplog
 from jaraco.mongodb import service
@@ -33,13 +33,7 @@ class TestReplacer:
 		assert op['o']['ns'] == 'airportlocker-us.luggage.chunks'
 
 
-@pytest.fixture
-def replicable_instance(request):
-	"""
-	Return a MongoDB instance (distinct from the normal
-	fixture) configured for replication such that it has
-	an oplog.
-	"""
+def make_replicaset(request):
 	try:
 		r_set = service.MongoDBReplicaSet()
 		r_set.log_root = ''
@@ -51,13 +45,21 @@ def replicable_instance(request):
 	return r_set
 
 
+@pytest.fixture
+def replicaset_factory(request):
+	"""
+	Return a factory that can generate MongoDB replica sets
+	"""
+	return jaraco.itertools.infiniteCall(make_replicaset, request)
+
+
 class TestOplogReplication:
-	def test_index_deletion(self, replicable_instance, mongodb_instance):
+	def test_index_deletion(self, replicaset_factory):
 		"""
 		A delete index operation should be able to be applied to a replica
 		"""
-		source = replicable_instance.get_connection()
-		dest = mongodb_instance.get_connection()
+		source = next(replicaset_factory).get_connection()
+		dest = next(replicaset_factory).get_connection()
 		source.index_deletion_test.stuff.ensure_index("foo")
 		dest.index_deletion_test.stuff.ensure_index("foo")
 		source_oplog = oplog.Oplog(source.local.oplog.rs)
