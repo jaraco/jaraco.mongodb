@@ -283,15 +283,20 @@ def _handle(dest, op, args, num):
 
     args.rename(op)
 
-    # Apply operation
+    logging.debug("applying op %s", op)
     try:
-        dbname = op['ns'].split('.')[0] or "admin"
-        logging.debug("applying op %s", op)
-        if args.dry_run:
-            return
-        dest[dbname].command("applyOps", [op])
+        apply(dest, op) if not args.dry_run else None
     except pymongo.errors.OperationFailure as e:
         logging.warning(repr(e))
+
+
+def apply(db, op):
+    """
+    Apply operation in db
+    """
+    dbname = op['ns'].split('.')[0] or "admin"
+    db[dbname].command("applyOps", [op])
+
 
 class Oplog(object):
     find_params = {}
