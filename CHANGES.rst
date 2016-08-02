@@ -1,3 +1,9 @@
+4.2
+===
+
+``oplog`` now reports the failed operation when an oplog
+entry fails to apply.
+
 4.1
 ===
 
