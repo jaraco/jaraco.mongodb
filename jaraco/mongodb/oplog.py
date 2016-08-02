@@ -280,7 +280,8 @@ def _handle(dest, op, args, num):
     try:
         apply(dest, op) if not args.dry_run else None
     except pymongo.errors.OperationFailure as e:
-        logging.warning(repr(e))
+        msg = '{e!r} applying {op}'.format(**locals())
+        logging.warning(msg)
 
 
 def apply(db, op):
