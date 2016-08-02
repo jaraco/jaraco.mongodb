@@ -1,5 +1,3 @@
-import time
-
 import bson
 import pytest
 import jaraco.itertools
@@ -63,12 +61,9 @@ class TestOplogReplication:
 		source.index_deletion_test.stuff.ensure_index("foo")
 		dest.index_deletion_test.stuff.ensure_index("foo")
 		source_oplog = oplog.Oplog(source.local.oplog.rs)
-		# need to sleep one second to ensure that the
-		# creation operation is less than begin_ts.
-		time.sleep(1)
-		begin_ts = bson.Timestamp(int(time.time()), 0)
+		begin_ts = source_oplog.get_latest_ts()
 		source.index_deletion_test.stuff.drop_index("foo_1")
-		delete_index_op, = source_oplog.since(begin_ts)
+		delete_index_op, = source_oplog.since(oplog.increment_ts(begin_ts))
 		oplog.apply(dest, delete_index_op)
 		only_index, = dest.index_deletion_test.stuff.list_indexes()
 		assert only_index['name'] == '_id_'
