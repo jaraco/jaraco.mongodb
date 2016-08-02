@@ -243,12 +243,13 @@ def main():
     try:
         for num, doc in enumerate(generator.since(start)):
             _handle(dest, doc, args, num)
+            last_handled = doc
         logging.info("all done")
     except KeyboardInterrupt:
         logging.info("Got Ctrl+C, exiting...")
     finally:
-        if 'doc' in locals():
-            save_ts(doc['ts'], args.resume_file)
+        if 'last_handled' in locals():
+            save_ts(last_handled['ts'], args.resume_file)
 
 def _handle(dest, op, args, num):
     # Skip "no operation" items
