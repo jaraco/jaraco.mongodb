@@ -9,6 +9,7 @@ import bson
 import re
 import textwrap
 
+import jaraco.logging
 from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
 
@@ -95,8 +96,7 @@ def parse_args(*args, **kwargs):
         metavar="FILENAME", type=string_none,
         help=help,
     )
-    parser.add_argument('-l', '--log-level', default=logging.INFO,
-        type=log_level, help="Set log level (DEBUG, INFO, WARNING, ERROR)")
+    jaraco.logging.add_arguments(parser)
 
     args = parser.parse_args(*args, **kwargs)
     args.rename = Renamer(args.rename)
@@ -165,13 +165,6 @@ def string_none(value):
     return None if is_string_none else value
 
 
-def log_level(level_string):
-    """
-    Return a log level for a string
-    """
-    return getattr(logging, level_string.upper())
-
-
 def _calculate_start(args):
     """
     Return the start time as a bson timestamp.
@@ -222,7 +215,7 @@ def _resolve_shard(client):
 def main():
     args = parse_args()
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
-    logging.basicConfig(level=args.log_level, format=log_format)
+    jaraco.logging.setup(args, format=log_format)
 
     logging.info("going to connect")
 
