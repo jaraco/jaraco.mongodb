@@ -146,13 +146,18 @@ Example usages
 
 Consider the following sample usage::
 
-    python -m jaraco.mongodb.oplog --from prod.example.com:28000 --to dev.example.com:28500 -f --exclude logdb data.transactions --seconds 600
+    python -m jaraco.mongodb.oplog --source prod.example.com:28000 --dest dev.example.com:28500 -f --exclude logdb data.transactions --seconds 600
 
 This command is going to take operations from the last 10 minutes from prod,
 and apply them to dev. Database ``logdb`` and collection ``transactions`` of
 ``data`` database will be omitted. After operations for the last minutes will
 be applied, command will wait for new changes to come, keep running until
 Ctrl+C or other termination signal recieved.
+
+The tool provides a ``--dry-run`` option and when logging at the DEBUG level will
+emit the oplog entries. Combine these to use the tool as an oplog cat tool::
+
+    $ python -m jaraco.mongodb.oplog --dry-run -s 0 -f --source prod.example.com --ns survey_tabs -l DEBUG
 
 
 Testing
