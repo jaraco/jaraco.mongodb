@@ -278,7 +278,7 @@ def _handle(dest, op, args, num):
     included = any(op['ns'].startswith(ns) for ns in args.ns)
 
     if excluded or (args.ns and not included):
-        logging.debug("skipping ns %s", op['ns'])
+        logging.log(logging.DEBUG-1, "skipping ns %s", op['ns'])
         return
 
     args.rename(op)
