@@ -3,6 +3,12 @@
 
 #2: Retain key order when loading Oplog events for replay.
 
+4.2.1
+=====
+
+Avoid race condition if an operation was being applied
+when sync was cancelled.
+
 4.2
 ===
 
