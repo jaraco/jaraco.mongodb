@@ -1,9 +1,15 @@
 jaraco.mongodb
 ==============
 
-`Documentation <https://pythonhosted.org/jaraco.mongodb>`_
+.. image:: https://img.shields.io/pypi/v/jaraco.mongodb.svg
+   :target: https://pypi.io/project/jaraco.mongodb
 
-Provides support for MongoDB environments.
+.. image:: https://img.shields.io/pypi/pyversions/jaraco.mongodb.svg
+
+.. image:: https://img.shields.io/pypi/dm/jaraco.mongodb.svg
+
+.. image:: https://img.shields.io/travis/jaraco/jaraco.mongodb/master.svg
+   :target: http://travis-ci.org/jaraco/jaraco.mongodb
 
 migration manager
 -----------------
