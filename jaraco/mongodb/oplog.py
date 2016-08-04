@@ -8,6 +8,7 @@ import pymongo
 import bson
 import re
 import textwrap
+import collections
 
 import jaraco.logging
 from pymongo.cursor import CursorType
@@ -297,7 +298,11 @@ class Oplog(object):
     find_params = {}
 
     def __init__(self, coll):
-        self.coll = coll
+        self.coll = coll.with_options(
+            codec_options=bson.CodecOptions(
+                document_class=collections.OrderedDict,
+            ),
+        )
 
     def get_latest_ts(self):
         cur = self.coll.find().sort('$natural', pymongo.DESCENDING).limit(-1)

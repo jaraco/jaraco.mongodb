@@ -1,3 +1,8 @@
+4.2.2
+=====
+
+#2: Retain key order when loading Oplog events for replay.
+
 4.2
 ===
 
