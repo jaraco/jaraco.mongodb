@@ -1,3 +1,9 @@
+4.3
+===
+
+Oplog replay now warns if there are no operations preceding
+the cutoff.
+
 4.2.2
 =====
 

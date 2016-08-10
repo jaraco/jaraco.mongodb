@@ -241,6 +241,9 @@ def main():
     class_ = TailingOplog if args.follow else Oplog
     generator = class_(oplog_coll)
 
+    if not generator.has_ops_before(start):
+        logging.warning("No ops before start time; oplog may be overrun")
+
     try:
         for num, doc in enumerate(generator.since(start)):
             _handle(dest, doc, args, num)
@@ -327,6 +330,13 @@ class Oplog(object):
             if not cursor.alive:
                 break
             time.sleep(1)
+
+    def has_ops_before(self, ts):
+        """
+        Determine if there are any ops before ts
+        """
+        spec = {'ts': {'$lt': ts}}
+        return bool(self.coll.find_one(spec))
 
 
 class TailingOplog(Oplog):
