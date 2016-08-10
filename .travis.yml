@@ -20,11 +20,12 @@ branches:
   - skeleton
 deploy:
   provider: pypi
+  server: https://upload.pypi.org/legacy/
   on:
     tags: true
     all_branches: true
     python: 3.5
   user: jaraco
-  distributions: release
+  distributions: dists
   password:
     secure: LqAY+QqOlo5aaD+MO5vt8ueTfhR+gFSHMuxOCYZaz8q9j9Y5A96n0p/L7MCf086UIpMEZBuxZUUa3JOQsJ5VNKAyox/knxikuvq/bR4Qt0jfg/BICwfRbwTt6UXZ8J92BcGc+T6TsMztfZtSEsEiA3FH8c+ixiiYH632Z1LVeWZTuAyLWIt3i7Bn99hO5/xV6/bbW7kYUZurl+cFCcm/FZTRaXDpDsO/75G8K2OCHRMe2zXLb3w7X8IMsIptvn73+9HgDQgBwzDKeAtqGOdeNw9RQV2uloGJfrrc+ecqUooXvE2LcFYNID9UbStYrU8ruRALm5z/FaBYsZDY/TetbihOqqXG/5VTSS9nmJOfhS0SS7qyGGpyLj+HNfuswaBd9xECYdFoZLMeT3zvGHXgU94MKz+nu2KoOSgI0f2o03i/6rRdmzp2WN06IgR9VPdcVwgSbzvpwxo+b3aOYBvQzGtIi3P1C4AXc0AclfP5U7FF30+7uS1pallY6gAlAeHrbATh4qT3Cvo1PQYmXS+3KQN0KOFxmoMPAY6yUMF7PIWiavoZjpUP9WTHBMxD6WtWhlMJASAryF0SCWiwRMn/HjuM3mkPPBOaRw3Rne6lIXeykbQ2GJJfI21l16uDKohKl4yqPg2L+EdTrRzynXobSzAlqMoK3l6E9OXskF+BxoA=

@@ -2,7 +2,7 @@ jaraco.mongodb
 ==============
 
 .. image:: https://img.shields.io/pypi/v/jaraco.mongodb.svg
-   :target: https://pypi.io/project/jaraco.mongodb
+   :target: https://pypi.org/project/jaraco.mongodb
 
 .. image:: https://img.shields.io/pypi/pyversions/jaraco.mongodb.svg
 
