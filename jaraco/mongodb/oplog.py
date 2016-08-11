@@ -27,7 +27,7 @@ class Extend(argparse.Action):
 
 
 def delta_from_seconds(seconds):
-    return datetime.timedelta(seconds=seconds)
+    return datetime.timedelta(seconds=int(seconds))
 
 
 def parse_args(*args, **kwargs):
@@ -49,6 +49,9 @@ def parse_args(*args, **kwargs):
     2
     >>> type(renames)
     <class 'jaraco.mongodb.oplog.Renamer'>
+
+    >>> parse_args(['--seconds', '86402']).window
+    datetime.timedelta(1, 2)
     """
     parser = argparse.ArgumentParser(add_help=False)
 
