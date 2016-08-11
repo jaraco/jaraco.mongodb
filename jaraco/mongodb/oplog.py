@@ -273,6 +273,8 @@ def _handle(dest, op, args, num):
     if op['op'] == 'n':
         return
 
+    op['ts'] = Timestamp.wrap(op['ts'])
+
     # Update status
     ts = op['ts']
     if not num % 1000:
