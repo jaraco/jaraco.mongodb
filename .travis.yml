@@ -12,7 +12,7 @@ before_script:
 - export PATH=`pwd`/mongodb/bin:$PATH
 script:
 - pip install -U pytest
-- python setup.py test
+- python setup.py test --addopts='-v -rs'
 - pip install -e .
 - mongo --nodb tests/oplog.js
 branches:
