@@ -190,7 +190,7 @@ def _calculate_start(args):
 
     day_ago = Timestamp(utcnow - one_day, 0)
     saved_ts = read_ts(args.resume_file)
-    spec_ts = saved_ts.next() if saved_ts else None
+    spec_ts = saved_ts if saved_ts else None
     return spec_ts or day_ago
 
 
@@ -348,7 +348,7 @@ class Oplog(object):
         """
         Query the oplog for items since ts and then return
         """
-        spec = {'ts': {'$gte': ts}}
+        spec = {'ts': {'$gt': ts}}
         cursor = self.query(spec)
         while True:
             # todo: trap InvalidDocument errors:
