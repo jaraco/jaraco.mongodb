@@ -172,11 +172,9 @@ Testing
 .. _BuildStatus: http://travis-ci.org/jaraco/jaraco.mongodb
 
 Tests for ``oplog`` are written in javascript using test harness
-which is used for testing MongoDB iteself. You can run the whole suite with::
+which is used for testing MongoDB iteself. You can run the oplog suite with::
 
-    mongo tests/suite.js
-
-Note, that you will need existing writable ``/data/db`` dir.
+    mongo tests/oplog.js
 
 Tests produce alot of output. Succesful execution ends with line like this::
 

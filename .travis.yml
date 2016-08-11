@@ -14,7 +14,7 @@ script:
 - pip install -U pytest
 - python setup.py test
 - pip install -e .
-- mongo --nodb tests/suite.js
+- mongo --nodb tests/oplog.js
 branches:
   except:
   - skeleton
