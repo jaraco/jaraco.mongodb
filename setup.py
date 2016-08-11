@@ -43,6 +43,7 @@ setup_params = dict(
 		'jaraco.context',
 		'more_itertools',
 		'jaraco.logging',
+		'jaraco.timing',
 	],
 	extras_require={
 	},

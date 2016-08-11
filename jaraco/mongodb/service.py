@@ -8,10 +8,12 @@ import importlib
 import shutil
 import functools
 import logging
+import datetime
 
 import portend
 from jaraco.services import paths
 from jaraco import services
+from jaraco import timing
 from . import manage
 
 
@@ -155,13 +157,17 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         )
         errors = importlib.import_module('pymongo.errors')
         log.info('Waiting for replica set to initialize')
-        while True:
+
+        watch = timing.Stopwatch()
+        while watch.elapsed < datetime.timedelta(minutes=5):
             try:
                 res = get_repl_set_status()
                 if res.get('myState') != 1: continue
             except errors.OperationFailure:
                 continue
             break
+        else:
+            raise RuntimeError("timeout waiting for replica set to start")
 
     def start_instance(self, number):
         port = self.find_free_port()
