@@ -275,17 +275,6 @@ def _handle(dest, op, args, num):
 
     op['ts'] = Timestamp.wrap(op['ts'])
 
-    # Update status
-    ts = op['ts']
-    if not num % 1000:
-        save_ts(ts, args.resume_file)
-        logging.info(
-            "%s\t%s\t%s -> %s",
-            num, ts.as_datetime(),
-            op.get('op'),
-            op.get('ns'),
-        )
-
     # Skip excluded namespaces or namespaces that does not match --ns
     excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
     included = any(op['ns'].startswith(ns) for ns in args.ns)
@@ -302,6 +291,17 @@ def _handle(dest, op, args, num):
     except pymongo.errors.OperationFailure as e:
         msg = '{e!r} applying {op}'.format(**locals())
         logging.warning(msg)
+
+    # Update status
+    ts = op['ts']
+    if not num % 1000:
+        save_ts(ts, args.resume_file)
+        logging.info(
+            "%s\t%s\t%s -> %s",
+            num, ts.as_datetime(),
+            op.get('op'),
+            op.get('ns'),
+        )
 
 
 def apply(db, op):
