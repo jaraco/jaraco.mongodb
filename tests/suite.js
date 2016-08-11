@@ -22,14 +22,15 @@ function runTests() {
 /** Initialize test environment. */
 function setUp() {
     MongoRunner.dataPath = '/tmp/'
+    opts = {nojournal: ''};
     var rs1 = new ReplSetTest({
         name: 'rs1',
-        nodes: [{nojournal: ''}],
+        nodes: [opts],
         startPort: 31001,
     });
     var rs2 = new ReplSetTest({
         name: 'rs2',
-        nodes: [{nojournal: ''}],
+        nodes: [opts],
         startPort: 31002,
     });
 
