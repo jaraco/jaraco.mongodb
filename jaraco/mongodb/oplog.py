@@ -9,6 +9,7 @@ import bson
 import re
 import textwrap
 import collections
+import datetime
 
 import jaraco.logging
 from pymongo.cursor import CursorType
@@ -22,6 +23,10 @@ class Extend(argparse.Action):
     """
     def __call__(self, parser, namespace, values, option_string=None):
         getattr(namespace, self.dest).extend(values)
+
+
+def delta_from_seconds(seconds):
+    return datetime.timedelta(seconds=seconds)
 
 
 def parse_args(*args, **kwargs):
@@ -60,7 +65,9 @@ def parse_args(*args, **kwargs):
         default="localhost",
         help="host to push to (<set name>/s1,s2 for sets)")
 
-    parser.add_argument("-s", "--seconds", type=int, default=None,
+    parser.add_argument("-s", "--seconds",
+        dest="window",
+        type=delta_from_seconds, default=None,
         help="""seconds to go back. If not set, try read
         timestamp from --resume-file. If the file not found,
         assume --seconds=86400 (24 hours)""")
@@ -170,12 +177,14 @@ def _calculate_start(args):
     """
     Return the start time as a bson timestamp.
     """
-    utcnow = int(time.time())
+    utcnow = datetime.datetime.utcnow()
 
-    if args.seconds:
-        return bson.timestamp.Timestamp(utcnow - args.seconds, 0)
+    if args.window:
+        return bson.timestamp.Timestamp(utcnow - args.window, 0)
 
-    day_ago = bson.timestamp.Timestamp(utcnow - 24*60*60, 0)
+    one_day = datetime.timedelta(days=1)
+
+    day_ago = bson.timestamp.Timestamp(utcnow - one_day, 0)
     saved_ts = read_ts(args.resume_file)
     spec_ts = increment_ts(saved_ts) if saved_ts else None
     return spec_ts or day_ago
