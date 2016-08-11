@@ -54,7 +54,7 @@ oplog
 
 This package provides an ``oplog`` module, which is based on the
 `mongooplog-alt <https://github.com/asivokon/mongooplog-alt/>`_ project,
-which itself is a  Python remake of `official mongooplog utility`_,
+which itself is a Python remake of `official mongooplog utility`_,
 shipped with MongoDB starting from version 2.2.0. It reads oplog of a remote
 server, and applies operations to the local server. This can be used to keep
 independed replica set loosly synced in a sort of one way replication, and may
@@ -72,15 +72,12 @@ adds following features:
   being synced.
 
 * ability to "rename" dbs/collections on fly, i.e. destination namespaces can
-  differ from the original ones.
+  differ from the original ones. This feature
 
-* works on mongodb 1.8.x, 2.0.x, and 2.2.x. Official utility only supports
+* works on mongodb 1.8 and later. Official utility only supports
   version 2.2.x and higher.
 
 * save last processed timestamp to file, resume from saved point later.
-
-* at the time of writing (2.2.0), official ``mongooplog`` suffers from bug that
-  limits its usage with replica sets (https://jira.mongodb.org/browse/SERVER-6915)
 
 
 .. _official mongooplog utility: http://docs.mongodb.org/manual/reference/mongooplog/
