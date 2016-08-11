@@ -63,7 +63,7 @@ class TestOplogReplication:
 		source_oplog = oplog.Oplog(source.local.oplog.rs)
 		begin_ts = source_oplog.get_latest_ts()
 		source.index_deletion_test.stuff.drop_index("foo_1")
-		delete_index_op, = source_oplog.since(oplog.increment_ts(begin_ts))
+		delete_index_op, = source_oplog.since(begin_ts.next())
 		print("attempting", delete_index_op)
 		oplog.apply(dest, delete_index_op)
 		only_index, = dest.index_deletion_test.stuff.list_indexes()

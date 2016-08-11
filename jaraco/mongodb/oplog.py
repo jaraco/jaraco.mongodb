@@ -10,6 +10,7 @@ import re
 import textwrap
 import collections
 import datetime
+import warnings
 
 import jaraco.logging
 from pymongo.cursor import CursorType
@@ -180,13 +181,13 @@ def _calculate_start(args):
     utcnow = datetime.datetime.utcnow()
 
     if args.window:
-        return bson.timestamp.Timestamp(utcnow - args.window, 0)
+        return Timestamp(utcnow - args.window, 0)
 
     one_day = datetime.timedelta(days=1)
 
-    day_ago = bson.timestamp.Timestamp(utcnow - one_day, 0)
+    day_ago = Timestamp(utcnow - one_day, 0)
     saved_ts = read_ts(args.resume_file)
-    spec_ts = increment_ts(saved_ts) if saved_ts else None
+    spec_ts = saved_ts.next() if saved_ts else None
     return spec_ts or day_ago
 
 
@@ -319,7 +320,7 @@ class Oplog(object):
     def get_latest_ts(self):
         cur = self.coll.find().sort('$natural', pymongo.DESCENDING).limit(-1)
         latest_doc = next(cur)
-        return latest_doc['ts']
+        return Timestamp.wrap(latest_doc['ts'])
 
     def query(self, spec):
         return self.coll.find(spec, **self.find_params)
@@ -365,13 +366,51 @@ class TailingOplog(Oplog):
                 ts = doc['ts']
 
 
+class Timestamp(bson.timestamp.Timestamp):
+    @classmethod
+    def wrap(cls, orig):
+        """
+        Wrap an original timestamp as returned by a pymongo query
+        with a version of this class.
+        """
+        # hack to give the timestamp this class' specialized methods
+        orig.__class__ = cls
+        return orig
+
+    def next(self):
+        """Return another :class:`Timestamp` that's one inc greater.
+        """
+        return self.__class__(self.time, self.inc + 1)
+
+    def dump(self, stream):
+        """Serialize self to text stream.
+
+        Matches convention of mongooplog.
+        """
+        items = (
+            ('time', self.time),
+            ('inc', self.inc),
+        )
+        # use ordered dict to retain order
+        ts = collections.OrderedDict(items)
+        json.dump(dict(ts=ts), stream)
+
+    @classmethod
+    def load(cls, stream):
+        """Load a serialized version of self from text stream.
+
+        Expects the format used by mongooplog.
+        """
+        data = json.load(stream)['ts']
+        return cls(data['time'], data['inc'])
+
+
 def save_ts(ts, filename):
     """Save last processed timestamp to file. """
     try:
         if filename:
             with open(filename, 'w') as f:
-                obj = {"ts": {"time": ts.time, "inc":  ts.inc}}
-                json.dump(obj, f)
+                ts.dump(f)
     except IOError:
         pass
 
@@ -382,17 +421,14 @@ def read_ts(filename):
     """
     try:
         with open(filename, 'r') as f:
-            data = json.load(f)['ts']
-        return bson.Timestamp(data['time'], data['inc'])
+            return Timestamp.load(f)
     except (IOError, KeyError):
         pass
 
 
 def increment_ts(ts):
-    """
-    Return a new ts with an incremented .inc.
-    """
-    return bson.Timestamp(ts.time, ts.inc + 1)
+    warnings.warn("Use ts.next()", DeprecationWarning)
+    return ts.next()
 
 
 if __name__ == '__main__':
