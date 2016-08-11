@@ -268,6 +268,20 @@ def main():
         if 'last_handled' in locals():
             save_ts(last_handled['ts'], args.resume_file)
 
+
+def applies_to_ns(op, ns):
+    db, sep, coll = ns.partition('.')
+    return (
+        op['ns'].startswith(ns) or
+
+        op['op'] == 'c'
+        and
+        op['ns'] == db + '.$cmd'
+        and
+        op['o'].get('create', None) == coll
+    )
+
+
 def _handle(dest, op, args, num):
     # Skip "no operation" items
     if op['op'] == 'n':
@@ -276,8 +290,8 @@ def _handle(dest, op, args, num):
     op['ts'] = Timestamp.wrap(op['ts'])
 
     # Skip excluded namespaces or namespaces that does not match --ns
-    excluded = any(op['ns'].startswith(ns) for ns in args.exclude)
-    included = any(op['ns'].startswith(ns) for ns in args.ns)
+    excluded = any(applies_to_ns(op, ns) for ns in args.exclude)
+    included = any(applies_to_ns(op, ns) for ns in args.ns)
 
     if excluded or (args.ns and not included):
         logging.log(logging.DEBUG-1, "skipping %s", op)
