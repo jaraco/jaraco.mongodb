@@ -48,6 +48,7 @@ function setUp() {
 function tearDown(env) {
     env.rs1.stopSet();
     env.rs2.stopSet();
+    removeFile('mongooplog.ts');
 }
 
 
