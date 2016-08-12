@@ -100,7 +100,7 @@ function test_excludeNamespaces(rs1, rs2) {
     var destDb1 = rs2.getPrimary().getDB('testdb');
     var destDb2 = rs2.getPrimary().getDB('test_ignored_db');
 
-    assert(destDb1.include_coll.count(), 1);
+    assert.eq(destDb1.include_coll.count(), 1);
 
     // Changes in excluded namespaces should not be on dest server
     assert.eq(destDb1.exclude_coll.count(), 0);
@@ -129,7 +129,7 @@ function test_includeMatchingNamespaces(rs1, rs2) {
     var destDb1 = rs2.getPrimary().getDB('testdb');
     var destDb2 = rs2.getPrimary().getDB('test_ignored_db');
 
-    assert(destDb1.include_coll.count(), 1);
+    assert.eq(destDb1.include_coll.count(), 1);
 
     // All other namespaces should be ignored
     assert.eq(destDb1.exclude_coll.count(), 0);
