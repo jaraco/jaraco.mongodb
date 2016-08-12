@@ -1,3 +1,9 @@
+4.4
+===
+
+#3: ``create_db_in_shard`` no longer raises an exception when
+the database happens to be created in the target shard.
+
 4.3
 ===
 

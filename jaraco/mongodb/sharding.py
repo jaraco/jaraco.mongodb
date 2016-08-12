@@ -31,7 +31,9 @@ def create_db_in_shard(db_name, shard, client=None):
         client[db_name].foo.drop()
         if client[db_name].collection_names():
                 raise ValueError("database has collections")
-        res = client.admin.command('movePrimary', value=db_name, to=shard)
-        if not res.get('ok'):
-                raise RuntimeError(str(res))
+        primary = client['config'].databases.find_one(db_name)['primary']
+        if primary != shard:
+                res = client.admin.command('movePrimary', value=db_name, to=shard)
+                if not res.get('ok'):
+                        raise RuntimeError(str(res))
         return nf("Successfully created {db_name} in {shard} via {hostname}")
