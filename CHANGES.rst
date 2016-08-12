@@ -4,6 +4,11 @@
 #3: ``create_db_in_shard`` no longer raises an exception when
 the database happens to be created in the target shard.
 
+#5: Better MongoDB 3.2 support for oplog replication.
+
+Tests in continuous integration are now run against MongoDB
+2.6, 3.0, and 3.2.
+
 4.3
 ===
 
