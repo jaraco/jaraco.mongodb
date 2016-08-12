@@ -30,7 +30,6 @@ class TestReplacer:
 		assert op['ns'] == 'airportlocker-us.system.indexes'
 		assert op['o']['ns'] == 'airportlocker-us.luggage.chunks'
 
-	@pytest.mark.xfail(reason="#5")
 	def test_collection_rename_on_create_cmd(self):
 		"""
 		Starting in MongoDB 3.2, a create collection is required

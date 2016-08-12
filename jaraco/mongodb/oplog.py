@@ -127,6 +127,8 @@ class RenameSpec(object):
     def __init__(self, old_ns, new_ns):
         self.old_ns = old_ns
         self.new_ns = new_ns
+        self.old_db, sep, self.old_coll = self.old_ns.partition('.')
+        self.new_db, sep, self.new_coll = self.new_ns.partition('.')
         self.regex = re.compile(r"^{0}(\.|$)".format(re.escape(self.old_ns)))
 
         if '.' in self.old_ns:
@@ -147,6 +149,23 @@ class RenameSpec(object):
         if op['ns'].endswith('.system.indexes'):
             # index operation; update ns in the op also.
             self(op['o'])
+        self._handle_create(op)
+
+    def _handle_create(self, op):
+        if self._matching_create_command(op, self.old_ns):
+            op['ns'] = self.new_db + '.$cmd'
+            op['o']['create'] = self.new_coll
+
+    @staticmethod
+    def _matching_create_command(op, old_ns):
+        old_db, sep, old_coll = old_ns.partition('.')
+        return (
+            op.get('op') == 'c'
+            and
+            op['ns'] == old_db + '.$cmd'
+            and
+            op['o'].get('create', None) == old_coll
+        )
 
     def affects(self, ns):
         return bool(self.regex.match(ns))
