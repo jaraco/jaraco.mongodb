@@ -30,6 +30,27 @@ class TestReplacer:
 		assert op['ns'] == 'airportlocker-us.system.indexes'
 		assert op['o']['ns'] == 'airportlocker-us.luggage.chunks'
 
+	def test_collection_rename_on_create_cmd(self):
+		"""
+		Starting in MongoDB 3.2, a create collection is required
+		before insert operations (apparently). Ensure that a renamed
+		command in a create collection is renamed.
+		"""
+		op = {
+			'h': -4317026186822365585,
+			't': 1,
+			'ns': 'newdb.$cmd',
+			'v': 2,
+			'o': {'create': 'coll_1'},
+			'ts': bson.Timestamp(1470940276, 1),
+			'op': 'c',
+		}
+
+		ren = oplog.Renamer.from_specs("newdb.coll_1=newdb.coll_2")
+		ren(op)
+
+		assert op['o']['create'] == 'coll_2'
+
 
 def make_replicaset(request):
 	try:
