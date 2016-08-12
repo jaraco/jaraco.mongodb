@@ -160,6 +160,11 @@ class Renamer(dict):
         old_ns, new_ns = spec.split('=')
         regex = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
 
+        if '.' in old_ns:
+            logging.warning("Collection rename operations will fail on "
+                "MongoDB 3.2; "
+                "see https://github.com/jaraco/jaraco.mongodb/issues/5")
+
         return regex, new_ns + "."
 
     def affects(self, ns):
