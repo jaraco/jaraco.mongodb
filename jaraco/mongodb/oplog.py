@@ -89,7 +89,7 @@ def parse_args(*args, **kwargs):
 
     parser.add_argument("--rename", nargs="*", default=[],
         metavar="ns_old=ns_new",
-        type=Renamer.item,
+        type=RenameSpec.from_spec,
         action=Extend,
         help="rename namespaces before processing on dest")
 
@@ -115,13 +115,50 @@ def parse_args(*args, **kwargs):
     return args
 
 
-class Renamer(dict):
+class RenameSpec(object):
+    @classmethod
+    def from_spec(cls, string_spec):
+        """
+        Construct RenameSpec from a pair separated by equal sign ('=').
+        """
+        old_ns, new_ns = string_spec.split('=')
+        return cls(old_ns, new_ns)
+
+    def __init__(self, old_ns, new_ns):
+        self.old_ns = old_ns
+        self.new_ns = new_ns
+        self.regex = re.compile(r"^{0}(\.|$)".format(re.escape(self.old_ns)))
+
+        if '.' in self.old_ns:
+            logging.warning("Collection rename operations will fail on "
+                "MongoDB 3.2; "
+                "see https://github.com/jaraco/jaraco.mongodb/issues/5")
+
+        self.new_ns += "."
+
+    def __call__(self, op):
+        """
+        Apply this rename to the op
+        """
+        if self.regex.match(op['ns']):
+            ns = self.regex.sub(self.new_ns, op['ns']).rstrip(".")
+            logging.debug("renaming %s to %s", op['ns'], ns)
+            op['ns'] = ns
+        if op['ns'].endswith('.system.indexes'):
+            # index operation; update ns in the op also.
+            self(op['o'])
+
+    def affects(self, ns):
+        return bool(self.regex.match(ns))
+
+
+class Renamer(list):
     """
     >>> specs = [
     ...      'a=b',
     ...      'alpha=gamma',
     ...  ]
-    >>> renames = Renamer(map(Renamer.item, specs))
+    >>> renames = Renamer.from_specs(specs)
     >>> op = dict(ns='a.a')
     >>> renames(op)
     >>> op['ns']
@@ -134,44 +171,21 @@ class Renamer(dict):
 
     def invoke(self, op):
         """
-        Replace namespaces in op based on keys/values in self.
+        Replace namespaces in op based on RenameSpecs in self.
         """
-        for old_ns, new_ns in self.items():
-            if old_ns.match(op['ns']):
-                ns = old_ns.sub(new_ns, op['ns']).rstrip(".")
-                logging.debug("renaming %s to %s", op['ns'], ns)
-                op['ns'] = ns
-            if op['ns'].endswith('.system.indexes'):
-                # index operation; update ns in the op also.
-                self.invoke(op['o'])
+        for rename in self:
+            rename(op)
     __call__ = invoke
 
     @classmethod
     def from_specs(cls, specs):
-        return cls(map(cls.item, always_iterable(specs)))
-
-    @staticmethod
-    def item(spec):
-        """
-        Return a pair of old namespace (regex) to the new namespace (string).
-
-        spec should be a pair separated by equal sign ('=').
-        """
-        old_ns, new_ns = spec.split('=')
-        regex = re.compile(r"^{0}(\.|$)".format(re.escape(old_ns)))
-
-        if '.' in old_ns:
-            logging.warning("Collection rename operations will fail on "
-                "MongoDB 3.2; "
-                "see https://github.com/jaraco/jaraco.mongodb/issues/5")
-
-        return regex, new_ns + "."
+        return cls(map(RenameSpec.from_spec, always_iterable(specs)))
 
     def affects(self, ns):
         """
         Return True if this renamer affects the indicated namespace.
         """
-        return any(exp.match(ns) for exp in self)
+        return any(rn.affects(ns) for rn in self)
 
 
 def string_none(value):
