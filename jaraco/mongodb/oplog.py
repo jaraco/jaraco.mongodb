@@ -157,14 +157,14 @@ class RenameSpec(object):
             op['o']['create'] = self.new_coll
 
     @staticmethod
-    def _matching_create_command(op, old_ns):
-        old_db, sep, old_coll = old_ns.partition('.')
+    def _matching_create_command(op, ns):
+        db, sep, coll = ns.partition('.')
         return (
             op.get('op') == 'c'
             and
-            op['ns'] == old_db + '.$cmd'
+            op['ns'] == db + '.$cmd'
             and
-            op['o'].get('create', None) == old_coll
+            op['o'].get('create', None) == coll
         )
 
     def affects(self, ns):
@@ -308,15 +308,9 @@ def main():
 
 
 def applies_to_ns(op, ns):
-    db, sep, coll = ns.partition('.')
     return (
         op['ns'].startswith(ns) or
-
-        op['op'] == 'c'
-        and
-        op['ns'] == db + '.$cmd'
-        and
-        op['o'].get('create', None) == coll
+        RenameSpec._matching_create_command(op, ns)
     )
 
 
