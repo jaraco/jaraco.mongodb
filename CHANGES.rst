@@ -1,3 +1,11 @@
+5.0
+===
+
+Removed ``oplog.increment_ts`` and ``Timestamp.next`` operation
+(no longer needed).
+
+Ensure that ts is a oplog.Timestamp during ``save_ts``.
+
 4.4
 ===
 

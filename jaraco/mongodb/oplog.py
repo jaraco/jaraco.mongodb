@@ -10,7 +10,6 @@ import re
 import textwrap
 import collections
 import datetime
-import warnings
 
 import jaraco.logging
 from pymongo.cursor import CursorType
@@ -319,8 +318,6 @@ def _handle(dest, op, args, num):
     if op['op'] == 'n':
         return
 
-    op['ts'] = Timestamp.wrap(op['ts'])
-
     # Skip excluded namespaces or namespaces that does not match --ns
     excluded = any(applies_to_ns(op, ns) for ns in args.exclude)
     included = any(applies_to_ns(op, ns) for ns in args.ns)
@@ -428,11 +425,6 @@ class Timestamp(bson.timestamp.Timestamp):
         orig.__class__ = cls
         return orig
 
-    def next(self):
-        """Return another :class:`Timestamp` that's one inc greater.
-        """
-        return self.__class__(self.time, self.inc + 1)
-
     def dump(self, stream):
         """Serialize self to text stream.
 
@@ -461,7 +453,7 @@ def save_ts(ts, filename):
     try:
         if filename:
             with open(filename, 'w') as f:
-                ts.dump(f)
+                Timestamp.wrap(ts).dump(f)
     except IOError:
         pass
 
@@ -475,11 +467,6 @@ def read_ts(filename):
             return Timestamp.load(f)
     except (IOError, KeyError):
         pass
-
-
-def increment_ts(ts):
-    warnings.warn("Use ts.next()", DeprecationWarning)
-    return ts.next()
 
 
 if __name__ == '__main__':
