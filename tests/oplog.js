@@ -6,6 +6,7 @@ function runTests() {
         test_includeMatchingNamespaces,
         test_renameNamespaces,
         test_renameNamespacesIndexes,
+        test_renameNamespacesRenameOps,
         test_resumeFromSavedTimestamp,
     ];
 
@@ -202,6 +203,34 @@ function test_renameNamespacesIndexes(rs1, rs2) {
 
     // Old namespaces should not appear on destination server
     assert(dest.getDB('testdb').coll_1.findOne() == null);
+}
+
+function test_renameNamespacesRenameOps(rs1, rs2) {
+
+    // When renaming a db, rename operations on
+    // collections in that db should be honored.
+
+    // Given operations on different namespaces
+    var srcDb1 = rs1.getPrimary().getDB('testdb');
+
+    srcDb1.coll_oops.insert({msg: "This collection gets renamed"});
+    srcDb1.coll_oops.renameCollection('coll_1')
+
+    // Invoke mongooplog-alt to transfer changes from rs1 to rs2
+    // Rename one db and one collection during transfer
+    runMongoProgram(
+        'python', '-m', 'jaraco.mongodb.oplog', '-l', '9',
+        '--window', '1 d',
+        '--source', rs1.getPrimary().host,
+        '--dest', rs2.getPrimary().host,
+        '--rename', 'testdb=newdb'
+    )
+
+    // Only coll_1 should exist in the dest
+    var dest = rs2.getPrimary();
+    assert(dest.getDB('newdb').coll_oops.findOne() == null);
+    assert(dest.getDB('newdb').coll_1.findOne());
+
 }
 
 function test_resumeFromSavedTimestamp(rs1, rs2) {
