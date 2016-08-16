@@ -1,3 +1,11 @@
+5.1
+===
+
+Oplog tool no longer defaults to ``localhost`` for the dest,
+but instead allows the value to be None. When combined with
+``--dry-run``, dest is not needed and a connection is only
+attempted if ``--dest`` is indicated.
+
 5.0
 ===
 

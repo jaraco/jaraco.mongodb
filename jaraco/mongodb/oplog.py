@@ -65,7 +65,6 @@ def parse_args(*args, **kwargs):
         help="source namespace for oplog")
 
     parser.add_argument("--dest", metavar="host[:port]",
-        default="localhost",
         help="host to push to (<set name>/s1,s2 for sets)")
 
     parser.add_argument("-s", "--seconds",
@@ -263,6 +262,12 @@ def _resolve_shard(client):
     return client
 
 
+def _load_dest(host):
+    if not host:
+        return
+    return _resolve_shard(pymongo.MongoClient(host))
+
+
 def main():
     args = parse_args()
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
@@ -271,9 +276,9 @@ def main():
     logging.info("going to connect")
 
     src = pymongo.MongoClient(args.source)
-    dest = _resolve_shard(pymongo.MongoClient(args.dest))
+    dest = _load_dest(args.dest)
 
-    if _same_instance(src, dest) and not _full_rename(args):
+    if dest and _same_instance(src, dest) and not _full_rename(args):
         logging.error(
             "source and destination hosts can be the same only "
             "when both --ns and --rename arguments are given")
