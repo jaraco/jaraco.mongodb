@@ -1,3 +1,9 @@
+5.2.1
+=====
+
+#6: Oplog tool will now include, exclude, and apply namespace
+renames on 'renameCollection' commands.
+
 5.2
 ===
 

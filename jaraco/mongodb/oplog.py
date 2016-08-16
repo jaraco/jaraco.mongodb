@@ -158,6 +158,7 @@ class RenameSpec(object):
         """
         Apply this rename to the op
         """
+        self._handle_renameCollection(op)
         if self.regex.match(op['ns']):
             ns = self.regex.sub(self.new_ns, op['ns']).rstrip(".")
             logging.debug("renaming %s to %s", op['ns'], ns)
@@ -182,6 +183,37 @@ class RenameSpec(object):
             and
             op['o'].get('create', None) == coll
         )
+
+    @staticmethod
+    def _matching_renameCollection_command(op, ns):
+        db, sep, coll = ns.partition('.')
+        return (
+            op.get('op') == 'c'
+            and (
+                # seems command can happen in admin or the db
+                op['ns'] == 'admin.$cmd'
+                or
+                op['ns'] == db + '.$cmd'
+            )
+            and
+            'renameCollection' in op['o']
+            and (
+                op['o']['renameCollection'].startswith(ns)
+                or
+                op['o']['to'].startswith(ns)
+            )
+        )
+
+    def _handle_renameCollection(self, op):
+        if self._matching_renameCollection_command(op, self.old_ns):
+            cmd = op['o']
+            rename_keys = 'renameCollection', 'to'
+            for key in rename_keys:
+                # todo, this is a mirror of the code in __call__; refactor
+                if self.regex.match(cmd[key]):
+                    ns = self.regex.sub(self.new_ns, cmd[key]).rstrip(".")
+                    logging.debug("renaming %s to %s", cmd[key], ns)
+                    cmd[key] = ns
 
     def affects(self, ns):
         return bool(self.regex.match(ns))
@@ -324,7 +356,8 @@ def main():
 def applies_to_ns(op, ns):
     return (
         op['ns'].startswith(ns) or
-        RenameSpec._matching_create_command(op, ns)
+        RenameSpec._matching_create_command(op, ns) or
+        RenameSpec._matching_renameCollection_command(op, ns)
     )
 
 
