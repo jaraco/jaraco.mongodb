@@ -1,3 +1,8 @@
+5.1.1
+=====
+
+Fix version reporting when invoked with ``-m``.
+
 5.1
 ===
 

@@ -275,8 +275,8 @@ def main():
     jaraco.logging.setup(args, format=log_format)
 
     logging.info("{name} {version}".format(
-        name=__name__,
-        version=pkg_resources.require(__name__)[0].version,
+        name='jaraco.mongodb.oplog',
+        version=pkg_resources.require('jaraco.mongodb')[0].version,
     ))
     logging.info("going to connect")
 
