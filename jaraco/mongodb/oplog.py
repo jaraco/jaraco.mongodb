@@ -5,7 +5,7 @@ import time
 import json
 import logging
 import pymongo
-import bson
+import bson.json_util
 import re
 import textwrap
 import collections
@@ -358,6 +358,29 @@ def applies_to_ns(op, ns):
     )
 
 
+class NiceRepr(object):
+    """
+    Adapt a Python representation of a MongoDB object
+    to make it appear nicely when rendered as a
+    string.
+
+    >>> messy_doc = collections.OrderedDict([
+    ...     ('ts', bson.Timestamp(1111111111, 30),
+    ... )])
+    >>> print(NiceRepr(messy_doc))
+    {"ts": {"$timestamp": {"t": 1111111111, "i": 30}}}
+    """
+
+    def __init__(self, orig):
+        self.__orig = orig
+
+    def __str__(self):
+        return bson.json_util.dumps(self.__orig)
+
+    def __getattr__(self, attr):
+        return getattr(self.__orig, attr)
+
+
 def _handle(dest, op, args, num):
     # Skip "no operation" items
     if op['op'] == 'n':
@@ -373,11 +396,12 @@ def _handle(dest, op, args, num):
 
     args.rename(op)
 
-    logging.debug("applying op %s", op)
+    logging.debug("applying op %s", NiceRepr(op))
     try:
         args.dry_run or apply(dest, op)
     except pymongo.errors.OperationFailure as e:
-        msg = '{e!r} applying {op}'.format(**locals())
+        tmpl = '{e!r} applying {nice_op}'
+        msg = tmpl.format(nice_op=NiceRepr(op), **locals())
         logging.warning(msg)
 
     # Update status

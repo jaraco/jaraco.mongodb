@@ -1,3 +1,8 @@
+5.3
+===
+
+Nicer rendering of operations in the oplog tool.
+
 5.2.1
 =====
 
