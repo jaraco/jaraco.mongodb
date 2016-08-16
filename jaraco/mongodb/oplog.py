@@ -73,6 +73,7 @@ def parse_args(*args, **kwargs):
 
     parser.add_argument("-s", "--seconds",
         dest="start_ts",
+        metavar="SECONDS",
         type=compose(Timestamp.for_window, delta_from_seconds),
         help="""Seconds in the past to query. Overrides any value
         indicated by a resume file.""")

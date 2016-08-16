@@ -3,7 +3,9 @@
 
 Oplog tool no longer has a default window of 86400 seconds,
 but instead requires that a window or valid resume file
-be specified.
+be specified. Additionally, there is no longer a default
+resume file (avoiding potential issues with multiple
+processes writing to the same file).
 
 5.1.1
 =====
