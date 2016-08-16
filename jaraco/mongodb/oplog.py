@@ -147,6 +147,8 @@ class RenameSpec(object):
         self.new_db, sep, self.new_coll = self.new_ns.partition('.')
         self.regex = re.compile(r"^{0}(\.|$)".format(re.escape(self.old_ns)))
 
+        # ugly hack: append a period so the regex can match dot
+        # or end of string; requires .rstrip operation in __call__ also.
         self.new_ns += "."
 
     def __call__(self, op):
