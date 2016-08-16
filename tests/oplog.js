@@ -69,7 +69,7 @@ function test_basicOperations(rs1, rs2) {
     // Invoke mongooplog-alt to transfer changes from rs1 to rs2
     runMongoProgram(
         'python', '-m', 'jaraco.mongodb.oplog', '-l', '9',
-        '--seconds', '86400',
+        '--window', '1 d',
         '--source', src.host,
         '--dest', dst.host
     );
@@ -92,7 +92,7 @@ function test_excludeNamespaces(rs1, rs2) {
     // Ignore two namespaces: a collection and a whole database
     runMongoProgram(
         'python', '-m', 'jaraco.mongodb.oplog', '-l', '9',
-        '--seconds', '86400',
+        '--window', '1 d',
         '--source', rs1.getPrimary().host,
         '--dest', rs2.getPrimary().host,
         '--exclude', 'testdb.exclude_coll', 'test_ignored_db'
@@ -122,7 +122,7 @@ function test_includeMatchingNamespaces(rs1, rs2) {
     // Process only one namespace (a collection)
     runMongoProgram(
         'python', '-m', 'jaraco.mongodb.oplog', '-l', '9',
-        '--seconds', '86400',
+        '--window', '1 d',
         '--source', rs1.getPrimary().host,
         '--dest', rs2.getPrimary().host,
         '--ns', 'testdb.include_coll'
@@ -155,7 +155,7 @@ function test_renameNamespaces(rs1, rs2) {
     // Rename one db and one collection during transfer
     runMongoProgram(
         'python', '-m', 'jaraco.mongodb.oplog', '-l', '9',
-        '--seconds', '86400',
+        '--window', '1 d',
         '--source', rs1.getPrimary().host,
         '--dest', rs2.getPrimary().host,
         '--rename', 'renamedb=newdb', 'testdb.renameMe=testdb.newMe'
@@ -186,7 +186,7 @@ function test_renameNamespacesIndexes(rs1, rs2) {
     // Rename one db and one collection during transfer
     runMongoProgram(
         'python', '-m', 'jaraco.mongodb.oplog', '-l', '9',
-        '--seconds', '86400',
+        '--window', '1 d',
         '--source', rs1.getPrimary().host,
         '--dest', rs2.getPrimary().host,
         '--rename', 'testdb.coll_1=testdb.coll_new'
@@ -213,7 +213,7 @@ function test_resumeFromSavedTimestamp(rs1, rs2) {
     srcDb.test_coll.insert({msg: "Hello world!"});
     runMongoProgram(
         'python', '-m', 'jaraco.mongodb.oplog', '-l', '9',
-        '--seconds', '86400',
+        '--window', '1 d',
         '--resume-file', 'oplog-resume-test.ts',
         '--source', rs1.getPrimary().host,
         '--dest', rs2.getPrimary().host

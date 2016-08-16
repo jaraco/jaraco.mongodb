@@ -15,6 +15,7 @@ import six
 
 import pkg_resources
 import jaraco.logging
+import pytimeparse
 from jaraco.functools import compose
 from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
@@ -76,8 +77,19 @@ def parse_args(*args, **kwargs):
         metavar="SECONDS",
         type=compose(Timestamp.for_window, delta_from_seconds),
         help="""Seconds in the past to query. Overrides any value
-            indicated by a resume file.""",
+            indicated by a resume file. Deprecated, use window instead.""",
         )
+
+    parser.add_argument("-w", "--window",
+        dest="start_ts",
+        metavar="WINDOW",
+        type=compose(
+            Timestamp.for_window,
+            delta_from_seconds,
+            pytimeparse.parse,
+        ),
+        help='Time window to query, like "3 days" or "24:00".',
+    )
 
     parser.add_argument("-f", "--follow", action="store_true",
         help="wait for new data in oplog, run forever.")

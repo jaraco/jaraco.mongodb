@@ -87,40 +87,27 @@ Invoke the command as a module script: ``python -m jaraco.mongodb.oplog``.
 Command-line options
 ********************
 
-Options common to original ``mongooplog``::
-
   --source <hostname><:port>
+
     Hostname of the mongod server from which oplog operations are going to be
     pulled. Called "--from" in mongooplog.
 
-  --dest <hostname><:port>, -h
+  --dest <hostname><:port>
 
     Hostname of the mongod server to which oplog operations are going to be
     applied. Default is "localhost". Called "--host" in mongooplog.
 
-  --port <number>
+  --window WINDOW
 
-    Port of the mongod server to which oplog operations are going to be
-    applied, if not specified in ``--host``. Default is 27017.
+    Time window to query, like "3 days" or "24:00"
 
-  -s SECONDS, --seconds SECONDS
+  --follow, -f
 
-    Seconds in the past to query. Overrides any value
-    indicated by a resume file.
+    Wait for new data in oplog. Makes the utility polling oplog forever (until
+    interrupted). New data is going to be applied immediately with at most one
+    second delay.
 
-
-Options specific to this implementation::
-
- --to
-   An alias for ``--host``.
-
- --follow, -f
-
-   Wait for new data in oplog. Makes the utility polling oplog forever (until
-   interrupted). New data is going to be applied immediately with at most one
-   second delay.
-
- --exclude, -x
+  --exclude, -x
 
     List of space separated namespaces which should be ignored. Can be in form
     of ``dname`` or ``dbname.collection``. May be specified multiple times.
@@ -141,6 +128,11 @@ Options specific to this implementation::
 
     Read from and write to this file the last processed timestamp.
 
+  -s SECONDS, --seconds SECONDS
+
+    Seconds in the past to query. Overrides any value
+    indicated by a resume file. Deprecated, use window
+    instead.
 
 Example usages
 **************

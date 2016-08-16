@@ -44,6 +44,7 @@ setup_params = dict(
 		'more_itertools',
 		'jaraco.logging',
 		'jaraco.timing',
+		'pytimeparse',
 	],
 	extras_require={
 	},

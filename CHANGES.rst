@@ -7,6 +7,13 @@ be specified. Additionally, there is no longer a default
 resume file (avoiding potential issues with multiple
 processes writing to the same file).
 
+Oplog tool now accepts a ``--window`` argument, preferred
+to the now deprecated ``--seconds`` argument. Window
+accepts simple time spans, like "3 days" or "04:20" (four
+hours, twenty minutes). See the docs for `pytimeparse
+<https://github.com/wroberts/pytimeparse>`_ for specifics
+on which formats are supported.
+
 5.1.1
 =====
 
