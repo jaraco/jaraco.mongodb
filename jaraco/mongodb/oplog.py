@@ -76,7 +76,8 @@ def parse_args(*args, **kwargs):
         metavar="SECONDS",
         type=compose(Timestamp.for_window, delta_from_seconds),
         help="""Seconds in the past to query. Overrides any value
-        indicated by a resume file.""")
+            indicated by a resume file.""",
+        )
 
     parser.add_argument("-f", "--follow", action="store_true",
         help="wait for new data in oplog, run forever.")
