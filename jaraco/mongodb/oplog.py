@@ -147,11 +147,6 @@ class RenameSpec(object):
         self.new_db, sep, self.new_coll = self.new_ns.partition('.')
         self.regex = re.compile(r"^{0}(\.|$)".format(re.escape(self.old_ns)))
 
-        if '.' in self.old_ns:
-            logging.warning("Collection rename operations will fail on "
-                "MongoDB 3.2; "
-                "see https://github.com/jaraco/jaraco.mongodb/issues/5")
-
         self.new_ns += "."
 
     def __call__(self, op):
