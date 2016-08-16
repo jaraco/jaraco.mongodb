@@ -104,6 +104,7 @@ def parse_args(*args, **kwargs):
     parser.add_argument("--resume-file",
         metavar="FILENAME",
         type=ResumeFile,
+        default=NullResumeFile(),
         help=help,
     )
     jaraco.logging.add_arguments(parser)
@@ -111,9 +112,7 @@ def parse_args(*args, **kwargs):
     args = parser.parse_args(*args, **kwargs)
     args.rename = Renamer(args.rename)
 
-    args.start_ts = args.start_ts or (
-        args.resume_file and args.resume_file.read()
-    )
+    args.start_ts = args.start_ts or args.resume_file.read()
 
     return args
 
@@ -471,6 +470,14 @@ class ResumeFile(six.text_type):
         """
         with open(self) as f:
             return Timestamp.load(f)
+
+
+class NullResumeFile(object):
+    def save(self, ts):
+        pass
+
+    def read(self):
+        pass
 
 
 if __name__ == '__main__':
