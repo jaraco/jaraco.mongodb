@@ -6,6 +6,8 @@ but instead allows the value to be None. When combined with
 ``--dry-run``, dest is not needed and a connection is only
 attempted if ``--dest`` is indicated.
 
+Oplog tool now logs the name and version on startup.
+
 5.0
 ===
 

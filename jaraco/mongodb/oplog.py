@@ -11,6 +11,7 @@ import textwrap
 import collections
 import datetime
 
+import pkg_resources
 import jaraco.logging
 from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
@@ -273,6 +274,10 @@ def main():
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
     jaraco.logging.setup(args, format=log_format)
 
+    logging.info("{name} {version}".format(
+        name=__name__,
+        version=pkg_resources.require(__name__)[0].version,
+    ))
     logging.info("going to connect")
 
     src = pymongo.MongoClient(args.source)
