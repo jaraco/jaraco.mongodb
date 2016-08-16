@@ -335,7 +335,7 @@ def _handle(dest, op, args, num):
 
     logging.debug("applying op %s", op)
     try:
-        apply(dest, op) if not args.dry_run else None
+        args.dry_run or apply(dest, op)
     except pymongo.errors.OperationFailure as e:
         msg = '{e!r} applying {op}'.format(**locals())
         logging.warning(msg)
