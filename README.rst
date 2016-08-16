@@ -117,7 +117,7 @@ Options specific to this implementation::
  --follow, -f
 
    Wait for new data in oplog. Makes the utility polling oplog forever (until
-   interrupted). New data is going to be applied immideately with at most one
+   interrupted). New data is going to be applied immediately with at most one
    second delay.
 
  --exclude, -x
