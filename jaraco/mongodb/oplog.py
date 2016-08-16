@@ -11,8 +11,11 @@ import textwrap
 import collections
 import datetime
 
+import six
+
 import pkg_resources
 import jaraco.logging
+from jaraco.functools import compose
 from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
 
@@ -50,8 +53,8 @@ def parse_args(*args, **kwargs):
     >>> type(renames)
     <class 'jaraco.mongodb.oplog.Renamer'>
 
-    >>> parse_args(['--seconds', '86402']).window
-    datetime.timedelta(1, 2)
+    >>> parse_args(['--seconds', '86402']).start_ts
+    Timestamp(..., 0)
     """
     parser = argparse.ArgumentParser(add_help=False)
 
@@ -69,11 +72,10 @@ def parse_args(*args, **kwargs):
         help="host to push to (<set name>/s1,s2 for sets)")
 
     parser.add_argument("-s", "--seconds",
-        dest="window",
-        type=delta_from_seconds, default=None,
-        help="""seconds to go back. If not set, try read
-        timestamp from --resume-file. If the file not found,
-        assume --seconds=86400 (24 hours)""")
+        dest="start_ts",
+        type=compose(Timestamp.for_window, delta_from_seconds),
+        help="""Seconds in the past to query. Overrides any value
+        indicated by a resume file.""")
 
     parser.add_argument("-f", "--follow", action="store_true",
         help="wait for new data in oplog, run forever.")
@@ -97,20 +99,22 @@ def parse_args(*args, **kwargs):
         help="suppress application of ops")
 
     help = textwrap.dedent("""
-        resume from timestamp read from this file and
-        write last processed timestamp back to this file
-        (default is %(default)s).
-        Pass empty string or 'none' to disable this
-        feature.
+        Read from and write to this file the last processed timestamp.
         """)
-    parser.add_argument("--resume-file", default="mongooplog.ts",
-        metavar="FILENAME", type=string_none,
+    parser.add_argument("--resume-file",
+        metavar="FILENAME",
+        type=ResumeFile,
         help=help,
     )
     jaraco.logging.add_arguments(parser)
 
     args = parser.parse_args(*args, **kwargs)
     args.rename = Renamer(args.rename)
+
+    args.start_ts = args.start_ts or (
+        args.resume_file and args.resume_file.read()
+    )
+
     return args
 
 
@@ -214,23 +218,6 @@ def string_none(value):
     return None if is_string_none else value
 
 
-def _calculate_start(args):
-    """
-    Return the start time as a bson timestamp.
-    """
-    utcnow = datetime.datetime.utcnow()
-
-    if args.window:
-        return Timestamp(utcnow - args.window, 0)
-
-    one_day = datetime.timedelta(days=1)
-
-    day_ago = Timestamp(utcnow - one_day, 0)
-    saved_ts = read_ts(args.resume_file)
-    spec_ts = saved_ts if saved_ts else None
-    return spec_ts or day_ago
-
-
 def _same_instance(client1, client2):
     """
     Return True if client1 and client2 appear to reference the same
@@ -291,7 +278,10 @@ def main():
 
     logging.info("connected")
 
-    start = _calculate_start(args)
+    start = args.start_ts
+    if not start:
+        logging.error("Resume file or window required")
+        raise SystemExit(2)
 
     logging.info("starting from %s (%s)", start, start.as_datetime())
     db_name, sep, coll_name = args.oplogns.partition('.')
@@ -313,7 +303,7 @@ def main():
         logging.info("Got Ctrl+C, exiting...")
     finally:
         if 'last_handled' in locals():
-            save_ts(last_handled['ts'], args.resume_file)
+            args.resume_file.save(last_handled['ts'])
 
 
 def applies_to_ns(op, ns):
@@ -348,7 +338,7 @@ def _handle(dest, op, args, num):
     # Update status
     ts = op['ts']
     if not num % 1000:
-        save_ts(ts, args.resume_file)
+        args.resume_file.save(ts)
         logging.info(
             "%s\t%s\t%s -> %s",
             num, ts.as_datetime(),
@@ -457,26 +447,30 @@ class Timestamp(bson.timestamp.Timestamp):
         data = json.load(stream)['ts']
         return cls(data['time'], data['inc'])
 
+    @classmethod
+    def for_window(cls, window):
+        """
+        Given a timedelta window, return a timestamp representing
+        that time.
+        """
+        utcnow = datetime.datetime.utcnow()
+        return cls(utcnow - window, 0)
 
-def save_ts(ts, filename):
-    """Save last processed timestamp to file. """
-    try:
-        if filename:
-            with open(filename, 'w') as f:
-                Timestamp.wrap(ts).dump(f)
-    except IOError:
-        pass
 
+class ResumeFile(six.text_type):
+    def save(self, ts):
+        """
+        Save timestamp to file.
+        """
+        with open(self, 'w') as f:
+            Timestamp.wrap(ts).dump(f)
 
-def read_ts(filename):
-    """Read last processed timestamp from file. Return next timestamp that
-    need to be processed, that is timestamp right after last processed one.
-    """
-    try:
-        with open(filename, 'r') as f:
+    def read(self):
+        """
+        Read timestamp from file.
+        """
+        with open(self) as f:
             return Timestamp.load(f)
-    except (IOError, KeyError):
-        pass
 
 
 if __name__ == '__main__':

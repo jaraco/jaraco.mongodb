@@ -1,3 +1,10 @@
+5.2
+===
+
+Oplog tool no longer has a default window of 86400 seconds,
+but instead requires that a window or valid resume file
+be specified.
+
 5.1.1
 =====
 
