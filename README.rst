@@ -105,8 +105,8 @@ Options common to original ``mongooplog``::
 
   -s SECONDS, --seconds SECONDS
 
-    seconds to go back. If not set, try read timestamp from --resume-file.
-    If the file not found, assume --seconds=86400 (24 hours)
+    Seconds in the past to query. Overrides any value
+    indicated by a resume file.
 
 
 Options specific to this implementation::
@@ -139,9 +139,7 @@ Options specific to this implementation::
 
   --resume-file FILENAME
 
-    resume from timestamp read from this file and write last processed
-    timestamp back to this file (default is mongooplog.ts).
-    Pass empty string or 'none' to disable this feature.
+    Read from and write to this file the last processed timestamp.
 
 
 Example usages
