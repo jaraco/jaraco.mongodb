@@ -302,7 +302,9 @@ def main():
         logging.info("Got Ctrl+C, exiting...")
     finally:
         if 'last_handled' in locals():
-            args.resume_file.save(last_handled['ts'])
+            last = last_handled['ts']
+            args.resume_file.save(last)
+            logging.info("last ts was %s (%s)", last, last.as_datetime())
 
 
 def applies_to_ns(op, ns):
