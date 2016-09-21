@@ -1,6 +1,3 @@
-jaraco.mongodb
-==============
-
 .. image:: https://img.shields.io/pypi/v/jaraco.mongodb.svg
    :target: https://pypi.org/project/jaraco.mongodb
 
