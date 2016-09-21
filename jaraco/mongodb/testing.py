@@ -23,6 +23,7 @@ def assert_covered(cur):
     report += _rep_index_info(cur.collection)
     docs = explanation['executionStats']['totalDocsExamined']
     assert docs == 0, report
+    return explanation
 
 
 def assert_distinct_covered(coll, field, query):
@@ -42,3 +43,4 @@ def assert_distinct_covered(coll, field, query):
     report += _rep_index_info(coll)
     assert stats['nscannedObjects'] == 0, report
     assert stats['n'], "No documents matched"
+    return stats

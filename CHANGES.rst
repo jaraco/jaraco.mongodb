@@ -3,6 +3,10 @@
 
 Nicer rendering of operations in the oplog tool.
 
+In ``testing`` module, assertions now return the objects
+on which they've asserted (for troubleshooting or additional
+assertions).
+
 5.2.1
 =====
 
