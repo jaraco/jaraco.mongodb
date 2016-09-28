@@ -1,3 +1,10 @@
+5.4
+===
+
+``assert_covered`` now will fail when the candidate cursor
+returns no results, as that's almost certainly not an effective
+assertion.
+
 5.3
 ===
 

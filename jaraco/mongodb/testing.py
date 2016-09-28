@@ -21,8 +21,9 @@ def assert_covered(cur):
         """).lstrip()
     report = tmpl.format(explanation=pprint.pformat(explanation))
     report += _rep_index_info(cur.collection)
-    docs = explanation['executionStats']['totalDocsExamined']
-    assert docs == 0, report
+    stats = explanation['executionStats']
+    assert stats['totalDocsExamined'] == 0, report
+    assert stats['totalKeysExamined'], "No documents matched"
     return explanation
 
 
