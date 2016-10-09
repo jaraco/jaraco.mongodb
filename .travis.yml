@@ -15,7 +15,7 @@ before_script:
   xz -C mongodb --strip-components=1
 - export PATH=$(pwd)/mongodb/bin:$PATH
 install:
-- pip install tox
+- pip install tox "setuptools>=28.2"
 script:
 - tox -- -v -rs
 - pip install -e .
