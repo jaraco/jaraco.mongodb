@@ -31,7 +31,7 @@ deploy:
     tags: true
     all_branches: true
     python: 3.5
-    condition: $MONGODB_VERSION == "3.2.8"
+    condition: $MONGODB_VERSION == "3.4.0"
   user: jaraco
   distributions: dists
   password:
