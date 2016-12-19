@@ -33,7 +33,7 @@ setup_params = dict(
 		'python-dateutil',
 		'jaraco.services',
 		'portend',
-		'jaraco.itertools',
+		'jaraco.itertools>=1.8',
 		'jaraco.functools',
 		'jaraco.ui',
 		'jaraco.context',

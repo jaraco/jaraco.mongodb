@@ -1,3 +1,5 @@
+import functools
+
 import bson
 import pytest
 import jaraco.itertools
@@ -69,7 +71,8 @@ def replicaset_factory(request):
 	"""
 	Return a factory that can generate MongoDB replica sets
 	"""
-	return jaraco.itertools.infiniteCall(make_replicaset, request)
+	maker = functools.partial(make_replicaset, request)
+	return jaraco.itertools.infinite_call(maker)
 
 
 class TestOplogReplication:
