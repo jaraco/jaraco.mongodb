@@ -81,7 +81,6 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         '--syncdelay', '0',
         '--ipv6',
         '--noauth',
-        '--setParameter', 'textSearchEnabled=true',
     )
 
     @staticmethod

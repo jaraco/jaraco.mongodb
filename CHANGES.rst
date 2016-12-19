@@ -1,3 +1,10 @@
+5.5
+===
+
+No longer startup MongoDBInstance with
+``textSearchEnabled=true``, fixing startup on MongoDB 3.4
+and dropping implicit support for text search on MongoDB 2.4.
+
 5.4
 ===
 
