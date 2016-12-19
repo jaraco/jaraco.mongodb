@@ -166,6 +166,9 @@ class RenameSpec(object):
         self._handle_create(op)
 
     def _handle_create(self, op):
+        # MongoDB 3.4 introduces idIndex
+        if 'idIndex' in op.get('o', {}):
+            self(op['o']['idIndex'])
         if self._matching_create_command(op, self.old_ns):
             op['ns'] = self.new_db + '.$cmd'
             op['o']['create'] = self.new_coll
