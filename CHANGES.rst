@@ -1,3 +1,8 @@
+5.6
+===
+
+Added workarounds module with ``safe_upsert_27707``.
+
 5.5
 ===
 
