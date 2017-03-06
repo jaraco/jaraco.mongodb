@@ -1,3 +1,8 @@
+6.0
+===
+
+Removed workarounds module.
+
 5.6
 ===
 
