@@ -30,7 +30,7 @@ deploy:
     tags: true
     all_branches: true
     python: 3.6
-    condition: $MONGODB_VERSION == "3.4.0"
+    condition: $MONGODB_VERSION == "3.4.3"
   user: jaraco
   distributions: dists
   skip_upload_docs: true
