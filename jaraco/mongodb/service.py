@@ -9,7 +9,6 @@ import shutil
 import functools
 import logging
 import datetime
-import io
 
 import portend
 from jaraco.services import paths
@@ -23,8 +22,7 @@ log = logging.getLogger(__name__)
 
 class HiddenLog(object):
     def get_log(self):
-        self.log = io.StringIO()
-        return self.log
+        return subprocess.PIPE
 
 
 class MongoDBFinder(paths.PathFinder):

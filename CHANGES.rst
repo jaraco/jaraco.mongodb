@@ -1,3 +1,10 @@
+6.1.1
+=====
+
+#9: Fix issue with MongoDBInstance by using
+``subprocess.PIPE`` for stdout. Users may read from
+this pipe by reading ``instance.process.stdout``.
+
 6.1
 ===
 
