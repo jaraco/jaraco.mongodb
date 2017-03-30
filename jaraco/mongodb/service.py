@@ -9,6 +9,7 @@ import shutil
 import functools
 import logging
 import datetime
+import io
 
 import portend
 from jaraco.services import paths
@@ -18,6 +19,12 @@ from . import manage
 
 
 log = logging.getLogger(__name__)
+
+
+class HiddenLog(object):
+    def get_log(self):
+        self.log = io.StringIO()
+        return self.log
 
 
 class MongoDBFinder(paths.PathFinder):
@@ -53,7 +60,7 @@ class MongoDBFinder(paths.PathFinder):
         return os.path.join(cls.find_root(), cls.exe)
 
 
-class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
+class MongoDBService(HiddenLog, MongoDBFinder, services.Subprocess, services.Service):
     port = 27017
 
     @services.Subprocess.PortFree()
@@ -71,7 +78,7 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
 is_virtualenv = lambda: hasattr(sys, 'real_prefix')
 
-class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
+class MongoDBInstance(HiddenLog, MongoDBFinder, services.Subprocess, services.Service):
     data_dir = None
 
     mongod_args = (

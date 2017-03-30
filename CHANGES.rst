@@ -1,3 +1,9 @@
+6.1
+===
+
+Now, suppress creation of MongoDBInstance log file in
+fixture and MongoDBInstance service.
+
 6.0
 ===
 

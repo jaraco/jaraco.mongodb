@@ -24,7 +24,6 @@ def mongodb_instance():
 	service.MongoDBInstance.mongod_args += tuple(params)
 	try:
 		instance = service.MongoDBInstance()
-		instance.log_root = ''
 		instance.start()
 		pymongo.MongoClient(instance.get_connect_hosts())
 		yield instance
