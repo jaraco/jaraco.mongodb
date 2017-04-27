@@ -1,3 +1,9 @@
+6.2.1
+=====
+
+Use portend for finding available local port, eliminating
+remaining DeprecationWarnings.
+
 6.2
 ===
 

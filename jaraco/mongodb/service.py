@@ -102,7 +102,7 @@ class MongoDBInstance(HiddenLog, MongoDBFinder, services.Subprocess, services.Se
         super(MongoDBInstance, self).start()
         self.data_dir = self.data_dir or self.get_data_dir()
         if not hasattr(self, 'port') or not self.port:
-            self.port = self.find_free_port()
+            self.port = portend.find_available_local_port()
         cmd = [
             self.find_binary(),
             '--dbpath', self.data_dir,
@@ -174,7 +174,7 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
             raise RuntimeError("timeout waiting for replica set to start")
 
     def start_instance(self, number):
-        port = self.find_free_port()
+        port = portend.find_available_local_port()
         data_dir = os.path.join(self.data_root, 'r{number}'.format(**locals()))
         os.mkdir(data_dir)
         cmd = [
