@@ -41,6 +41,16 @@ params = dict(
 		'jaraco.collections>=1.5',
 	],
 	extras_require={
+		'testing': [
+			'pytest>=2.8',
+			'pytest-sugar',
+			'cherrypy',
+		],
+		'docs': [
+			'sphinx',
+			'jaraco.packaging>=3.2',
+			'rst.linker>=1.9',
+		],
 	},
 	setup_requires=[
 		'setuptools_scm>=1.15.0',
