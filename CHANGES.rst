@@ -1,3 +1,10 @@
+6.2
+===
+
+Add compat module and ``compat.save`` method for
+supplying the ``Collection.save`` behavior, deprecated
+in PyMongo.
+
 6.1.1
 =====
 
