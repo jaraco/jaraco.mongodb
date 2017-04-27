@@ -17,7 +17,7 @@ def indexed_collection(request, mongodb_instance):
 
 
 def test_assert_covered_passes(indexed_collection):
-	indexed_collection.insert({'foo': 'bar'})
+	indexed_collection.insert_one({'foo': 'bar'})
 	proj = {'_id': False, 'foo': True}
 	cur = indexed_collection.find({'foo': 'bar'}, proj)
 	testing.assert_covered(cur)
@@ -38,7 +38,7 @@ def test_assert_covered_null(indexed_collection):
 	assert_covered should raise an error it's trivially
 	covered (returns no results)
 	"""
-	indexed_collection.insert({"foo": "bar"})
+	indexed_collection.insert_one({"foo": "bar"})
 	proj = {'_id': False, 'foo': True}
 	cur = indexed_collection.find({"foo": "baz"}, proj)
 	with pytest.raises(AssertionError):

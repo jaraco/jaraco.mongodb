@@ -5,6 +5,9 @@ Add compat module and ``compat.save`` method for
 supplying the ``Collection.save`` behavior, deprecated
 in PyMongo.
 
+Updated PyMongo 3.0 API usage to eliminate
+DeprecationWarnings.
+
 6.1.1
 =====
 

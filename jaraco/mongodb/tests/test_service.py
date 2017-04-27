@@ -12,7 +12,7 @@ def test_MongoDBReplicaSet_writable():
     rs.start()
     try:
         conn = pymongo.MongoClient(rs.get_connect_hosts())
-        conn.database.collection.save({'foo': 'bar'})
+        conn.database.collection.insert_one({'foo': 'bar'})
     finally:
         rs.stop()
 

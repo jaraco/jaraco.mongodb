@@ -82,8 +82,8 @@ class TestOplogReplication:
 		"""
 		source = next(replicaset_factory).get_connection()
 		dest = next(replicaset_factory).get_connection()
-		source.index_deletion_test.stuff.ensure_index("foo")
-		dest.index_deletion_test.stuff.ensure_index("foo")
+		source.index_deletion_test.stuff.create_index("foo")
+		dest.index_deletion_test.stuff.create_index("foo")
 		source_oplog = oplog.Oplog(source.local.oplog.rs)
 		begin_ts = source_oplog.get_latest_ts()
 		source.index_deletion_test.stuff.drop_index("foo_1")

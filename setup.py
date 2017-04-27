@@ -25,7 +25,7 @@ params = dict(
 	namespace_packages=name.split('.')[:-1],
 	python_requires='>=2.7',
 	install_requires=[
-		'pymongo',
+		'pymongo>=3.0',
 		'six',
 		'python-dateutil',
 		'jaraco.services',
@@ -38,6 +38,7 @@ params = dict(
 		'jaraco.logging',
 		'jaraco.timing',
 		'pytimeparse',
+		'jaraco.collections>=1.5',
 	],
 	extras_require={
 	},

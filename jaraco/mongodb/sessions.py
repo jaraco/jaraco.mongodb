@@ -39,6 +39,7 @@ import cherrypy
 import dateutil.tz
 
 from . import timers
+from . import compat
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +97,7 @@ class Session(cherrypy.lib.sessions.Session):
 		"""
 		Use pymongo TTL index to automatically expire sessions.
 		"""
-		self.collection.ensure_index('_expiration_datetime',
+		self.collection.create_index('_expiration_datetime',
 			expireAfterSeconds=0)
 
 	def _exists(self):
@@ -144,11 +145,11 @@ class Session(cherrypy.lib.sessions.Session):
 		#  it in the database.
 		expiration_datetime = self._make_utc(expiration_datetime)
 		data.update(
-			_expiration_datetime = expiration_datetime,
-			_id = self.id,
+			_expiration_datetime=expiration_datetime,
+			_id=self.id,
 		)
 		try:
-			self.collection.save(data)
+			compat.save(self.collection, data)
 		except pymongo.errors.InvalidDocument:
 			log.warning("Unable to save session:\n%s",
 				pprint.pformat(data))
@@ -165,7 +166,7 @@ class Session(cherrypy.lib.sessions.Session):
 		"""
 		# first ensure that a record exists for this session id
 		try:
-			self.collection.insert(dict(_id=self.id))
+			self.collection.insert_one(dict(_id=self.id))
 		except pymongo.errors.DuplicateKeyError:
 			pass
 		unlocked_spec = dict(_id=self.id, locked=None)
@@ -176,8 +177,8 @@ class Session(cherrypy.lib.sessions.Session):
 		)
 		while not lock_timer.expired():
 			locked_spec = {'$set': dict(locked=datetime.datetime.utcnow())}
-			res = self.collection.update(unlocked_spec, locked_spec)
-			if res['updatedExisting']:
+			res = self.collection.update_one(unlocked_spec, locked_spec)
+			if res.raw_result['updatedExisting']:
 				# we have the lock
 				break
 			time.sleep(0.1)
@@ -188,10 +189,10 @@ class Session(cherrypy.lib.sessions.Session):
 
 	def release_lock(self):
 		record_spec = dict(_id=self.id)
-		self.collection.update(record_spec, {'$unset': {'locked': 1}})
+		self.collection.update_one(record_spec, {'$unset': {'locked': 1}})
 		# if no data was saved (no expiry), remove the record
 		record_spec.update(_expiration_datetime={'$exists': False})
-		self.collection.remove(record_spec)
+		self.collection.delete_one(record_spec)
 		self.locked = False
 
 	def __len__(self):
