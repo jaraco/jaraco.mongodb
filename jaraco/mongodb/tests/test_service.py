@@ -32,4 +32,4 @@ def test_MongoDBReplicaSet_starts_quickly():
 
 def test_fixture(mongodb_instance):
     "Cause the fixture to be invoked"
-    assert hasattr(mongodb_instance.process.stdout, 'read')
+    pass

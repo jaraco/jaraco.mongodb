@@ -20,11 +20,6 @@ from . import manage
 log = logging.getLogger(__name__)
 
 
-class HiddenLog(object):
-    def get_log(self):
-        return subprocess.PIPE
-
-
 class MongoDBFinder(paths.PathFinder):
     windows_installed = glob.glob('/Program Files/MongoDB/Server/???/bin')
     windows_paths = [
@@ -58,8 +53,13 @@ class MongoDBFinder(paths.PathFinder):
         return os.path.join(cls.find_root(), cls.exe)
 
 
-class MongoDBService(HiddenLog, MongoDBFinder, services.Subprocess, services.Service):
+class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
     port = 27017
+
+    process_kwargs = {}
+    """
+    keyword arguments to Popen to control the process creation
+    """
 
     @services.Subprocess.PortFree()
     def start(self):
@@ -70,13 +70,13 @@ class MongoDBService(HiddenLog, MongoDBFinder, services.Subprocess, services.Ser
             self.find_binary(),
             '--dbpath=' + mongodb_data,
         ]
-        self.process = subprocess.Popen(cmd, stdout=self.get_log())
+        self.process = subprocess.Popen(cmd, **self.process_kwargs)
         self.wait_for_pattern('waiting for connections on port (?P<port>\d+)')
         log.info('%s listening on %s', self, self.port)
 
 is_virtualenv = lambda: hasattr(sys, 'real_prefix')
 
-class MongoDBInstance(HiddenLog, MongoDBFinder, services.Subprocess, services.Service):
+class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     data_dir = None
 
     mongod_args = (
@@ -87,6 +87,11 @@ class MongoDBInstance(HiddenLog, MongoDBFinder, services.Subprocess, services.Se
         '--ipv6',
         '--noauth',
     )
+
+    process_kwargs = {}
+    """
+    keyword arguments to Popen to control the process creation
+    """
 
     @staticmethod
     def get_data_dir():
@@ -110,7 +115,7 @@ class MongoDBInstance(HiddenLog, MongoDBFinder, services.Subprocess, services.Se
         ] + list(self.mongod_args)
         if hasattr(self, 'bind_ip') and not '--bind_ip' in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
-        self.process = subprocess.Popen(cmd, stdout=self.get_log())
+        self.process = subprocess.Popen(cmd, **self.process_kwargs)
         portend.occupied('localhost', self.port, timeout=3)
         log.info('{self} listening on {self.port}'.format(**locals()))
 

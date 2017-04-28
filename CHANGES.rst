@@ -1,3 +1,13 @@
+6.3
+===
+
+#10: MongoDBInstance now passes the subprocess output
+through to stderr and stdout. Callers should either
+capture this output separately (such as pytest already
+does) or set a ``.process_kwargs`` property on the
+instance to customize the ``stdout`` and/or ``stderr``
+parameters to Popen.
+
 6.2.1
 =====
 
