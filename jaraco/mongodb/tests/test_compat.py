@@ -44,3 +44,12 @@ def test_save_no_id_extant_docs(database):
 	assert database.test_coll.count() == 1
 	compat.save(database.test_coll, doc)
 	assert database.test_coll.count() == 2
+
+
+def test_save_adds_id(database):
+	"""
+	Ensure _id is added to an inserted document.
+	"""
+	doc = dict(foo='bar')
+	compat.save(database.test_coll, doc)
+	assert '_id' in doc
