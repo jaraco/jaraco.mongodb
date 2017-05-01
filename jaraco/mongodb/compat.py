@@ -13,5 +13,5 @@ def save(coll, to_save):
 	"""
 	filter = Projection(['_id'], to_save)
 	upsert_replace = functools.partial(coll.replace_one, filter, upsert=True)
-	op = upsert_replace if bool(dict(filter)) else coll.insert_one
+	op = upsert_replace if filter else coll.insert_one
 	return op(to_save)
