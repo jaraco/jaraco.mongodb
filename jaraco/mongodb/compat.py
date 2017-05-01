@@ -1,3 +1,5 @@
+import functools
+
 from jaraco.collections import Projection
 
 
@@ -10,4 +12,6 @@ def save(coll, to_save):
 	This function provides a compatible interface.
 	"""
 	filter = Projection(['_id'], to_save)
-	return coll.replace_one(filter, to_save, upsert=True)
+	upsert_replace = functools.partial(coll.replace_one, filter, upsert=True)
+	op = upsert_replace if bool(dict(filter)) else coll.insert_one
+	return op(to_save)
