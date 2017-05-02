@@ -50,6 +50,7 @@ params = dict(
 			'sphinx',
 			'jaraco.packaging>=3.2',
 			'rst.linker>=1.9',
+			'cherrypy',
 		],
 	},
 	setup_requires=[
