@@ -1,5 +1,7 @@
 import six
 
+import pymongo
+
 
 def project(*args, **kwargs):
     """
@@ -32,3 +34,21 @@ def compat_explain(cur):
             executionTimeMillis=res.pop('millis'),
         )
     return res
+
+
+def upsert_and_fetch(coll, doc):
+    """
+    Fetch exactly one matching document or upsert
+    the document if not found, returning the matching
+    or upserted document.
+
+    See https://jira.mongodb.org/browse/SERVER-28434
+    describing the condition where MongoDB is uninterested in
+    providing an upsert and fetch behavior.
+    """
+    coll.find_one_and_update(
+        doc,
+        {"$setOnInsert": doc},
+        upsert=True,
+        return_document=pymongo.ReturnDocument.AFTER,
+    )
