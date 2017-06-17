@@ -1,3 +1,9 @@
+6.4
+===
+
+``move-gridfs`` now accepts a limit-date option, allowing
+for the archival of files older than a certain date.
+
 6.3.1
 =====
 

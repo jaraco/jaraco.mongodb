@@ -10,6 +10,8 @@ import itertools
 
 from six.moves import map
 
+import bson
+import dateutil
 from jaraco.ui import progress
 from more_itertools.recipes import consume
 
@@ -30,6 +32,8 @@ def get_args():
 		help="delete files after moving",
 	)
 	parser.add_argument('--limit', type=int)
+	parser.add_argument('--limit-date', type=dateutil.parser.parse,
+		help="only move files older than this date")
 	return parser.parse_args()
 
 
@@ -37,15 +41,20 @@ class FileMove:
 	include = None
 	delete = False
 	limit = None
+	limit_date = None
 
 	def __init__(self, **params):
 		vars(self).update(**params)
 
 	@property
 	def filter(self):
-		if not self.include:
-			return
-		return dict(filename={"$regex": self.include})
+		filter = {}
+		if self.include:
+			filter.update(filename={"$regex": self.include})
+		if self.limit_date:
+			id_max = bson.objectid.ObjectId.from_datetime(self.limit_date)
+			filter.update(_id={"$lt": id_max})
+		return filter
 
 	@property
 	def source_coll(self):
