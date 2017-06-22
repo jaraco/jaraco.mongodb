@@ -64,21 +64,22 @@ def parse_args(*args, **kwargs):
         action="help")
 
     parser.add_argument("--source", metavar="host[:port]",
-        help="host to pull from")
+        help="""Hostname of the mongod server from which oplog
+            operations are going to be pulled. Called "--from"
+            in mongooplog.""",
+    )
 
     parser.add_argument('--oplogns', default='local.oplog.rs',
-        help="source namespace for oplog")
+        help="Source namespace for oplog")
 
     parser.add_argument("--dest", metavar="host[:port]",
-        help="host to push to (<set name>/s1,s2 for sets)")
-
-    parser.add_argument("-s", "--seconds",
-        dest="start_ts",
-        metavar="SECONDS",
-        type=compose(Timestamp.for_window, delta_from_seconds),
-        help="""Seconds in the past to query. Overrides any value
-            indicated by a resume file. Deprecated, use window instead.""",
-        )
+        help="""
+            Hostname of the mongod server (or replica set as
+            <set name>/s1,s2) to which oplog operations
+            are going to be applied. Default is "localhost".
+            Called "--host" in mongooplog.
+            """,
+    )
 
     parser.add_argument("-w", "--window",
         dest="start_ts",
@@ -88,39 +89,65 @@ def parse_args(*args, **kwargs):
             delta_from_seconds,
             pytimeparse.parse,
         ),
-        help='Time window to query, like "3 days" or "24:00".',
+        help="""Time window to query, like "3 days" or "24:00"
+            (24 hours, 0 minutes).""",
     )
 
     parser.add_argument("-f", "--follow", action="store_true",
-        help="wait for new data in oplog, run forever.")
+        help="""Wait for new data in oplog. Makes the utility
+            polling oplog forever (until interrupted). New data
+            is going to be applied immediately with at most one
+            second delay.""",
+    )
 
     parser.add_argument("--ns", nargs="*", default=[],
         action=Extend,
-        help="this namespace(s) only ('dbname' or 'dbname.coll')")
+        help="""Process only these namespaces, ignoring all others.
+            Space separated list of strings in form of ``dname``
+            or ``dbname.collection``. May be specified multiple times.
+            """,
+    )
 
     parser.add_argument("-x", "--exclude", nargs="*", default=[],
         action=Extend,
-        help="exclude namespaces ('dbname' or 'dbname.coll')")
+        help="""List of space separated namespaces which should be
+            ignored. Can be in form of ``dname`` or ``dbname.collection``.
+            May be specified multiple times.
+            """,
+    )
 
     parser.add_argument("--rename", nargs="*", default=[],
         metavar="ns_old=ns_new",
         type=RenameSpec.from_spec,
         action=Extend,
-        help="rename namespaces before processing on dest")
+        help="""
+            Rename database(s) and/or collection(s). Operations on
+            namespace ``ns_old`` from the source server will be
+            applied to namespace ``ns_new`` on the destination server.
+            May be specified multiple times.
+            """,
+    )
 
     parser.add_argument("--dry-run", default=False,
         action="store_true",
-        help="suppress application of ops")
+        help="Suppress application of ops.")
 
-    help = textwrap.dedent("""
-        Read from and write to this file the last processed timestamp.
-        """)
     parser.add_argument("--resume-file",
         metavar="FILENAME",
         type=ResumeFile,
         default=NullResumeFile(),
-        help=help,
+        help="""Read from and write to this file the last processed
+            timestamp.""",
     )
+
+    parser.add_argument("-s", "--seconds",
+        dest="start_ts",
+        metavar="SECONDS",
+        type=compose(Timestamp.for_window, delta_from_seconds),
+        help="""Seconds in the past to query. Overrides any value
+            indicated by a resume file. Deprecated, use window instead.""",
+        )
+
     jaraco.logging.add_arguments(parser)
 
     args = parser.parse_args(*args, **kwargs)

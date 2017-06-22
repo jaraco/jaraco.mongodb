@@ -90,54 +90,56 @@ Invoke the command as a module script: ``python -m jaraco.mongodb.oplog``.
 Command-line options
 --------------------
 
-Options to the command are as follows::
+Usage is as follows::
 
-  --source <hostname><:port>
+    $ python -m jaraco.mongodb.oplog  --help
+    usage: oplog.py [--help] [--source host[:port]] [--oplogns OPLOGNS]
+                    [--dest host[:port]] [-w WINDOW] [-f] [--ns [NS [NS ...]]]
+                    [-x [EXCLUDE [EXCLUDE ...]]]
+                    [--rename [ns_old=ns_new [ns_old=ns_new ...]]] [--dry-run]
+                    [--resume-file FILENAME] [-s SECONDS] [-l LOG_LEVEL]
 
-    Hostname of the mongod server from which oplog operations are going to be
-    pulled. Called "--from" in mongooplog.
-
-  --dest <hostname><:port>
-
-    Hostname of the mongod server to which oplog operations are going to be
-    applied. Default is "localhost". Called "--host" in mongooplog.
-
-  --window WINDOW
-
-    Time window to query, like "3 days" or "24:00" (24 hours, 0 minutes).
-
-  --follow, -f
-
-    Wait for new data in oplog. Makes the utility polling oplog forever (until
-    interrupted). New data is going to be applied immediately with at most one
-    second delay.
-
-  --exclude, -x
-
-    List of space separated namespaces which should be ignored. Can be in form
-    of ``dname`` or ``dbname.collection``. May be specified multiple times.
-
-  --ns
-
-    Process only these namespaces, ignoring all others. Space separated list of
-    strings in form of ``dname`` or ``dbname.collection``. May be specified
-    multiple times.
-
-  --rename [ns_old=ns_new [ns_old=ns_new ...]]
-
-    Rename database(s) and/or collection(s). Operations on namespace ``ns_old``
-    from the source server will be applied to namespace ``ns_new`` on the
-    destination server. May be specified multiple times.
-
-  --resume-file FILENAME
-
-    Read from and write to this file the last processed timestamp.
-
-  -s SECONDS, --seconds SECONDS
-
-    Seconds in the past to query. Overrides any value
-    indicated by a resume file. Deprecated, use window
-    instead.
+    optional arguments:
+      --help                show usage information
+      --source host[:port]  Hostname of the mongod server from which oplog
+                            operations are going to be pulled. Called "--from" in
+                            mongooplog.
+      --oplogns OPLOGNS     Source namespace for oplog
+      --dest host[:port]    Hostname of the mongod server (or replica set as <set
+                            name>/s1,s2) to which oplog operations are going to be
+                            applied. Default is "localhost". Called "--host" in
+                            mongooplog.
+      -w WINDOW, --window WINDOW
+                            Time window to query, like "3 days" or "24:00" (24
+                            hours, 0 minutes).
+      -f, --follow          Wait for new data in oplog. Makes the utility polling
+                            oplog forever (until interrupted). New data is going
+                            to be applied immediately with at most one second
+                            delay.
+      --ns [NS [NS ...]]    Process only these namespaces, ignoring all others.
+                            Space separated list of strings in form of ``dname``
+                            or ``dbname.collection``. May be specified multiple
+                            times.
+      -x [EXCLUDE [EXCLUDE ...]], --exclude [EXCLUDE [EXCLUDE ...]]
+                            List of space separated namespaces which should be
+                            ignored. Can be in form of ``dname`` or
+                            ``dbname.collection``. May be specified multiple
+                            times.
+      --rename [ns_old=ns_new [ns_old=ns_new ...]]
+                            Rename database(s) and/or collection(s). Operations on
+                            namespace ``ns_old`` from the source server will be
+                            applied to namespace ``ns_new`` on the destination
+                            server. May be specified multiple times.
+      --dry-run             Suppress application of ops.
+      --resume-file FILENAME
+                            Read from and write to this file the last processed
+                            timestamp.
+      -s SECONDS, --seconds SECONDS
+                            Seconds in the past to query. Overrides any value
+                            indicated by a resume file. Deprecated, use window
+                            instead.
+      -l LOG_LEVEL, --log-level LOG_LEVEL
+                            Set log level (DEBUG, INFO, WARNING, ERROR)
 
 Example usages
 --------------
