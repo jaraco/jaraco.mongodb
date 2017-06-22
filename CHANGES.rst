@@ -1,3 +1,9 @@
+7.0
+===
+
+Removed support for ``seconds`` argument to ``oplog``
+command.
+
 6.4
 ===
 

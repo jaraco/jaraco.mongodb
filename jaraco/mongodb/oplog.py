@@ -53,9 +53,6 @@ def parse_args(*args, **kwargs):
     2
     >>> type(renames)
     <class 'jaraco.mongodb.oplog.Renamer'>
-
-    >>> parse_args(['--seconds', '86402']).start_ts
-    Timestamp(..., 0)
     """
     parser = argparse.ArgumentParser(add_help=False)
 
@@ -139,14 +136,6 @@ def parse_args(*args, **kwargs):
         help="""Read from and write to this file the last processed
             timestamp.""",
     )
-
-    parser.add_argument("-s", "--seconds",
-        dest="start_ts",
-        metavar="SECONDS",
-        type=compose(Timestamp.for_window, delta_from_seconds),
-        help="""Seconds in the past to query. Overrides any value
-            indicated by a resume file. Deprecated, use window instead.""",
-        )
 
     jaraco.logging.add_arguments(parser)
 
