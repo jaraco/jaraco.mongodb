@@ -134,10 +134,6 @@ Usage is as follows::
       --resume-file FILENAME
                             Read from and write to this file the last processed
                             timestamp.
-      -s SECONDS, --seconds SECONDS
-                            Seconds in the past to query. Overrides any value
-                            indicated by a resume file. Deprecated, use window
-                            instead.
       -l LOG_LEVEL, --log-level LOG_LEVEL
                             Set log level (DEBUG, INFO, WARNING, ERROR)
 
