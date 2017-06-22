@@ -104,7 +104,7 @@ Options to the command are as follows::
 
   --window WINDOW
 
-    Time window to query, like "3 days" or "24:00"
+    Time window to query, like "3 days" or "24:00" (24 hours, 0 minutes).
 
   --follow, -f
 
