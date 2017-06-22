@@ -8,7 +8,6 @@
 .. image:: https://img.shields.io/travis/jaraco/jaraco.mongodb/master.svg
    :target: http://travis-ci.org/jaraco/jaraco.mongodb
 
-
 License
 =======
 
@@ -16,8 +15,8 @@ License is indicated in the project metadata (typically one or more
 of the Trove classifiers). For more details, see `this explanation
 <https://github.com/jaraco/skeleton/issues/1>`_.
 
-migration manager
------------------
+Migration Manager
+=================
 
 ``jaraco.mongodb.migration`` implements the Migration Manager as featured
 at the `MongoWorld 2016 <https://www.mongodb.com/world16>`_ presentation
@@ -27,7 +26,7 @@ it to load documents of various schema versions into a target version that
 your application expects.
 
 sessions
---------
+========
 
 ``jaraco.mongodb.sessions`` implements a CherryPy Sessions store backed by
 MongoDB.
@@ -38,14 +37,14 @@ be inserted into a MongoDB collection naturally.
 To support richer objects, one may configure the codec to use ``jaraco.modb``.
 
 monitor-index-creation
-----------------------
+======================
 
 To monitor an ongoing index operation in a server, simply invoke:
 
     python -m jaraco.mongodb.monitor-index-creation mongodb://host/db
 
 move-gridfs
------------
+===========
 
 To move files from one gridfs collection to another, invoke:
 
@@ -55,7 +54,7 @@ And follow the usage for moving all or some gridfs files and
 optionally deleting the files after.
 
 oplog
------
+=====
 
 This package provides an ``oplog`` module, which is based on the
 `mongooplog-alt <https://github.com/asivokon/mongooplog-alt/>`_ project,
@@ -89,7 +88,7 @@ adds following features:
 Invoke the command as a module script: ``python -m jaraco.mongodb.oplog``.
 
 Command-line options
-********************
+--------------------
 
 Options to the command are as follows::
 
@@ -141,7 +140,7 @@ Options to the command are as follows::
     instead.
 
 Example usages
-**************
+--------------
 
 Consider the following sample usage::
 
@@ -160,7 +159,7 @@ emit the oplog entries. Combine these to use the tool as an oplog cat tool::
 
 
 Testing
-*******
+-------
 
 Tests for ``oplog`` are written in javascript using test harness
 which is used for testing MongoDB iteself. You can run the oplog suite with::
