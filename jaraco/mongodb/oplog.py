@@ -7,7 +7,6 @@ import logging
 import pymongo
 import bson.json_util
 import re
-import textwrap
 import collections
 import datetime
 
