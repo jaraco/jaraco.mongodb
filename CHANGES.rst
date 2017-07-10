@@ -1,3 +1,8 @@
+7.0.1
+=====
+
+Miscellaneous packaging fixes.
+
 7.0
 ===
 
