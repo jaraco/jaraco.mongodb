@@ -25,6 +25,8 @@ branches:
   - skeleton
 deploy:
   provider: pypi
+  edge:
+    branch: twine-user-install
   server: https://upload.pypi.org/legacy/
   on:
     tags: true
