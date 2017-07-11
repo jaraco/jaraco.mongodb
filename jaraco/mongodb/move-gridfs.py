@@ -11,7 +11,7 @@ import itertools
 from six.moves import map
 
 import bson
-import dateutil
+import dateutil.parser
 from jaraco.ui import progress
 from more_itertools.recipes import consume
 
