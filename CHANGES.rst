@@ -1,3 +1,8 @@
+7.0.2
+=====
+
+Fix AttributeError in ``move-gridfs`` get_args.
+
 7.0.1
 =====
 
