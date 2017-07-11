@@ -25,15 +25,19 @@ def get_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('source_gfs', type=helper.connect_gridfs)
 	parser.add_argument('dest_gfs', type=helper.connect_gridfs)
-	parser.add_argument('--include',
+	parser.add_argument(
+		'--include',
 		help="a filter of files (regex) to include",
 	)
-	parser.add_argument('--delete', default=False, action="store_true",
+	parser.add_argument(
+		'--delete', default=False, action="store_true",
 		help="delete files after moving",
 	)
 	parser.add_argument('--limit', type=int)
-	parser.add_argument('--limit-date', type=dateutil.parser.parse,
-		help="only move files older than this date")
+	parser.add_argument(
+		'--limit-date', type=dateutil.parser.parse,
+		help="only move files older than this date",
+	)
 	return parser.parse_args()
 
 
@@ -65,8 +69,10 @@ class FileMove:
 		return self.dest_gfs._GridFS__collection
 
 	def run(self):
-		files = self.source_coll.files.find(self.filter,
-			batch_size=1)
+		files = self.source_coll.files.find(
+			self.filter,
+			batch_size=1,
+		)
 		limit_files = itertools.islice(files, self.limit)
 		count = min(files.count(), self.limit or float('inf'))
 		bar = progress.TargetProgressBar(count)
