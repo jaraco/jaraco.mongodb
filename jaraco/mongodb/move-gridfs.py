@@ -7,6 +7,7 @@ import sys
 import logging
 import argparse
 import itertools
+import signal
 
 from six.moves import map
 
@@ -76,8 +77,8 @@ class FileMove:
 		limit_files = itertools.islice(files, self.limit)
 		count = min(files.count(), self.limit or float('inf'))
 		bar = progress.TargetProgressBar(count)
-		to_process = map(self.process, bar.iterate(limit_files))
-		consume(to_process)
+		with SignalTrap(bar.iterate(limit_files)) as items:
+			consume(map(self.process, items))
 
 	def process(self, file):
 		chunks = self.source_coll.chunks.find(dict(files_id=file['_id']))
@@ -85,6 +86,33 @@ class FileMove:
 			self.dest_coll.chunks.insert(chunk)
 		self.dest_coll.files.insert(file)
 		self.delete and self.source_gfs.delete(file['_id'])
+
+
+class SignalTrap:
+	"""
+	A context manager for wrapping an iterable such that it
+	is only interrupted between iterations.
+	"""
+	def __init__(self, iterable):
+		self.iterable = iterable
+
+	def __enter__(self):
+		self.prev = signal.signal(signal.SIGINT, self.stop)
+		return self
+
+	def __exit__(self, *args):
+		signal.signal(signal.SIGINT, self.prev)
+		del self.prev
+
+	def __iter__(self):
+		return self
+
+	def __next__(self):
+		return next(self.iterable)
+	next = __next__
+
+	def stop(self):
+		self.iterable = iter([])
 
 
 def run():

@@ -1,3 +1,9 @@
+7.1
+===
+
+In ``move-gridfs``, explicitly handle interrupt to allow a
+move to complete and only stop between moves.
+
 7.0.2
 =====
 
