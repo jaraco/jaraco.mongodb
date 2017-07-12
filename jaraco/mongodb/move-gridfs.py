@@ -111,7 +111,7 @@ class SignalTrap:
 		return next(self.iterable)
 	next = __next__
 
-	def stop(self):
+	def stop(self, signal, frame):
 		self.iterable = iter([])
 
 
