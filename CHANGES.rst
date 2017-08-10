@@ -1,3 +1,9 @@
+7.2
+===
+
+Moved ``Extend`` action in oplog module to
+`jaraco.ui <https://pypi.org/project/jaraco.ui>`_ 1.6.
+
 7.1
 ===
 

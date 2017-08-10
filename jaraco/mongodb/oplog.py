@@ -18,15 +18,7 @@ import pytimeparse
 from jaraco.functools import compose
 from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
-
-
-class Extend(argparse.Action):
-    """
-    Argparse action to take an nargs=* argument
-    and add any values to the existing value.
-    """
-    def __call__(self, parser, namespace, values, option_string=None):
-        getattr(namespace, self.dest).extend(values)
+from jaraco.ui.command import Extend
 
 
 def delta_from_seconds(seconds):

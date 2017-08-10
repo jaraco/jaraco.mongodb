@@ -32,7 +32,7 @@ params = dict(
 		'portend',
 		'jaraco.itertools>=1.8',
 		'jaraco.functools',
-		'jaraco.ui',
+		'jaraco.ui>=1.6',
 		'jaraco.context',
 		'more_itertools',
 		'jaraco.logging',
