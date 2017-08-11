@@ -18,7 +18,7 @@ import pytimeparse
 from jaraco.functools import compose
 from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
-from jaraco.ui.command import Extend
+from jaraco.ui.cmdline import Extend
 
 
 def delta_from_seconds(seconds):
