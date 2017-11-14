@@ -42,7 +42,7 @@ before_script:
 - export PATH=$(pwd)/mongodb/bin:$PATH
 
 install:
-- pip install tox
+- pip install tox 'setuptools>=31'
 
 script:
 - tox
