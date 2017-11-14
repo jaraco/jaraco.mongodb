@@ -39,12 +39,12 @@ cache: pip
 before_script:
 - mkdir mongodb
 - wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGODB_VERSION.tgz -q -O - | tar xz -C mongodb --strip-components=1
-- export $(pwd)/mongodb/bin:$PATH
+- export PATH=$(pwd)/mongodb/bin:$PATH
 
 install:
 - pip install tox
 
 script:
 - tox
-- export PATH=$(PWD)/.tox/python/bin:$PATH
+- export PATH=$(pwd)/.tox/python/bin:$PATH
 - mongo --nodb tests/oplog.js
