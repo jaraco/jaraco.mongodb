@@ -408,7 +408,7 @@ def _handle(dest, op, args, num):
 
     logging.debug("applying op %s", NiceRepr(op))
     try:
-        args.dry_run or dest(*op)
+        args.dry_run or apply(dest, op)
     except pymongo.errors.OperationFailure as e:
         tmpl = '{e!r} applying {nice_op}'
         msg = tmpl.format(nice_op=NiceRepr(op), **locals())
