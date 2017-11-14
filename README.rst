@@ -3,17 +3,11 @@
 
 .. image:: https://img.shields.io/pypi/pyversions/jaraco.mongodb.svg
 
-.. image:: https://img.shields.io/pypi/dm/jaraco.mongodb.svg
-
 .. image:: https://img.shields.io/travis/jaraco/jaraco.mongodb/master.svg
    :target: http://travis-ci.org/jaraco/jaraco.mongodb
 
-License
-=======
-
-License is indicated in the project metadata (typically one or more
-of the Trove classifiers). For more details, see `this explanation
-<https://github.com/jaraco/skeleton/issues/1>`_.
+.. image:: https://readthedocs.org/projects/jaracomongodb/badge/?version=latest
+   :target: http://jaracomongodb.readthedocs.io/en/latest/?badge=latest
 
 Migration Manager
 =================
