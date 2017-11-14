@@ -7,15 +7,16 @@ env:
 - MONGODB_VERSION=3.2.17
 - MONGODB_VERSION=3.4.10
 - MONGODB_VERSION=3.6.0-rc3
+python:
+- 2.7
+- 3.3
+- &latest_py3 3.6
 
 jobs:
   fast_finish: true
   allow_failures:
   - env: MONGODB_VERSION=3.6.0-rc3
   include:
-  - python: 2.7
-  - python: 3.3
-  - python: &latest_py3 3.6
   - stage: deploy
     if: tag IS present
     python: *latest_py3
