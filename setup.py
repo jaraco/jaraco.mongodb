@@ -11,7 +11,7 @@ with io.open('README.rst', encoding='utf-8') as readme:
 
 name = 'jaraco.mongodb'
 description = 'Routines and classes supporting MongoDB environments'
-nspkg_technique = 'native'
+nspkg_technique = 'managed'
 """
 Does this package use "native" namespace packages or
 pkg_resources "managed" namespace packages?
