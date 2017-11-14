@@ -23,8 +23,8 @@ log = logging.getLogger()
 def get_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--depth', default=1024,
-		help="Bytes to read into each file during check",
-	)
+                     help="Bytes to read into each file during check",
+                     )
 	parser.add_argument('db', type=helper.connect_gridfs)
 	return parser.parse_args()
 

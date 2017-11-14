@@ -74,7 +74,9 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
         self.wait_for_pattern('waiting for connections on port (?P<port>\d+)')
         log.info('%s listening on %s', self, self.port)
 
-is_virtualenv = lambda: hasattr(sys, 'real_prefix')
+
+def is_virtualenv(): return hasattr(sys, 'real_prefix')
+
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     data_dir = None
@@ -171,7 +173,8 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         while watch.elapsed < datetime.timedelta(minutes=5):
             try:
                 res = get_repl_set_status()
-                if res.get('myState') != 1: continue
+                if res.get('myState') != 1:
+                    continue
             except errors.OperationFailure:
                 continue
             break
@@ -216,8 +219,8 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
 
     def build_config(self):
         return dict(
-            _id = self.replica_set_name,
-            members = [
+            _id=self.replica_set_name,
+            members=[
                 dict(
                     _id=number,
                     host='localhost:{instance.port}'.format(**locals()),
@@ -227,7 +230,7 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
 
     def get_connect_hosts(self):
         return ['localhost:{instance.port}'.format(**locals())
-            for instance in self.instances]
+                for instance in self.instances]
 
     def get_uri(self):
         return 'mongodb://' + ','.join(self.get_connect_hosts())
@@ -238,7 +241,9 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
 
 
 InstanceInfoBase = collections.namedtuple('InstanceInfoBase',
-    'path port process log_file')
+                                          'path port process log_file')
+
+
 class InstanceInfo(InstanceInfoBase):
     def connect(self):
         hp = 'localhost:{self.port}'.format(**locals())

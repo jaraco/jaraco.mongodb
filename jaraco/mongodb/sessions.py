@@ -43,7 +43,10 @@ from . import compat
 
 log = logging.getLogger(__name__)
 
-class LockTimeout(RuntimeError): pass
+
+class LockTimeout(RuntimeError):
+	pass
+
 
 class NullCodec(object):
 	def decode(self, data):
@@ -51,6 +54,7 @@ class NullCodec(object):
 
 	def encode(self, data):
 		return data
+
 
 class Session(cherrypy.lib.sessions.Session):
 	"""
@@ -78,7 +82,7 @@ class Session(cherrypy.lib.sessions.Session):
 			self.lock_timeout = datetime.timedelta(seconds=self.lock_timeout)
 		if not isinstance(self.lock_timeout, (datetime.timedelta, type(None))):
 			raise ValueError("Lock timeout must be numeric seconds or "
-				"a timedelta instance.")
+                            "a timedelta instance.")
 
 	@classmethod
 	def install(cls):
@@ -98,7 +102,7 @@ class Session(cherrypy.lib.sessions.Session):
 		Use pymongo TTL index to automatically expire sessions.
 		"""
 		self.collection.create_index('_expiration_datetime',
-			expireAfterSeconds=0)
+                               expireAfterSeconds=0)
 
 	def _exists(self):
 		return bool(self.collection.find_one(self.id))
@@ -108,9 +112,10 @@ class Session(cherrypy.lib.sessions.Session):
 			_id=self.id,
 			_expiration_datetime={'$exists': True},
 		)
-		projection=dict(_id=False)
+		projection = dict(_id=False)
 		doc = self.collection.find_one(filter, projection)
-		if not doc: return
+		if not doc:
+			return
 		expiration_time = doc.pop('_expiration_datetime')
 		doc = self.codec.decode(doc)
 		return (doc, self._make_local(expiration_time))
@@ -132,9 +137,9 @@ class Session(cherrypy.lib.sessions.Session):
 		(also naive).
 		"""
 		return utc_datetime.replace(
-			tzinfo = dateutil.tz.tzutc()
+			tzinfo=dateutil.tz.tzutc()
 		).astimezone(dateutil.tz.tzlocal()).replace(
-			tzinfo = None
+			tzinfo=None
 		)
 
 	def _save(self, expiration_datetime):
@@ -152,7 +157,7 @@ class Session(cherrypy.lib.sessions.Session):
 			compat.save(self.collection, data)
 		except pymongo.errors.InvalidDocument:
 			log.warning("Unable to save session:\n%s",
-				pprint.pformat(data))
+                            pprint.pformat(data))
 			raise
 
 	def _delete(self):
@@ -184,7 +189,7 @@ class Session(cherrypy.lib.sessions.Session):
 			time.sleep(0.1)
 		else:
 			raise LockTimeout("Timeout acquiring lock for {self.id}"
-				.format(**vars()))
+                            .format(**vars()))
 		self.locked = True
 
 	def release_lock(self):

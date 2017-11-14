@@ -93,6 +93,7 @@ class SignalTrap:
 	A context manager for wrapping an iterable such that it
 	is only interrupted between iterations.
 	"""
+
 	def __init__(self, iterable):
 		self.iterable = iterable
 

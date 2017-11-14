@@ -4,13 +4,16 @@ import argparse
 
 from jaraco.mongodb import helper
 
+
 def is_index_op(op):
 	return op.get('query', {}).get('createIndexes')
+
 
 def get_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('db')
 	return parser.parse_args()
+
 
 def run():
 	db = helper.connect_db(get_args().db)
@@ -27,5 +30,6 @@ def run():
 		msg = pat.sub(name, msg, count=1)
 		print(msg, end='\r')
 		time.sleep(5)
+
 
 __name__ == '__main__' and run()

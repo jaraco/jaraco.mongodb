@@ -20,8 +20,8 @@ def _filter_username_warning():
     warnings.filterwarnings(
         'ignore', category=UserWarning,
         message=".*must provide a username",
-        module='pymongo.mongo_client' if pymongo.version_tuple >= (2,4) else
-            'pymongo.connection',
+        module='pymongo.mongo_client' if pymongo.version_tuple >= (2, 4) else
+        'pymongo.connection',
     )
 
 

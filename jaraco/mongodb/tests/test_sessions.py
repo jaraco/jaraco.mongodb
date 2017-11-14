@@ -18,6 +18,7 @@ def database(request, mongodb_instance):
     request.addfinalizer(database.sessions.remove)
     return database
 
+
 class TestSessions(object):
     def test_time_conversion(self):
         local_time = datetime.datetime.now().replace(
@@ -36,7 +37,7 @@ class TestSessions(object):
         assert round_local.tzinfo is None
 
     def test_session_persists(self, database):
-        session = sessions.Session(None, database = database)
+        session = sessions.Session(None, database=database)
         session['x'] = 3
         session['y'] = "foo"
         session.save()
@@ -65,6 +66,7 @@ class TestSessions(object):
         session.save()
         session_id = session.id
         del session
-        session = sessions.Session(session_id, database=database, use_modb=True)
+        session = sessions.Session(
+            session_id, database=database, use_modb=True)
         assert 3 in session
         assert session[3] == 9

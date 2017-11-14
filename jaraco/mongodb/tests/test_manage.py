@@ -1,5 +1,6 @@
 from jaraco.mongodb import manage
 
+
 def test_purge_all_databases(mongodb_instance):
 	client = mongodb_instance.get_connection()
 	client.test_db.test_coll.insert_one({'a': 1})

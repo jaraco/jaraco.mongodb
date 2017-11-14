@@ -11,7 +11,7 @@ from . import service
 
 def pytest_addoption(parser):
 	parser.addoption('--mongod-args',
-		help="Arbitrary arguments to mongod")
+                  help="Arbitrary arguments to mongod")
 
 
 @pytest.yield_fixture(scope='session')
@@ -30,6 +30,7 @@ def mongodb_instance():
 	except Exception as err:
 		pytest.skip("MongoDB not available ({err})".format(**locals()))
 	instance.stop()
+
 
 @pytest.fixture(scope='session')
 def mongodb_uri(mongodb_instance):
