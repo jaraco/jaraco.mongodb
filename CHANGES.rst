@@ -1,3 +1,9 @@
+7.2.1
+=====
+
+Corrected oplog replication issues for MongoDB 3.6 (#13,
+#14).
+
 7.2
 ===
 
