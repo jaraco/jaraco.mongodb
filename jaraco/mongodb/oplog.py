@@ -47,86 +47,100 @@ def parse_args(*args, **kwargs):
     """
     parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument("--help",
-                        help="show usage information",
-                        action="help")
+    parser.add_argument(
+        "--help",
+        help="show usage information",
+        action="help",
+    )
 
-    parser.add_argument("--source", metavar="host[:port]",
-                        help="""Hostname of the mongod server from which oplog
-            operations are going to be pulled. Called "--from"
-            in mongooplog.""",
-                        )
+    parser.add_argument(
+        "--source", metavar="host[:port]",
+        help="""Hostname of the mongod server from which oplog
+        operations are going to be pulled. Called "--from"
+        in mongooplog.""",
+    )
 
-    parser.add_argument('--oplogns', default='local.oplog.rs',
-                        help="Source namespace for oplog")
+    parser.add_argument(
+        '--oplogns', default='local.oplog.rs',
+        help="Source namespace for oplog",
+    )
 
-    parser.add_argument("--dest", metavar="host[:port]",
-                        help="""
-            Hostname of the mongod server (or replica set as
-            <set name>/s1,s2) to which oplog operations
-            are going to be applied. Default is "localhost".
-            Called "--host" in mongooplog.
-            """,
-                        )
+    parser.add_argument(
+        "--dest", metavar="host[:port]",
+        help="""
+        Hostname of the mongod server (or replica set as
+        <set name>/s1,s2) to which oplog operations
+        are going to be applied. Default is "localhost".
+        Called "--host" in mongooplog.
+        """,
+    )
 
-    parser.add_argument("-w", "--window",
-                        dest="start_ts",
-                        metavar="WINDOW",
-                        type=compose(
-                            Timestamp.for_window,
-                            delta_from_seconds,
-                            pytimeparse.parse,
-                        ),
-                        help="""Time window to query, like "3 days" or "24:00"
-            (24 hours, 0 minutes).""",
-                        )
+    parser.add_argument(
+        "-w", "--window",
+        dest="start_ts",
+        metavar="WINDOW",
+        type=compose(
+            Timestamp.for_window,
+            delta_from_seconds,
+            pytimeparse.parse,
+        ),
+        help="""Time window to query, like "3 days" or "24:00"
+        (24 hours, 0 minutes).""",
+    )
 
-    parser.add_argument("-f", "--follow", action="store_true",
-                        help="""Wait for new data in oplog. Makes the utility
-            polling oplog forever (until interrupted). New data
-            is going to be applied immediately with at most one
-            second delay.""",
-                        )
+    parser.add_argument(
+        "-f", "--follow", action="store_true",
+        help="""Wait for new data in oplog. Makes the utility
+        polling oplog forever (until interrupted). New data
+        is going to be applied immediately with at most one
+        second delay.""",
+    )
 
-    parser.add_argument("--ns", nargs="*", default=[],
-                        action=Extend,
-                        help="""Process only these namespaces, ignoring all others.
-            Space separated list of strings in form of ``dname``
-            or ``dbname.collection``. May be specified multiple times.
-            """,
-                        )
+    parser.add_argument(
+        "--ns", nargs="*", default=[],
+        action=Extend,
+        help="""Process only these namespaces, ignoring all others.
+        Space separated list of strings in form of ``dname``
+        or ``dbname.collection``. May be specified multiple times.
+        """,
+    )
 
-    parser.add_argument("-x", "--exclude", nargs="*", default=[],
-                        action=Extend,
-                        help="""List of space separated namespaces which should be
-            ignored. Can be in form of ``dname`` or ``dbname.collection``.
-            May be specified multiple times.
-            """,
-                        )
+    parser.add_argument(
+        "-x", "--exclude", nargs="*", default=[],
+        action=Extend,
+        help="""List of space separated namespaces which should be
+        ignored. Can be in form of ``dname`` or ``dbname.collection``.
+        May be specified multiple times.
+        """,
+    )
 
-    parser.add_argument("--rename", nargs="*", default=[],
-                        metavar="ns_old=ns_new",
-                        type=RenameSpec.from_spec,
-                        action=Extend,
-                        help="""
-            Rename database(s) and/or collection(s). Operations on
-            namespace ``ns_old`` from the source server will be
-            applied to namespace ``ns_new`` on the destination server.
-            May be specified multiple times.
-            """,
-                        )
+    parser.add_argument(
+        "--rename", nargs="*", default=[],
+        metavar="ns_old=ns_new",
+        type=RenameSpec.from_spec,
+        action=Extend,
+        help="""
+        Rename database(s) and/or collection(s). Operations on
+        namespace ``ns_old`` from the source server will be
+        applied to namespace ``ns_new`` on the destination server.
+        May be specified multiple times.
+        """,
+    )
 
-    parser.add_argument("--dry-run", default=False,
-                        action="store_true",
-                        help="Suppress application of ops.")
+    parser.add_argument(
+        "--dry-run", default=False,
+        action="store_true",
+        help="Suppress application of ops.",
+    )
 
-    parser.add_argument("--resume-file",
-                        metavar="FILENAME",
-                        type=ResumeFile,
-                        default=NullResumeFile(),
-                        help="""Read from and write to this file the last processed
-            timestamp.""",
-                        )
+    parser.add_argument(
+        "--resume-file",
+        metavar="FILENAME",
+        type=ResumeFile,
+        default=NullResumeFile(),
+        help="""Read from and write to this file the last processed
+        timestamp.""",
+    )
 
     jaraco.logging.add_arguments(parser)
 
