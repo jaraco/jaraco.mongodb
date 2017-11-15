@@ -82,12 +82,17 @@ class TestOplogReplication:
 		"""
 		source = next(replicaset_factory).get_connection()
 		dest = next(replicaset_factory).get_connection()
-		source.index_deletion_test.stuff.create_index("foo")
-		dest.index_deletion_test.stuff.create_index("foo")
 		source_oplog = oplog.Oplog(source.local.oplog.rs)
-		begin_ts = source_oplog.get_latest_ts()
+		before_ts = source_oplog.get_latest_ts()
+		source.index_deletion_test.stuff.create_index("foo")
+		for op in source_oplog.since(before_ts):
+			oplog.apply(dest, op)
+
+		id_index, foo_index = dest.index_deletion_test.stuff.list_indexes()
+
+		after_ts = source_oplog.get_latest_ts()
 		source.index_deletion_test.stuff.drop_index("foo_1")
-		delete_index_op, = source_oplog.since(begin_ts)
+		delete_index_op, = source_oplog.since(after_ts)
 		print("attempting", delete_index_op)
 		oplog.apply(dest, delete_index_op)
 		only_index, = dest.index_deletion_test.stuff.list_indexes()
