@@ -3,11 +3,12 @@ import re
 import argparse
 
 from jaraco.mongodb import helper
+from .compat import query_or_command
 
 
 def is_index_op(op):
-	cmd = op.get('query') or op.get('command') or {}
-	return cmd.get('createIndexes')
+	cmd = query_or_command(op) or {}
+	return 'createIndexes' in cmd
 
 
 def get_args():
@@ -26,7 +27,7 @@ def run():
 			print("No index operations in progress")
 			break
 		msg = index_op['msg']
-		name = index_op['query']['indexes'][0]['name']
+		name = query_or_command(index_op)['indexes'][0]['name']
 		pat = re.compile('Index Build( \(background\))?')
 		msg = pat.sub(name, msg, count=1)
 		print(msg, end='\r')
