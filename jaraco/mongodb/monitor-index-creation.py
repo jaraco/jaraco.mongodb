@@ -6,7 +6,8 @@ from jaraco.mongodb import helper
 
 
 def is_index_op(op):
-	return op.get('query', {}).get('createIndexes')
+	cmd = op.get('query') or op.get('command') or {}
+	return cmd.get('createIndexes')
 
 
 def get_args():
