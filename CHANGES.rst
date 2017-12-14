@@ -1,3 +1,8 @@
+7.2.2
+=====
+
+#16: Fixed monitor-index-creation script for MongoDB 3.2+.
+
 7.2.1
 =====
 
