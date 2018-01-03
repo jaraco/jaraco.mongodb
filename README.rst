@@ -4,10 +4,10 @@
 .. image:: https://img.shields.io/pypi/pyversions/jaraco.mongodb.svg
 
 .. image:: https://img.shields.io/travis/jaraco/jaraco.mongodb/master.svg
-   :target: http://travis-ci.org/jaraco/jaraco.mongodb
+   :target: https://travis-ci.org/jaraco/jaraco.mongodb
 
 .. image:: https://readthedocs.org/projects/jaracomongodb/badge/?version=latest
-   :target: http://jaracomongodb.readthedocs.io/en/latest/?badge=latest
+   :target: https://jaracomongodb.readthedocs.io/en/latest/?badge=latest
 
 Migration Manager
 =================
