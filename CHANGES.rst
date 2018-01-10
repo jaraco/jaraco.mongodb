@@ -1,3 +1,10 @@
+7.2.3
+=====
+
+#17: Remove ``--nohttpinterface`` when constructing MongoDB
+instances, following the `same approach taken by MongoDB
+<https://jira.mongodb.org/browse/TOOLS-1679>`_.
+
 7.2.2
 =====
 
