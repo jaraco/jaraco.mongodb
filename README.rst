@@ -30,6 +30,13 @@ be inserted into a MongoDB collection naturally.
 
 To support richer objects, one may configure the codec to use ``jaraco.modb``.
 
+fields
+======
+
+``jaraco.mongodb.fields`` provides two functions, encode and decode, which
+take arbitrary unicode text and transform it into values suitable as keys
+on older versions of MongoDB by backslash-escaping the values.
+
 monitor-index-creation
 ======================
 

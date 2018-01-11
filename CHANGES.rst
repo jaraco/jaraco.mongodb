@@ -1,3 +1,9 @@
+7.3
+===
+
+Add ``jaraco.mongodb.fields`` for escaping values for document
+fields.
+
 7.2.3
 =====
 
