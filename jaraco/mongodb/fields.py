@@ -22,11 +22,12 @@ import re
 def encode(text):
 	text = text.replace('\\', '\\\\')
 	text = re.sub(r'^\$', '\\$', text)
-	return text.replace('.', '\\.')
+	return text.replace('.', '\\D')
 
 
 def unescape(match):
-	return match.group(1)
+	char = match.group(1)
+	return '.' if char == 'D' else char
 
 
 def decode(encoded):
