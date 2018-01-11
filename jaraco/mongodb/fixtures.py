@@ -10,8 +10,10 @@ from . import service
 
 
 def pytest_addoption(parser):
-	parser.addoption('--mongod-args',
-                  help="Arbitrary arguments to mongod")
+	parser.addoption(
+		'--mongod-args',
+		help="Arbitrary arguments to mongod",
+	)
 
 
 @pytest.yield_fixture(scope='session')

@@ -1,7 +1,7 @@
 """
 Script to repair broken GridFS files. It handles
 
- - Removing files with missing chunks.
+- Removing files with missing chunks.
 """
 
 import sys

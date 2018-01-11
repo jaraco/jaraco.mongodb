@@ -81,8 +81,8 @@ class Session(cherrypy.lib.sessions.Session):
 		if isinstance(self.lock_timeout, (int, float)):
 			self.lock_timeout = datetime.timedelta(seconds=self.lock_timeout)
 		if not isinstance(self.lock_timeout, (datetime.timedelta, type(None))):
-			raise ValueError("Lock timeout must be numeric seconds or "
-                            "a timedelta instance.")
+			msg = "Lock timeout must be numeric seconds or a timedelta instance."
+			raise ValueError(msg)
 
 	@classmethod
 	def install(cls):
@@ -101,8 +101,10 @@ class Session(cherrypy.lib.sessions.Session):
 		"""
 		Use pymongo TTL index to automatically expire sessions.
 		"""
-		self.collection.create_index('_expiration_datetime',
-                               expireAfterSeconds=0)
+		self.collection.create_index(
+			'_expiration_datetime',
+			expireAfterSeconds=0,
+		)
 
 	def _exists(self):
 		return bool(self.collection.find_one(self.id))
@@ -156,8 +158,10 @@ class Session(cherrypy.lib.sessions.Session):
 		try:
 			compat.save(self.collection, data)
 		except pymongo.errors.InvalidDocument:
-			log.warning("Unable to save session:\n%s",
-                            pprint.pformat(data))
+			log.warning(
+				"Unable to save session:\n%s",
+				pprint.pformat(data),
+			)
 			raise
 
 	def _delete(self):
@@ -188,8 +192,8 @@ class Session(cherrypy.lib.sessions.Session):
 				break
 			time.sleep(0.1)
 		else:
-			raise LockTimeout("Timeout acquiring lock for {self.id}"
-                            .format(**vars()))
+			raise LockTimeout(
+				"Timeout acquiring lock for {self.id}".format(**locals()))
 		self.locked = True
 
 	def release_lock(self):

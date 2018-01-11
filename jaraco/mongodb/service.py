@@ -75,7 +75,8 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
         log.info('%s listening on %s', self, self.port)
 
 
-def is_virtualenv(): return hasattr(sys, 'real_prefix')
+def is_virtualenv():
+    return hasattr(sys, 'real_prefix')
 
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
@@ -114,7 +115,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
             '--dbpath', self.data_dir,
             '--port', str(self.port),
         ] + list(self.mongod_args)
-        if hasattr(self, 'bind_ip') and not '--bind_ip' in cmd:
+        if hasattr(self, 'bind_ip') and '--bind_ip' not in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
         portend.occupied('localhost', self.port, timeout=3)

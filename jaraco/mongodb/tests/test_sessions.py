@@ -1,11 +1,12 @@
 import datetime
 import dateutil
+import importlib
 
 import py.test
 
-py.test.importorskip("cherrypy")
 
-from jaraco.mongodb import sessions
+py.test.importorskip("cherrypy")
+sessions = importlib.import_module('jaraco.mongodb.sessions')
 
 
 @py.test.fixture(scope='function')
