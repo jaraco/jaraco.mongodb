@@ -1,3 +1,9 @@
+7.4
+===
+
+#18: Allow pmxbot command to connect to the MongoDB database
+other than localhost.
+
 7.3
 ===
 
