@@ -1,6 +1,6 @@
-import sys
+import six
 
-PY2 = sys.version_info < (3,)
+collect_ignore = ['jaraco/mongodb/pmxbot.py']
 
-if PY2:
-    collect_ignore = ['jaraco/mongodb/monitor-index-creation.py']
+if six.PY2:
+    collect_ignore.append('jaraco/mongodb/monitor-index-creation.py')
