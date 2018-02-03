@@ -3,7 +3,6 @@ sudo: false
 language: python
 
 env:
-- MONGODB_VERSION=3.0.15
 - MONGODB_VERSION=3.2.18
 - MONGODB_VERSION=3.4.10
 - MONGODB_VERSION=3.6.1
