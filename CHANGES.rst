@@ -1,3 +1,9 @@
+7.5
+===
+
+Added ``jaraco.mongodb.insert-doc`` to take a JSON document
+from the command-line and insert it into the indicated collection.
+
 7.4
 ===
 
