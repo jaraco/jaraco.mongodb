@@ -6,6 +6,9 @@
 .. image:: https://img.shields.io/travis/jaraco/jaraco.mongodb/master.svg
    :target: https://travis-ci.org/jaraco/jaraco.mongodb
 
+.. .. image:: https://img.shields.io/appveyor/ci/jaraco/jaracomongodb/master.svg
+..    :target: https://ci.appveyor.com/project/jaraco/jaracomongodb/branch/master
+
 .. image:: https://readthedocs.org/projects/jaracomongodb/badge/?version=latest
    :target: https://jaracomongodb.readthedocs.io/en/latest/?badge=latest
 
