@@ -71,7 +71,7 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
             '--dbpath=' + mongodb_data,
         ]
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
-        self.wait_for_pattern('waiting for connections on port (?P<port>\d+)')
+        self.wait_for_pattern(r'waiting for connections on port (?P<port>\d+)')
         log.info('%s listening on %s', self, self.port)
 
 
