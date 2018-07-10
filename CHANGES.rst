@@ -1,3 +1,11 @@
+7.6
+===
+
+No longer pass ``--ipv6`` to mongod in MongoDBInstance. IPv6
+is supported since MongoDB 3.0 without this option, and in
+some environments, supplying this parameter causes the daemon
+to fail to bind to any interfaces.
+
 7.5
 ===
 
