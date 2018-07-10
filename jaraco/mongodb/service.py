@@ -86,7 +86,6 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         '--noprealloc',
         '--nojournal',
         '--syncdelay', '0',
-        '--ipv6',
         '--noauth',
     )
 
