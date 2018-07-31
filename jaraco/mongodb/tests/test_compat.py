@@ -1,17 +1,4 @@
-import pytest
-
 from jaraco.mongodb import compat
-
-
-@pytest.fixture(scope='function')
-def database(request, mongodb_instance):
-	"""
-	Return a clean MongoDB database suitable for testing.
-	"""
-	db_name = request.node.name
-	database = mongodb_instance.get_connection()[db_name]
-	yield database
-	database.client.drop_database(db_name)
 
 
 def test_save_no_id(database):

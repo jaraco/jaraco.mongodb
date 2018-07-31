@@ -1,3 +1,8 @@
+7.7
+===
+
+Added ``compat.Collection`` with ``save`` method added in 6.2.
+
 7.6
 ===
 
