@@ -24,13 +24,13 @@ class Collection(pymongo.collection.Collection):
 	save method. Don't use without first reading the cautions at
 	https://github.com/mongodb/specifications/blob/master/source/crud/crud.rst#q--a
 
-	>>> db = getfixture('database')
-	>>> coll = Collection(db, 'mycoll')
-	>>> coll.save({'foo': 'bar'})
+	>> db = getfixture('database')
+	>> coll = Collection(db, 'mycoll')
+	>> coll.save({'foo': 'bar'})
 	<pymongo.results.InsertOneResult object at ...>
-	>>> ob = coll.find_one()
-	>>> ob['foo'] = 'baz'
-	>>> coll.save(ob)
+	>> ob = coll.find_one()
+	>> ob['foo'] = 'baz'
+	>> coll.save(ob)
 	<pymongo.results.UpdateResult object at ...>
 	"""
 	save = save
