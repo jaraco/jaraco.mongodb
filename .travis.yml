@@ -1,4 +1,4 @@
-dist: trusty
+dist: xenial
 sudo: false
 language: python
 
@@ -9,7 +9,7 @@ env:
 python:
 - 2.7
 - 3.4
-- &latest_py3 3.6
+- &latest_py3 3.7
 
 jobs:
   fast_finish: true
@@ -32,15 +32,13 @@ jobs:
 
 cache: pip
 
-before_script:
-- mkdir mongodb
-- wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGODB_VERSION.tgz -q -O - | tar xz -C mongodb --strip-components=1
-- export PATH=$(pwd)/mongodb/bin:$PATH
-
 install:
 - pip install tox tox-venv
 
 before_script:
+  - mkdir mongodb
+  - wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGODB_VERSION.tgz -q -O - | tar xz -C mongodb --strip-components=1
+  - export PATH=$(pwd)/mongodb/bin:$PATH
   # Disable IPv6. Ref travis-ci/travis-ci#8361
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
       sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
