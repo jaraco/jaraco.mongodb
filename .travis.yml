@@ -8,7 +8,7 @@ env:
 - MONGODB_VERSION=4.0.0
 python:
 - 2.7
-- 3.4
+- 3.5
 - &latest_py3 3.7
 
 jobs:
