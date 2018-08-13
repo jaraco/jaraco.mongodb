@@ -23,7 +23,7 @@ function runTests() {
 /** Initialize test environment. */
 function setUp() {
     MongoRunner.dataPath = '/tmp/'
-    opts = {nojournal: ''};
+    opts = {};
     var rs1 = new ReplSetTest({
         name: 'rs1',
         nodes: [opts],
