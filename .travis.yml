@@ -47,4 +47,5 @@ before_script:
 script:
 - tox
 - export PATH=$(pwd)/.tox/python/bin:$PATH
+- which mongo
 - mongo --nodb tests/oplog.js
