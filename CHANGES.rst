@@ -1,7 +1,7 @@
 7.8
 ===
 
-Added Python 2 compatibility to the ``monitor-index-creation``
+#19: Added Python 2 compatibility to the ``monitor-index-creation``
 script.
 
 7.7
