@@ -3,9 +3,9 @@ sudo: false
 language: python
 
 env:
-- MONGODB_VERSION=3.4.15
-- MONGODB_VERSION=3.6.5
-- MONGODB_VERSION=4.0.0
+- MONGODB_VERSION=3.4
+- MONGODB_VERSION=3.6
+- MONGODB_VERSION=4.0
 python:
 - 2.7
 - 3.5
@@ -37,7 +37,7 @@ install:
 
 before_script:
   - mkdir mongodb
-  - wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGODB_VERSION.tgz -q -O - | tar xz -C mongodb --strip-components=1
+  - wget http://downloads.mongodb.org/linux/mongodb-linux-x86_64-v$MONGODB_VERSION-latest.tgz -q -O - | tar xz -C mongodb --strip-components=1
   - export PATH=$(pwd)/mongodb/bin:$PATH
   # Disable IPv6. Ref travis-ci/travis-ci#8361
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
