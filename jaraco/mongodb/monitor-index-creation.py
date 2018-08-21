@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import time
 import re
 import argparse
@@ -28,7 +30,7 @@ def run():
 			break
 		msg = index_op['msg']
 		name = query_or_command(index_op)['indexes'][0]['name']
-		pat = re.compile('Index Build( \(background\))?')
+		pat = re.compile(r'Index Build( \(background\))?')
 		msg = pat.sub(name, msg, count=1)
 		print(msg, end='\r')
 		time.sleep(5)
