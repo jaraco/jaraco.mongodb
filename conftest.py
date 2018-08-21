@@ -3,7 +3,13 @@ import six
 import pytest
 
 
-collect_ignore = ['jaraco/mongodb/pmxbot.py']
+collect_ignore = [
+	'jaraco/mongodb/pmxbot.py',
+	# disable move-gridfs check, as it causes output capturing
+	# to be disabled. See pytest-dev/pytest#3752.
+	'jaraco/mongodb/move-gridfs.py',
+]
+
 
 if six.PY2:
 	collect_ignore.append('jaraco/mongodb/monitor-index-creation.py')
