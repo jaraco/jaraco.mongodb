@@ -51,6 +51,12 @@ class FileMove:
 	def __init__(self, **params):
 		vars(self).update(**params)
 
+	def ensure_indexes(self):
+		"""
+		Create the same indexes that the GridFS API would have
+		"""
+		self.dest_gfs.new_file()._GridIn__ensure_indexes()
+
 	@property
 	def filter(self):
 		filter = {}
@@ -121,6 +127,7 @@ def run():
 	args = get_args()
 
 	mover = FileMove(**vars(args))
+	mover.ensure_indexes()
 	mover.run()
 
 

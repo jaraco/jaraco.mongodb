@@ -1,3 +1,8 @@
+7.9
+===
+
+#12: Ensure indexes when moving files using ``move-gridfs`` script.
+
 7.8
 ===
 
