@@ -1,5 +1,3 @@
-import six
-
 import pytest
 
 
@@ -9,10 +7,6 @@ collect_ignore = [
 	# to be disabled. See pytest-dev/pytest#3752.
 	'jaraco/mongodb/move-gridfs.py',
 ]
-
-
-if six.PY2:
-	collect_ignore.append('jaraco/mongodb/monitor-index-creation.py')
 
 
 @pytest.fixture(scope='function')
