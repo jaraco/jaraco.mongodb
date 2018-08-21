@@ -1,6 +1,21 @@
 """
 Script to move a subset of GridFS files from one db
 (or collection) to another.
+
+>>> import io
+>>> db_uri = getfixture('mongodb_uri') + '/move_gridfs_test'
+>>> source = helper.connect_gridfs(db_uri + '.source')
+>>> dest = helper.connect_gridfs(db_uri + '.dest')
+>>> id = source.put(io.BytesIO(b'test'), filename='test.txt')
+>>> mover = FileMove(source_gfs=source, dest_gfs=dest, delete=True)
+>>> mover.ensure_indexes()
+>>> mover.run(bar=None)
+>>> source.list()
+[]
+>>> dest.exists(id)
+True
+>>> dest.list()
+['test.txt']
 """
 
 import sys
@@ -75,15 +90,15 @@ class FileMove:
 	def dest_coll(self):
 		return self.dest_gfs._GridFS__collection
 
-	def run(self):
+	def run(self, bar=progress.TargetProgressBar):
 		files = self.source_coll.files.find(
 			self.filter,
 			batch_size=1,
 		)
 		limit_files = itertools.islice(files, self.limit)
 		count = min(files.count(), self.limit or float('inf'))
-		bar = progress.TargetProgressBar(count)
-		with SignalTrap(bar.iterate(limit_files)) as items:
+		progress = bar(count).iterate if bar else iter
+		with SignalTrap(progress(limit_files)) as items:
 			consume(map(self.process, items))
 
 	def process(self, file):
