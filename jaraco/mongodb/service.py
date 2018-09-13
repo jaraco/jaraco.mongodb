@@ -75,10 +75,6 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
         log.info('%s listening on %s', self, self.port)
 
 
-def is_virtualenv():
-    return hasattr(sys, 'real_prefix')
-
-
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     data_dir = None
 
@@ -96,13 +92,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
 
     @staticmethod
     def get_data_dir():
-        data_dir = None
-        if is_virtualenv():
-            # use the virtualenv as a base to store the data
-            data_dir = os.path.join(sys.prefix, 'var', 'data')
-            if not os.path.isdir(data_dir):
-                os.makedirs(data_dir)
-        return tempfile.mkdtemp(dir=data_dir)
+        return tempfile.mkdtemp()
 
     def start(self):
         super(MongoDBInstance, self).start()

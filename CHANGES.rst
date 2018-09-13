@@ -1,3 +1,10 @@
+7.10
+====
+
+MongoDBInstances will no longer attempt to store their data in
+the root of the virtualenv (if present). Instead, they
+unconditionally use a temp directory.
+
 7.9
 ===
 
