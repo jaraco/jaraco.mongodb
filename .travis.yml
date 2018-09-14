@@ -11,6 +11,11 @@ python:
 - 3.5
 - &latest_py3 3.7
 
+matrix:
+  allow_failures:
+  # https://jira.mongodb.org/browse/SERVER-36792
+  - env: MONGODB_VERSION=3.6
+
 jobs:
   fast_finish: true
   include:
