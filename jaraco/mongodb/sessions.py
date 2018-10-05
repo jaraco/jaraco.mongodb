@@ -165,7 +165,7 @@ class Session(cherrypy.lib.sessions.Session):
 			raise
 
 	def _delete(self):
-		self.collection.remove(self.id)
+		self.collection.delete_one(self.id)
 
 	def acquire_lock(self):
 		"""

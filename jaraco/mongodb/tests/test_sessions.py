@@ -1,3 +1,4 @@
+import functools
 import datetime
 import dateutil
 import importlib
@@ -16,7 +17,7 @@ def database(request, mongodb_instance):
     collection between every test.
     """
     database = mongodb_instance.get_connection().sessions_test
-    request.addfinalizer(database.sessions.remove)
+    request.addfinalizer(functools.partial(database.sessions.delete_many, {}))
     return database
 
 

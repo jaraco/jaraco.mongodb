@@ -12,7 +12,7 @@ def indexed_collection(request, mongodb_instance):
 	dropper = functools.partial(db.client.drop_database, _name)
 	request.addfinalizer(dropper)
 	coll = db[_name]
-	coll.ensure_index('foo')
+	coll.create_index('foo')
 	return coll
 
 

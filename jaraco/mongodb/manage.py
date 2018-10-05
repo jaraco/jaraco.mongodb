@@ -8,7 +8,7 @@ def all_databases(client, exclude=['local']):
 	"""
 	return (
 		client[db_name]
-		for db_name in client.database_names()
+		for db_name in client.list_database_names()
 		if db_name not in exclude
 	)
 
@@ -20,13 +20,13 @@ def all_collections(db):
 	include_pattern = r'(?!system\.)'
 	return (
 		db[name]
-		for name in db.collection_names()
+		for name in db.list_collection_names()
 		if re.match(include_pattern, name)
 	)
 
 
 def purge_collection(coll):
-	coll.remove(None)
+	coll.delete_all({})
 
 
 def safe_purge_collection(coll):
