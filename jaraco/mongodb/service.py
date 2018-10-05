@@ -76,13 +76,8 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
-    data_dir = None
-
     mongod_args = (
-        '--noprealloc',
-        '--nojournal',
-        '--syncdelay', '0',
-        '--noauth',
+        '--storageEngine', 'ephemeralForTest',
     )
 
     process_kwargs = {}
@@ -90,15 +85,11 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     keyword arguments to Popen to control the process creation
     """
 
-    @staticmethod
-    def get_data_dir():
-        return tempfile.mkdtemp()
-
     def start(self):
         super(MongoDBInstance, self).start()
-        self.data_dir = self.data_dir or self.get_data_dir()
         if not hasattr(self, 'port') or not self.port:
             self.port = portend.find_available_local_port()
+        self.data_dir = tempfile.mkdtemp()
         cmd = [
             self.find_binary(),
             '--dbpath', self.data_dir,
@@ -127,12 +118,6 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         super(MongoDBInstance, self).stop()
         shutil.rmtree(self.data_dir)
         del self.data_dir
-
-    def soft_stop(self):
-        """
-        Stop the process, but retain the data_dir.
-        """
-        super(MongoDBInstance, self).stop()
 
 
 class MongoDBReplicaSet(MongoDBFinder, services.Service):
