@@ -85,6 +85,16 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     keyword arguments to Popen to control the process creation
     """
 
+    def merge_mongod_args(self, add_args):
+        merged = list(self.mongod_args)
+
+        if any(arg.startswith('--storageEngine') for arg in add_args):
+            merged.remove('--storageEngine')
+            merged.remove('ephemeralForTest')
+
+        merged.extend(add_args)
+        self.mongod_args = merged
+
     def start(self):
         super(MongoDBInstance, self).start()
         if not hasattr(self, 'port') or not self.port:

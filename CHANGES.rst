@@ -11,8 +11,7 @@ also been removed from the mongod invocation:
  - syncdelay
  - noauth
 
-This change also means that it's no longer possible to configure
-the storage engine and that the ``soft_stop`` method has no
+This change also means that the ``soft_stop`` method has no
 benefit and so has been removed.
 
 7.10
