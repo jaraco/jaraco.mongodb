@@ -23,9 +23,9 @@ def mongodb_instance():
 
 	params_raw = pytest.config.getoption('mongod_args') or ''
 	params = shlex.split(params_raw)
-	service.MongoDBInstance.mongod_args += tuple(params)
 	try:
 		instance = service.MongoDBInstance()
+		instance.merge_mongod_args(params)
 		instance.start()
 		pymongo.MongoClient(instance.get_connect_hosts())
 		yield instance

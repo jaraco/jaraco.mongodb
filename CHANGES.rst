@@ -1,3 +1,19 @@
+8.0
+===
+
+MongoDB Instances are now started with
+``--storageEngine ephemeralForTest`` instead of deferring to
+the default storage engine. As a result, these options have
+also been removed from the mongod invocation:
+
+ - noprealloc
+ - nojournal
+ - syncdelay
+ - noauth
+
+This change also means that the ``soft_stop`` method has no
+benefit and so has been removed.
+
 7.10
 ====
 

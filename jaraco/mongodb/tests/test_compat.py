@@ -18,7 +18,7 @@ def test_save_replace_by_id(database):
 
 	doc = dict(foo='baz', _id=1)
 	compat.save(database.test_coll, doc)
-	assert database.test_coll.count() == 1
+	assert database.test_coll.count_documents({}) == 1
 	assert database.test_coll.find_one() == doc
 
 
@@ -28,9 +28,9 @@ def test_save_no_id_extant_docs(database):
 	"""
 	doc = dict(foo='bar')
 	compat.save(database.test_coll, dict(doc))
-	assert database.test_coll.count() == 1
+	assert database.test_coll.count_documents({}) == 1
 	compat.save(database.test_coll, doc)
-	assert database.test_coll.count() == 2
+	assert database.test_coll.count_documents({}) == 2
 
 
 def test_save_adds_id(database):
