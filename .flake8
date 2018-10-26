@@ -6,3 +6,6 @@ ignore =
 	W503
 	# W504 has issues https://github.com/OCA/maintainer-quality-tools/issues/545
 	W504
+
+	# Workaround for https://github.com/PyCQA/pyflakes/issues/376
+	F841
