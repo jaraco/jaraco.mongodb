@@ -1,3 +1,8 @@
+8.1.1
+=====
+
+Fix return value in ``query.upsert_and_fetch``.
+
 8.1
 ===
 

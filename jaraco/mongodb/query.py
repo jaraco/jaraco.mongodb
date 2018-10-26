@@ -55,7 +55,7 @@ def upsert_and_fetch(coll, doc, **kwargs):
     >>> upsert_and_fetch(coll, doc) == inserted
     True
     """
-    coll.find_one_and_update(
+    return coll.find_one_and_update(
         doc,
         {"$setOnInsert": doc},
         upsert=True,
