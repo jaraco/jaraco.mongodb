@@ -45,6 +45,15 @@ def upsert_and_fetch(coll, doc, **kwargs):
     See https://jira.mongodb.org/browse/SERVER-28434
     describing the condition where MongoDB is uninterested in
     providing an upsert and fetch behavior.
+
+    >>> instance = getfixture('mongodb_instance').get_connection()
+    >>> coll = instance.test_upsert_and_fetch.items
+    >>> doc = {'foo': 'bar'}
+    >>> inserted = upsert_and_fetch(coll, doc)
+    >>> inserted
+    {...'foo': 'bar'...}
+    >>> upsert_and_fetch(coll, doc) == inserted
+    True
     """
     coll.find_one_and_update(
         doc,
