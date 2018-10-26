@@ -12,6 +12,16 @@ Welcome to jaraco.mongodb documentation!
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: jaraco.mongodb.fields
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.mongodb.fixtures
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: jaraco.mongodb.helper
     :members:
     :undoc-members:
@@ -27,7 +37,27 @@ Welcome to jaraco.mongodb documentation!
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: jaraco.mongodb.query
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: jaraco.mongodb.sessions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.mongodb.sharding
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.mongodb.timers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.mongodb.uri
     :members:
     :undoc-members:
     :show-inheritance:
