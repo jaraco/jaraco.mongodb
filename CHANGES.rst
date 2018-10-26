@@ -1,3 +1,9 @@
+8.1
+===
+
+In ``query.upsert_and_fetch``, allow keyword arguments to pass
+to the underlying call.
+
 8.0
 ===
 

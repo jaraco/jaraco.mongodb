@@ -36,7 +36,7 @@ def compat_explain(cur):
     return res
 
 
-def upsert_and_fetch(coll, doc):
+def upsert_and_fetch(coll, doc, **kwargs):
     """
     Fetch exactly one matching document or upsert
     the document if not found, returning the matching
@@ -51,4 +51,5 @@ def upsert_and_fetch(coll, doc):
         {"$setOnInsert": doc},
         upsert=True,
         return_document=pymongo.ReturnDocument.AFTER,
+        **kwargs,
     )
