@@ -1,13 +1,10 @@
-8.1.1
-=====
-
-Fix return value in ``query.upsert_and_fetch``.
-
 8.1
 ===
 
 In ``query.upsert_and_fetch``, allow keyword arguments to pass
 to the underlying call.
+
+Fix return value in ``query.upsert_and_fetch``.
 
 8.0
 ===
