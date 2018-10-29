@@ -1,3 +1,9 @@
+9.0
+===
+
+Refreshed project metadata, including conversion to declarative
+config. Requires Setuptools 34.4 to install from sdist.
+
 8.1
 ===
 
