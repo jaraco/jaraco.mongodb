@@ -15,6 +15,7 @@ from jaraco.services import paths
 from jaraco import services
 from jaraco import timing
 from . import manage
+from . import cli
 
 
 log = logging.getLogger(__name__)
@@ -91,6 +92,8 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         if any(arg.startswith('--storageEngine') for arg in add_args):
             merged.remove('--storageEngine')
             merged.remove('ephemeralForTest')
+
+        self.port, add_args[:] = cli.extract_param('port', add_args, type=int)
 
         merged.extend(add_args)
         self.mongod_args = merged

@@ -1,3 +1,10 @@
+9.1
+===
+
+#21: In ``mongodb_instance`` fixture, allow ``--port`` to be
+passed as mongod args, overriding default behavior of starting
+on an ephemeral port.
+
 9.0
 ===
 
