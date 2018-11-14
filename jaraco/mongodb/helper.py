@@ -9,32 +9,9 @@ import gridfs
 
 
 def filter_warnings():
-    _filter_username_warning()
-
-
-def _filter_username_warning():
-    """
-    Suppress warnings when passing a URI to MongoDB that includes the database
-    name.
-    """
-    warnings.filterwarnings(
-        'ignore', category=UserWarning,
-        message=".*must provide a username",
-        module='pymongo.mongo_client' if pymongo.version_tuple >= (2, 4) else
-        'pymongo.connection',
-    )
-
-
-def _filter_safe_deprecation():
-    """
-    Due to a bug in pymongo, safe must be used in some cases even while it's
-    deprecated. If that's the case, call this function to suppress those
-    warnings.
-    """
-    warnings.filterwarnings(
-        'ignore', category=DeprecationWarning,
-        message=".*write_concern option instead",
-        module='pymongo.common',
+    warnings.warn(
+        "filter_warnings is deprecated and has no effect; do not call",
+        DeprecationWarning,
     )
 
 
@@ -55,7 +32,6 @@ def connect_db(uri, default_db_name=None, **kwargs):
     intermediate MongoClient object that pymongo creates (though the
     connection is always available as db.client).
     """
-    filter_warnings()
     uri_p = pymongo.uri_parser.parse_uri(uri)
     db_name = uri_p['database'] or default_db_name
     if not db_name:

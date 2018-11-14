@@ -1,3 +1,8 @@
+9.2
+===
+
+Disabled and deprecated ``helper.filter_warnings``.
+
 9.1
 ===
 
