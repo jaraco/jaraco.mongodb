@@ -27,6 +27,10 @@ def connect(uri, factory=pymongo.MongoClient):
 def connect_db(
         uri, default_db_name=None, factory=pymongo.MongoClient):
     """
+    *Deprecated*
+
+    Use pymongo.MongoClient(uri).get_database(default_db_name) instead.
+
     Use pymongo to parse a uri (possibly including database name) into
     a connected database object.
 
@@ -42,6 +46,9 @@ def connect_db(
     >>> db.client.read_preference
     Secondary(...)
     """
+    warnings.warn(
+        "Use pymongo.MongoClient(uri).get_database(default_db_name) instead",
+        DeprecationWarning)
     uri_p = pymongo.uri_parser.parse_uri(uri)
     db_name = uri_p['database'] or default_db_name
     if not db_name:

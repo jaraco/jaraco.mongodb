@@ -5,6 +5,9 @@ Disabled and deprecated ``helper.filter_warnings``.
 
 Deprecated ``helper.connect``.
 
+Deprecated ``helper.connect_db`` in favor of functions
+now available in pymongo 3.5.
+
 9.1
 ===
 
