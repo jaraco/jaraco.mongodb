@@ -1,3 +1,14 @@
+10.0
+====
+
+Require pymongo 3.5.
+
+Drop deprecated methods in helper:
+
+    - ``helper.filter_warnings``
+    - ``helper.connect``
+    - ``helper.connect_db``
+
 9.2
 ===
 
