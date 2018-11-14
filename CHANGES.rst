@@ -1,3 +1,10 @@
+9.2.1
+=====
+
+Removed deprecation of ``helper.connect_db``, as the
+upstream implementation still doesn't provide for a
+nice 'default'.
+
 9.2
 ===
 
