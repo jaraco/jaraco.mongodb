@@ -49,11 +49,8 @@ def connect_db(
     'mydb'
     """
     uri_p = pymongo.uri_parser.parse_uri(uri)
-    db_name = uri_p['database'] or default_db_name
-    if not db_name:
-        raise ValueError("A database name must be supplied")
     client = factory(uri)
-    return client[db_name]
+    return client.get_database(uri_p['database'] or default_db_name)
 
 
 def get_collection(uri):
