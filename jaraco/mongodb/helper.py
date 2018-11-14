@@ -57,10 +57,15 @@ def connect_db(
     return client[db_name]
 
 
+def get_collection(uri):
+    return pymongo.uri_parser.parse_uri(uri)['collection']
+
+
 def connect_gridfs(uri, db=None):
     """
     Construct a GridFS instance for a MongoDB URI.
     """
-    db = db or connect_db(uri)
-    collection = pymongo.uri_parser.parse_uri(uri)['collection']
-    return gridfs.GridFS(db, collection=collection or 'fs')
+    return gridfs.GridFS(
+        db or connect_db(uri),
+        collection=get_collection(uri) or 'fs',
+    )
