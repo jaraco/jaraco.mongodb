@@ -3,6 +3,8 @@
 
 Disabled and deprecated ``helper.filter_warnings``.
 
+Deprecated ``helper.connect``.
+
 9.1
 ===
 

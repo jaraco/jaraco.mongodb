@@ -19,10 +19,13 @@ def connect(uri, factory=pymongo.MongoClient):
     """
     Use the factory to establish a connection to uri.
     """
+    warnings.warn(
+        "do not use. Just call MongoClient directly.", DeprecationWarning)
     return factory(uri)
 
 
-def connect_db(uri, default_db_name=None, **kwargs):
+def connect_db(
+        uri, default_db_name=None, factory=pymongo.MongoClient):
     """
     Use pymongo to parse a uri (possibly including database name) into
     a connected database object.
@@ -36,7 +39,7 @@ def connect_db(uri, default_db_name=None, **kwargs):
     db_name = uri_p['database'] or default_db_name
     if not db_name:
         raise ValueError("A database name must be supplied")
-    conn = connect(uri, **kwargs)
+    conn = factory(uri)
     return conn[db_name]
 
 
