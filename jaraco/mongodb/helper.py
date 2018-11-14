@@ -42,6 +42,12 @@ def connect_db(
     >>> db.client.read_preference
     Secondary(...)
 
+    If no database is indicated in the uri, fall back to default.
+
+    >>> db = connect_db('mongodb://mgo/', 'defaultdb')
+    >>> db.name
+    'defaultdb'
+
     The default should only apply if no db was present in the URI.
 
     >>> db = connect_db('mongodb://mgo/mydb', 'defaultdb')
