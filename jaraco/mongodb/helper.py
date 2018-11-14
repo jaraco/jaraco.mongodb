@@ -34,6 +34,13 @@ def connect_db(
     wishes to get the Database object and is less concerned about the
     intermediate MongoClient object that pymongo creates (though the
     connection is always available as db.client).
+
+    >>> db = connect_db(
+    ...     'mongodb://mongodb.localhost/mydb?readPreference=secondary')
+    >>> db.name
+    'mydb'
+    >>> db.client.read_preference
+    Secondary(...)
     """
     uri_p = pymongo.uri_parser.parse_uri(uri)
     db_name = uri_p['database'] or default_db_name
