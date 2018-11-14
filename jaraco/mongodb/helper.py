@@ -39,8 +39,8 @@ def connect_db(
     db_name = uri_p['database'] or default_db_name
     if not db_name:
         raise ValueError("A database name must be supplied")
-    conn = factory(uri)
-    return conn[db_name]
+    client = factory(uri)
+    return client[db_name]
 
 
 def connect_gridfs(uri, db=None):
