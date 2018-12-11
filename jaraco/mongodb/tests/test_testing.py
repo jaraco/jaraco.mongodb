@@ -43,3 +43,23 @@ def test_assert_covered_null(indexed_collection):
 	cur = indexed_collection.find({"foo": "baz"}, proj)
 	with pytest.raises(AssertionError):
 		testing.assert_covered(cur)
+
+
+def test_assert_index_used_passes(indexed_collection):
+	"""
+	assert_index_used should pass when the index is used,
+	even if the documents had to be hit.
+	"""
+	indexed_collection.insert_one({'foo': 'bar', 'bing': 'baz'})
+	cur = indexed_collection.find({'foo': 'bar'})
+	testing.assert_index_used(cur)
+
+
+def test_assert_index_used_fails(indexed_collection):
+	"""
+	assert_index_used should fail when no index is used.
+	"""
+	indexed_collection.insert_one({'foo': 'bar', 'bing': 'baz'})
+	cur = indexed_collection.find({'bing': 'baz'})
+	with pytest.raises(AssertionError):
+		testing.assert_index_used(cur)

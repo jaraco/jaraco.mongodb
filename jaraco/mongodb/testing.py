@@ -9,6 +9,16 @@ def _rep_index_info(coll):
     return "Indexes are:\n" + pprint.pformat(index_info)
 
 
+def assert_index_used(cur):
+    """
+    Explain the cursor and ensure that the index was used.
+    """
+    explanation = compat_explain(cur)
+    plan = explanation['queryPlanner']['winningPlan']
+    assert plan['stage'] != 'COLLSCAN'
+    assert plan['inputStage']['stage'] == 'IXSCAN'
+
+
 def assert_covered(cur):
     """
     Use the best knowledge about Cursor.explain() to ensure that the query

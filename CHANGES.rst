@@ -1,3 +1,8 @@
+9.3
+===
+
+Added ``testing.assert_index_used`` function.
+
 9.2.1
 =====
 
