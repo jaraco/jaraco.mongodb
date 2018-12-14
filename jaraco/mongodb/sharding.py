@@ -37,4 +37,6 @@ def create_db_in_shard(db_name, shard, client=None):
                     'movePrimary', value=db_name, to=shard)
                 if not res.get('ok'):
                         raise RuntimeError(str(res))
-        return nf("Successfully created {db_name} in {shard} via {hostname}")
+        return nf(
+            "Successfully created {db_name} in {shard} via {client.nodes} "
+            "from {hostname}")

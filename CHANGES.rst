@@ -1,3 +1,9 @@
+9.4
+===
+
+``create_database_in_shard`` now also reports the 'nodes'
+on which the database was created.
+
 9.3
 ===
 
