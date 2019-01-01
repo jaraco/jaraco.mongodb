@@ -13,7 +13,7 @@ import datetime
 import portend
 from jaraco.services import paths
 from jaraco import services
-from jaraco import timing
+from tempora import timing
 from . import manage
 from . import cli
 

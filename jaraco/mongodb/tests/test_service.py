@@ -2,7 +2,7 @@ import datetime
 
 import pymongo
 import pytest
-from jaraco import timing
+from tempora import timing
 
 from jaraco.mongodb import service
 
