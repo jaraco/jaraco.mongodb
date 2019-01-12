@@ -1,3 +1,9 @@
+10.1
+====
+
+Add ``codec`` module with support for parsing dates from
+JSON input, suitable for making queries.
+
 10.0
 ====
 
