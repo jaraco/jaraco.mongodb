@@ -17,11 +17,11 @@ def pytest_addoption(parser):
 
 
 @pytest.yield_fixture(scope='session')
-def mongodb_instance():
+def mongodb_instance(request):
 	if 'pymongo' not in globals():
 		pytest.skip("pymongo not available")
 
-	params_raw = pytest.config.getoption('mongod_args') or ''
+	params_raw = request.config.getoption('mongod_args') or ''
 	params = shlex.split(params_raw)
 	try:
 		instance = service.MongoDBInstance()
