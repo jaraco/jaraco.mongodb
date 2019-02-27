@@ -41,7 +41,8 @@ def assert_distinct_covered(coll, field, query):
     """
     Ensure a distinct query is covered by an index.
     """
-    assert coll.count(), "Unable to assert without a document"
+    est = coll.estimated_document_count()
+    assert est, "Unable to assert without a document"
     db = coll.database
     res = db.command('distinct', coll.name, key=field, query=query)
     assert 'stats' in res, "Stats not supplied. Maybe SERVER-9126?"

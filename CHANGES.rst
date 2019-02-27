@@ -1,3 +1,8 @@
+10.1.2
+======
+
+Fixed DeprecationWarning in assert_distinct_covered.
+
 10.1.1
 ======
 
