@@ -1,3 +1,9 @@
+10.1.1
+======
+
+Fix a couple of deprecation warnings, including an emergent
+one on recent pytest versions.
+
 10.1
 ====
 
