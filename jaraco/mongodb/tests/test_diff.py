@@ -25,3 +25,10 @@ class TestSimpleDocs:
 		coll.update_one(dict(_id=doc['_id']), doc.distill())
 		expected = dict(num=6, new='new_value')
 		assert coll.find_one({}, projection=dict(_id=0)) == expected
+
+	def test_no_update(self, coll):
+		orig = dict(zip('ab', range(2)))
+		coll.insert_one(dict(orig))
+		doc = DD.wrap(coll).find_one({})
+		coll.update_one(dict(_id=doc['_id']), doc.distill())
+		assert coll.find_one({}, projection=dict(_id=0)) == orig

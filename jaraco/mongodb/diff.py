@@ -33,7 +33,7 @@ class Differencing:
 		Distill this object (and its children)
 		into a MongoDB update operation.
 		"""
-		return {
+		spec = {
 			'$set': {
 				key: self[key]
 				for key in self.__set
@@ -42,4 +42,10 @@ class Differencing:
 				key: 1
 				for key in self.__deleted
 			},
+		}
+		# MongoDB is bad at honoring degenerate forms, so remove them
+		return {
+			key: value
+			for key, value in spec.items()
+			if value
 		}
