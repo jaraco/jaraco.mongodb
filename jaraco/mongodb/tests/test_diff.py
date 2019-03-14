@@ -35,6 +35,11 @@ class TestSimpleDocs:
 
 
 class TestNestedDocs:
+	def test_distill_subkeys(self):
+		doc = DD(a=3, b=DD(foo='bar'))
+		doc['b']['foo'] = 'baz'
+		assert doc.distill() == {'$set': {'b.foo': 'baz'}}
+
 	def test_diff_on_nested_key(self, coll):
 		coll.insert_one(dict(a=3, b=dict(foo='bar')))
 		doc = DD.wrap(coll).find_one({})
