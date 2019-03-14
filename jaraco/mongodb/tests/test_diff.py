@@ -32,3 +32,13 @@ class TestSimpleDocs:
 		doc = DD.wrap(coll).find_one({})
 		coll.update_one(dict(_id=doc['_id']), doc.distill())
 		assert coll.find_one({}, projection=dict(_id=0)) == orig
+
+
+class TestNestedDocs:
+	def test_diff_on_nested_key(self, coll):
+		coll.insert_one(dict(a=3, b=dict(foo='bar')))
+		doc = DD.wrap(coll).find_one({})
+		doc['b']['foo'] = 'baz'
+		coll.update_one(dict(_id=doc['_id']), doc.distill())
+		expected = dict(a=3, b=dict(foo='baz'))
+		assert coll.find_one({}, projection=dict(_id=0)) == expected
