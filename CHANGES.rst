@@ -1,3 +1,11 @@
+10.2.0
+======
+
+Remove dependency on ``namespace_format`` from
+(otherwise pinned) ``jaraco.text`` and instead rely
+on ``future-fstrings`` to provide for f-strings on
+supported Python versions.
+
 10.1.3
 ======
 
