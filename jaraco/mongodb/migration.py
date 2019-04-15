@@ -1,3 +1,5 @@
+# coding: future-fstrings
+
 '''
 Migration support as features in MongoWorld 2016
 From the Polls to the Trolls.
@@ -138,6 +140,6 @@ class Manager(object):
 		try:
 			match, = matches
 		except ValueError:
-			msg = "No migration from {source_ver} to {target_ver}"
-			raise ValueError(msg.format(**locals()))
+			raise ValueError(
+				f"No migration from {source_ver} to {target_ver}")
 		return match

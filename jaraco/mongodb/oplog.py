@@ -1,3 +1,5 @@
+# coding: future-fstrings
+
 from __future__ import unicode_literals, absolute_import
 
 import argparse
@@ -424,8 +426,8 @@ def _handle(dest, op, args, num):
     try:
         args.dry_run or apply(dest, op)
     except pymongo.errors.OperationFailure as e:
-        tmpl = '{e!r} applying {nice_op}'
-        msg = tmpl.format(nice_op=NiceRepr(op), **locals())
+        nice_op = NiceRepr(op)
+        msg = f'{e!r} applying {nice_op}'
         logging.warning(msg)
 
     # Update status

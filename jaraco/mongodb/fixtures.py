@@ -1,3 +1,5 @@
+# coding: future-fstrings
+
 import shlex
 
 import pytest
@@ -30,7 +32,7 @@ def mongodb_instance(request):
 		pymongo.MongoClient(instance.get_connect_hosts())
 		yield instance
 	except Exception as err:
-		pytest.skip("MongoDB not available ({err})".format(**locals()))
+		pytest.skip(f"MongoDB not available ({err})")
 	instance.stop()
 
 

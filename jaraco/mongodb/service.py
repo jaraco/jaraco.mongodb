@@ -1,3 +1,5 @@
+# coding: future-fstrings
+
 import os
 import sys
 import tempfile
@@ -112,7 +114,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
             cmd.extend(['--bind_ip', self.bind_ip])
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
         portend.occupied('localhost', self.port, timeout=3)
-        log.info('{self} listening on {self.port}'.format(**locals()))
+        log.info(f'{self} listening on {self.port}')
 
     def get_connection(self):
         pymongo = importlib.import_module('pymongo')
@@ -122,7 +124,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         manage.purge_all_databases(self.get_connection())
 
     def get_connect_hosts(self):
-        return ['localhost:{self.port}'.format(**locals())]
+        return [f'localhost:{self.port}']
 
     def get_uri(self):
         return 'mongodb://' + ','.join(self.get_connect_hosts())
@@ -170,7 +172,7 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
 
     def start_instance(self, number):
         port = portend.find_available_local_port()
-        data_dir = os.path.join(self.data_root, 'r{number}'.format(**locals()))
+        data_dir = os.path.join(self.data_root, repr(number))
         os.mkdir(data_dir)
         cmd = [
             self.find_binary(),
@@ -181,12 +183,11 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         log_file = self.get_log(number)
         process = subprocess.Popen(cmd, stdout=log_file)
         portend.occupied('localhost', port, timeout=50)
-        log.info('{self}:{number} listening on {port}'.format(**locals()))
+        log.info(f'{self}:{number} listening on {port}')
         return InstanceInfo(data_dir, port, process, log_file)
 
     def get_log(self, number):
-        log_name = 'r{number}.log'.format(**locals())
-        log_filename = os.path.join(self.data_root, log_name)
+        log_filename = os.path.join(self.data_root, f'r{number}.log')
         log_file = open(log_filename, 'a')
         return log_file
 
@@ -210,14 +211,13 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
             members=[
                 dict(
                     _id=number,
-                    host='localhost:{instance.port}'.format(**locals()),
+                    host=f'localhost:{instance.port}',
                 ) for number, instance in enumerate(self.instances)
             ]
         )
 
     def get_connect_hosts(self):
-        return ['localhost:{instance.port}'.format(**locals())
-                for instance in self.instances]
+        return [f'localhost:{instance.port}' for instance in self.instances]
 
     def get_uri(self):
         return 'mongodb://' + ','.join(self.get_connect_hosts())
@@ -233,7 +233,7 @@ InstanceInfoBase = collections.namedtuple('InstanceInfoBase',
 
 class InstanceInfo(InstanceInfoBase):
     def connect(self):
-        hp = 'localhost:{self.port}'.format(**locals())
         pymongo = __import__('pymongo')
         rp = pymongo.ReadPreference.PRIMARY_PREFERRED
-        return pymongo.MongoClient(hp, read_preference=rp)
+        return pymongo.MongoClient(
+            f'localhost:{self.port}', read_preference=rp)

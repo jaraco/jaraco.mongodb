@@ -1,3 +1,5 @@
+# coding: future-fstrings
+
 """
 A MongoDB-backed CherryPy session store.
 
@@ -192,8 +194,7 @@ class Session(cherrypy.lib.sessions.Session):
 				break
 			time.sleep(0.1)
 		else:
-			raise LockTimeout(
-				"Timeout acquiring lock for {self.id}".format(**locals()))
+			raise LockTimeout(f"Timeout acquiring lock for {self.id}")
 		self.locked = True
 
 	def release_lock(self):

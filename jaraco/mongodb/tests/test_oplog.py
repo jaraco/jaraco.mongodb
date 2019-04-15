@@ -1,3 +1,5 @@
+# coding: future-fstrings
+
 import functools
 
 import bson
@@ -62,7 +64,7 @@ def make_replicaset(request):
 		r_set.get_connection()
 		request.addfinalizer(r_set.stop)
 	except Exception as err:
-		pytest.skip("MongoDB not available ({err})".format(**locals()))
+		pytest.skip(f"MongoDB not available ({err})")
 	return r_set
 
 
