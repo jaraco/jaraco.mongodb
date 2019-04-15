@@ -1,3 +1,8 @@
+10.1.3
+======
+
+#25: Pin dependency on jaraco.text 2.x to avoid error.
+
 10.1.2
 ======
 
