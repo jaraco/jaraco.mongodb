@@ -217,7 +217,10 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         )
 
     def get_connect_hosts(self):
-        return [f'localhost:{instance.port}' for instance in self.instances]
+        return [
+            f'localhost:{instance.port}'
+            for instance in self.instances
+        ]
 
     def get_uri(self):
         return 'mongodb://' + ','.join(self.get_connect_hosts())
