@@ -72,3 +72,15 @@ class Differencing:
 			for key, value in spec.items()
 			if value
 		}
+
+	def finalize(self):
+		"""
+		Because MongoDB performs many __setitem__ calls
+		when constructing the document from BSON, it's
+		necessary to clear self.__set after the document
+		is loaded.
+		"""
+		self.__set.clear()
+		for child in self:
+			with contextlib.suppress(AttributeError):
+				self[child].finalize()
