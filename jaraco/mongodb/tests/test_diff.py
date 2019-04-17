@@ -31,7 +31,7 @@ class TestSimpleDocs:
 		coll.insert_one(dict(orig))
 		doc = DD.wrap(coll).find_one({})
 		doc.finalize()
-		assert doc.distill() == {}
+		assert doc.distill() == doc.null_update
 		coll.update_one(dict(_id=doc['_id']), doc.distill())
 		assert coll.find_one({}, projection=dict(_id=0)) == orig
 

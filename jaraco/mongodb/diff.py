@@ -16,6 +16,13 @@ class Differencing:
 	True
 	"""
 
+	null_update = {'$setOnInsert': {'unused': 1}}
+	"""
+	As MongoDB doesn't support degenerate forms for its
+	queries, it's necessary to use this hack to indicate a
+	"null" update.
+	"""
+
 	def __init__(self, *args, **kwargs):
 		super(Differencing, self).__init__(*args, **kwargs)
 		self.__deleted = set()
@@ -71,7 +78,7 @@ class Differencing:
 			key: value
 			for key, value in spec.items()
 			if value
-		}
+		} or self.null_update
 
 	def finalize(self):
 		"""
