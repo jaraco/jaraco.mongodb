@@ -1,4 +1,9 @@
-import contextlib
+try:
+	from contextlib import suppress
+except ImportError:
+	from contextlib2 import suppress
+
+__metaclass__ = type
 
 
 class Differencing:
@@ -47,7 +52,7 @@ class Differencing:
 			if key not in self.__set and key not in self.__deleted
 		)
 		for key in children:
-			with contextlib.suppress(AttributeError):
+			with suppress(AttributeError):
 				for child_key, value in self[key]._sets():
 					yield '.'.join((key, child_key)), value
 
@@ -60,7 +65,7 @@ class Differencing:
 			if key not in self.__set and key not in self.__deleted
 		)
 		for key in children:
-			with contextlib.suppress(AttributeError):
+			with suppress(AttributeError):
 				for child_key, value in self[key]._deletes():
 					yield '.'.join((key, child_key)), value
 
@@ -89,5 +94,5 @@ class Differencing:
 		"""
 		self.__set.clear()
 		for child in self:
-			with contextlib.suppress(AttributeError):
+			with suppress(AttributeError):
 				self[child].finalize()
