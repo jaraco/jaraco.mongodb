@@ -30,6 +30,7 @@ class TestSimpleDocs:
 		orig = dict(zip('ab', range(2)))
 		coll.insert_one(dict(orig))
 		doc = DD.wrap(coll).find_one({})
+		assert doc.distill() == {}
 		coll.update_one(dict(_id=doc['_id']), doc.distill())
 		assert coll.find_one({}, projection=dict(_id=0)) == orig
 
@@ -44,6 +45,7 @@ class TestNestedDocs:
 		coll.insert_one(dict(a=3, b=dict(foo='bar')))
 		doc = DD.wrap(coll).find_one({})
 		doc['b']['foo'] = 'baz'
+		assert doc.distill() == {'$set': {'b.foo': 'baz'}}
 		coll.update_one(dict(_id=doc['_id']), doc.distill())
 		expected = dict(a=3, b=dict(foo='baz'))
 		assert coll.find_one({}, projection=dict(_id=0)) == expected
