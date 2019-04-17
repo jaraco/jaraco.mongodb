@@ -1,3 +1,6 @@
+import contextlib
+
+
 class Differencing:
 	"""
 	Mix-in for a MutableMapping to capture the differences
@@ -28,20 +31,40 @@ class Differencing:
 		self.__deleted.add(key)
 		self.__set.discard(key)
 
+	def _sets(self):
+		for key in self.__set:
+			yield key, self[key]
+		children = (
+			key
+			for key in self
+			if key not in self.__set and key not in self.__deleted
+		)
+		for key in children:
+			with contextlib.suppress(AttributeError):
+				for child_key, value in self[key]._sets():
+					yield '.'.join((key, child_key)), value
+
+	def _deletes(self):
+		for key in self.__deleted:
+			yield key, 1
+		children = (
+			key
+			for key in self
+			if key not in self.__set and key not in self.__deleted
+		)
+		for key in children:
+			with contextlib.suppress(AttributeError):
+				for child_key, value in self[key]._deletes():
+					yield '.'.join((key, child_key)), value
+
 	def distill(self):
 		"""
 		Distill this object (and its children)
 		into a MongoDB update operation.
 		"""
 		spec = {
-			'$set': {
-				key: self[key]
-				for key in self.__set
-			},
-			'$unset': {
-				key: 1
-				for key in self.__deleted
-			},
+			'$set': dict(self._sets()),
+			'$unset': dict(self._deletes()),
 		}
 		# MongoDB is bad at honoring degenerate forms, so remove them
 		return {
