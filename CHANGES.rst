@@ -1,3 +1,10 @@
+10.3.0
+======
+
+Added ``jaraco.mongodb.sampling`` with the new
+``estimate`` function for estimating the count of
+objects matching a query.
+
 10.2.0
 ======
 
