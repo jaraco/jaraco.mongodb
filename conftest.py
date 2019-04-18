@@ -1,3 +1,7 @@
+import random
+
+from six.moves import range
+
 import pytest
 
 
@@ -18,3 +22,16 @@ def database(request, mongodb_instance):
 	database = mongodb_instance.get_connection()[db_name]
 	yield database
 	database.client.drop_database(db_name)
+
+
+@pytest.fixture()
+def bulky_collection(database):
+	"""
+	Generate a semi-bulky collection with a few dozen random
+	documents.
+	"""
+	coll = database.bulky
+	for _id in range(100):
+		doc = dict(_id=_id, val=random.randint(1, 100))
+		coll.insert_one(doc)
+	return coll
