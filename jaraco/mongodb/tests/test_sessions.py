@@ -23,18 +23,18 @@ def database(request, mongodb_instance):
 
 class TestSessions(object):
     def test_time_conversion(self):
-        local_time = datetime.datetime.now().replace(
-            microsecond=0)
+        local_time = datetime.datetime.now().replace(microsecond=0)
         local_time = sessions.Session._make_aware(local_time)
         utc_aware = datetime.datetime.utcnow().replace(
-            tzinfo=dateutil.tz.tzutc(),
-            microsecond=0)
+            tzinfo=dateutil.tz.tzutc(), microsecond=0
+        )
         assert local_time == utc_aware
 
     def test_time_conversion2(self):
         local_time = datetime.datetime.now().replace(microsecond=0)
-        round_local = sessions.Session._make_local(sessions.Session._make_utc(
-            local_time))
+        round_local = sessions.Session._make_local(
+            sessions.Session._make_utc(local_time)
+        )
         assert round_local == local_time
         assert round_local.tzinfo is None
 
@@ -68,7 +68,6 @@ class TestSessions(object):
         session.save()
         session_id = session.id
         del session
-        session = sessions.Session(
-            session_id, database=database, use_modb=True)
+        session = sessions.Session(session_id, database=database, use_modb=True)
         assert 3 in session
         assert session[3] == 9

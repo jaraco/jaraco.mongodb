@@ -80,7 +80,8 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
     mongod_args = (
-        '--storageEngine', 'ephemeralForTest',
+        '--storageEngine',
+        'ephemeralForTest',
     )
 
     process_kwargs = {}
@@ -107,8 +108,10 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         self.data_dir = tempfile.mkdtemp()
         cmd = [
             self.find_binary(),
-            '--dbpath', self.data_dir,
-            '--port', str(self.port),
+            '--dbpath',
+            self.data_dir,
+            '--port',
+            str(self.port),
         ] + list(self.mongod_args)
         if hasattr(self, 'bind_ip') and '--bind_ip' not in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
@@ -141,7 +144,8 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
     mongod_parameters = (
         '--noprealloc',
         '--smallfiles',
-        '--oplogSize', '10',
+        '--oplogSize',
+        '10',
     )
 
     def start(self):
@@ -150,7 +154,8 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         self.instances = list(map(self.start_instance, range(3)))
         # initialize the replica set
         self.instances[0].connect().admin.command(
-            'replSetInitiate', self.build_config())
+            'replSetInitiate', self.build_config()
+        )
         # wait until the replica set is initialized
         get_repl_set_status = functools.partial(
             self.instances[0].connect().admin.command, 'replSetGetStatus', 1
@@ -176,9 +181,12 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         os.mkdir(data_dir)
         cmd = [
             self.find_binary(),
-            '--dbpath', data_dir,
-            '--port', str(port),
-            '--replSet', self.replica_set_name,
+            '--dbpath',
+            data_dir,
+            '--port',
+            str(port),
+            '--replSet',
+            self.replica_set_name,
         ] + list(self.mongod_parameters)
         log_file = self.get_log(number)
         process = subprocess.Popen(cmd, stdout=log_file)
@@ -193,7 +201,8 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
 
     def is_running(self):
         return hasattr(self, 'instances') and all(
-            instance.process.returncode is None for instance in self.instances)
+            instance.process.returncode is None for instance in self.instances
+        )
 
     def stop(self):
         super(MongoDBReplicaSet, self).stop()
@@ -209,18 +218,13 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         return dict(
             _id=self.replica_set_name,
             members=[
-                dict(
-                    _id=number,
-                    host=f'localhost:{instance.port}',
-                ) for number, instance in enumerate(self.instances)
-            ]
+                dict(_id=number, host=f'localhost:{instance.port}',)
+                for number, instance in enumerate(self.instances)
+            ],
         )
 
     def get_connect_hosts(self):
-        return [
-            f'localhost:{instance.port}'
-            for instance in self.instances
-        ]
+        return [f'localhost:{instance.port}' for instance in self.instances]
 
     def get_uri(self):
         return 'mongodb://' + ','.join(self.get_connect_hosts())
@@ -230,13 +234,13 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         return pymongo.MongoClient(self.get_uri())
 
 
-InstanceInfoBase = collections.namedtuple('InstanceInfoBase',
-                                          'path port process log_file')
+InstanceInfoBase = collections.namedtuple(
+    'InstanceInfoBase', 'path port process log_file'
+)
 
 
 class InstanceInfo(InstanceInfoBase):
     def connect(self):
         pymongo = __import__('pymongo')
         rp = pymongo.ReadPreference.PRIMARY_PREFERRED
-        return pymongo.MongoClient(
-            f'localhost:{self.port}', read_preference=rp)
+        return pymongo.MongoClient(f'localhost:{self.port}', read_preference=rp)

@@ -30,11 +30,16 @@ def estimate(coll, filter={}, sample=1):
         return total
     if sample <= 1:
         sample *= total
-    pipeline = list(builtins.filter(None, [
-        {'$sample': {'size': sample}} if sample < total else {},
-        {'$match': filter},
-        {'$count': 'matched'},
-    ]))
+    pipeline = list(
+        builtins.filter(
+            None,
+            [
+                {'$sample': {'size': sample}} if sample < total else {},
+                {'$match': filter},
+                {'$count': 'matched'},
+            ],
+        )
+    )
     docs = next(coll.aggregate(pipeline))
     ratio = docs['matched'] / sample
     return int(total * ratio)

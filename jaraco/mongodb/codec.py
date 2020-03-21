@@ -31,15 +31,11 @@ from jaraco.functools import compose
 
 
 def maybe_date(obj):
-	"""
-	>>> maybe_date({"$date": "2019-01-01"})
-	datetime.datetime(2019, 1, 1, 0, 0)
-	"""
-	return (
-		dateutil.parser.parse(obj['$date'])
-		if list(obj) == ['$date'] else
-		obj
-	)
+    """
+    >>> maybe_date({"$date": "2019-01-01"})
+    datetime.datetime(2019, 1, 1, 0, 0)
+    """
+    return dateutil.parser.parse(obj['$date']) if list(obj) == ['$date'] else obj
 
 
 smart_hook = compose(maybe_date, collections.OrderedDict)

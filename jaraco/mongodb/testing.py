@@ -25,10 +25,12 @@ def assert_covered(cur):
     was covered by an index.
     """
     explanation = compat_explain(cur)
-    tmpl = textwrap.dedent("""
+    tmpl = textwrap.dedent(
+        """
         Query was not covered:
         {explanation}
-        """).lstrip()
+        """
+    ).lstrip()
     report = tmpl.format(explanation=pprint.pformat(explanation))
     report += _rep_index_info(cur.collection)
     stats = explanation['executionStats']
@@ -47,10 +49,12 @@ def assert_distinct_covered(coll, field, query):
     res = db.command('distinct', coll.name, key=field, query=query)
     assert 'stats' in res, "Stats not supplied. Maybe SERVER-9126?"
     stats = res['stats']
-    tmpl = textwrap.dedent("""
+    tmpl = textwrap.dedent(
+        """
         Distinct query was not covered:
         {explanation}
-        """).lstrip()
+        """
+    ).lstrip()
     report = tmpl.format(explanation=pprint.pformat(stats))
     report += _rep_index_info(coll)
     assert stats['nscannedObjects'] == 0, report

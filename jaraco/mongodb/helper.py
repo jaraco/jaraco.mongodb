@@ -19,13 +19,11 @@ def connect(uri, factory=pymongo.MongoClient):
     """
     Use the factory to establish a connection to uri.
     """
-    warnings.warn(
-        "do not use. Just call MongoClient directly.", DeprecationWarning)
+    warnings.warn("do not use. Just call MongoClient directly.", DeprecationWarning)
     return factory(uri)
 
 
-def connect_db(
-        uri, default_db_name=None, factory=pymongo.MongoClient):
+def connect_db(uri, default_db_name=None, factory=pymongo.MongoClient):
     """
     Use pymongo to parse a uri (possibly including database name) into
     a connected database object.
@@ -67,7 +65,4 @@ def connect_gridfs(uri, db=None):
     """
     Construct a GridFS instance for a MongoDB URI.
     """
-    return gridfs.GridFS(
-        db or connect_db(uri),
-        collection=get_collection(uri) or 'fs',
-    )
+    return gridfs.GridFS(db or connect_db(uri), collection=get_collection(uri) or 'fs',)
