@@ -1,4 +1,4 @@
-dist: xenial
+dist: bionic
 language: python
 
 env:
@@ -6,23 +6,8 @@ env:
 - MONGODB_VERSION=3.6
 - MONGODB_VERSION=4.0
 python:
-- 2.7
-- 3.5
-- &latest_py3 3.7
-
-jobs:
-  fast_finish: true
-  include:
-  - stage: deploy
-    if: tag IS present
-    python: *latest_py3
-    before_script: skip
-    env:
-    - TWINE_USERNAME=jaraco
-    # TWINE_PASSWORD
-    - secure: r6Apyp3hWPgLkXBgbNWlmVoH/ObVvFQCD0SDBScUZGDzAPygA0o4sErKpb0+GFtQEKdQCGFPAnc9tTjtuTDeuM0m/flVhV8Aw+CvbH9JWyvmaLTUkkXXCMui4OeU/RF6wrXLP/an7c6tZP3CCjjDqYq22klNDJFtmbp4144Ca7BT0zUz34sGDrOHqbvJZj/qc1gG/OFIl8ChSGug0527jwHsgEwMvQGre//6wbDYMhMw/xgxjqa8rtUWsq1AT7mzWb58/+GUB08hWmqTQeAjJQdzAE6s0+5s1SrZi/njwebfR2aKKXYpQztzOPl0bKCx4O+uKNpnTr/rGOc/T3mSqw+PCi8QsmFphTs7uNFpAK200VyOwpuiZxuJwbNOhjCwsEF0L7Q6LaAuPT/ukkOMmoXsSygPzXdn0vx2FZqLb3Fvd0ia1jveuanGR22KLUzfyi1ofjtZVmuq35cxCQYZRecGj8WZSR+hhyJC1M/glMbf77Cf4FgqkvS8PrIG11xR5Z61bDEZBZmxIWmb1uGYhw3SKUJSXHrO57Mk6Wt9eRgEnjICHp+uPK3vOBxr0rM2cmG+mKo4ODAqzpRA5T5XssQ+57iG0FVKkHaSt3KvH7zcF9vu927HkRI6eIpBP+og616rnrJ9G30sEwBrcqWMQH7PhdgEoDXm6lytF5JzG0U=
-    - TOX_TESTENV_PASSENV="TWINE_USERNAME TWINE_PASSWORD"
-    script: tox -e release
+- 3.6
+- &latest_py3 3.8
 
 cache: pip
 
@@ -33,7 +18,7 @@ before_script:
   - mkdir mongodb
   - wget http://downloads.mongodb.org/linux/mongodb-linux-x86_64-v$MONGODB_VERSION-latest.tgz -q -O - | tar xz -C mongodb --strip-components=1
   - export PATH=$(pwd)/mongodb/bin:$PATH
-  # Disable IPv6. Ref travis-ci/travis-ci#8361
+  # Enable IPv6. Ref travis-ci/travis-ci#8361
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
       sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
     fi
