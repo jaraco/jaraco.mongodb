@@ -144,8 +144,6 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
     replica_set_name = 'test'
 
     mongod_parameters = (
-        '--noprealloc',
-        '--smallfiles',
         '--oplogSize',
         '10',
     )
