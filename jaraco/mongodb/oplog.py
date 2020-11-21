@@ -1,7 +1,3 @@
-# coding: future-fstrings
-
-from __future__ import unicode_literals, absolute_import
-
 import argparse
 import time
 import json
@@ -13,8 +9,6 @@ import collections
 import datetime
 
 from typing import Dict, Any
-
-import six
 
 import pkg_resources
 import jaraco.logging
@@ -566,7 +560,7 @@ class Timestamp(bson.timestamp.Timestamp):
         return cls(utcnow - window, 0)
 
 
-class ResumeFile(six.text_type):
+class ResumeFile(str):
     def save(self, ts):
         """
         Save timestamp to file.

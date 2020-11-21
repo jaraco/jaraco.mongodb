@@ -14,8 +14,6 @@ import itertools
 
 from typing import Set, Callable
 
-from six.moves import range
-
 from more_itertools import recipes
 
 

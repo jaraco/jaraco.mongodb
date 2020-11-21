@@ -13,9 +13,6 @@ honoring `Restrictions on Field Names
 '$leading dollar'
 """
 
-from __future__ import unicode_literals
-
-
 import re
 
 

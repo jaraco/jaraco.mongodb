@@ -6,8 +6,6 @@ import sys
 import logging
 import argparse
 
-from six.moves import filter, map
-
 import pymongo
 from jaraco.ui import progress
 from more_itertools.recipes import consume

@@ -24,8 +24,6 @@ import argparse
 import itertools
 import signal
 
-from six.moves import map
-
 import bson
 import dateutil.parser
 from jaraco.ui import progress

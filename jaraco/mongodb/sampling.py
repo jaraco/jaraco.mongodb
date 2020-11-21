@@ -1,6 +1,4 @@
-from __future__ import division
-
-from six.moves import builtins
+import builtins
 
 
 def estimate(coll, filter={}, sample=1):

@@ -1,5 +1,3 @@
-import six
-
 import pymongo
 
 
@@ -17,7 +15,7 @@ def project(*args, **kwargs):
     dict.
     """
     projection = dict(*args, **kwargs)
-    return {key: int(value) for key, value in six.iteritems(projection)}
+    return {key: int(value) for key, value in projection.items()}
 
 
 def compat_explain(cur):

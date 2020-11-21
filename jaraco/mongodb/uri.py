@@ -1,4 +1,4 @@
-from six.moves import urllib
+import urllib.parse
 
 import jaraco.functools
 
