@@ -12,6 +12,8 @@ a series of migration functions.
 import re
 import itertools
 
+from typing import Set, Callable
+
 from six.moves import range
 
 from more_itertools import recipes
@@ -60,7 +62,7 @@ class Manager(object):
     """
 
     version_attribute_name = 'version'
-    _upgrade_funcs = set()
+    _upgrade_funcs: Set[Callable] = set()
 
     def __init__(self, target_version):
         self.target_version = target_version

@@ -12,6 +12,8 @@ import functools
 import logging
 import datetime
 
+from typing import Dict, Any
+
 import portend
 from jaraco.services import paths
 from jaraco import services
@@ -59,7 +61,7 @@ class MongoDBFinder(paths.PathFinder):
 class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
     port = 27017
 
-    process_kwargs = {}
+    process_kwargs: Dict[str, Any] = {}
     """
     keyword arguments to Popen to control the process creation
     """
@@ -84,7 +86,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         'ephemeralForTest',
     )
 
-    process_kwargs = {}
+    process_kwargs: Dict[str, Any] = {}
     """
     keyword arguments to Popen to control the process creation
     """

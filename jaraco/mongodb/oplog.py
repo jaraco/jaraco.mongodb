@@ -12,6 +12,8 @@ import re
 import collections
 import datetime
 
+from typing import Dict, Any
+
 import six
 
 import pkg_resources
@@ -463,7 +465,7 @@ def apply(db, op):
 
 
 class Oplog(object):
-    find_params = {}
+    find_params: Dict[str, Any] = {}
 
     def __init__(self, coll):
         self.coll = coll.with_options(
