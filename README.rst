@@ -6,19 +6,13 @@
 
 .. _PyPI link: https://pypi.org/project/jaraco.mongodb
 
-.. image:: https://dev.azure.com/jaraco/jaraco.mongodb/_apis/build/status/jaraco.jaraco.mongodb?branchName=master
-   :target: https://dev.azure.com/jaraco/jaraco.mongodb/_build/latest?definitionId=1&branchName=master
-.. image:: https://img.shields.io/pypi/pyversions/jaraco.mongodb.svg
-
-.. image:: https://img.shields.io/travis/jaraco/jaraco.mongodb/master.svg
-   :target: https://travis-ci.org/jaraco/jaraco.mongodb
+.. image:: https://github.com/jaraco/skeleton/workflows/Automated%20Tests/badge.svg
+   :target: https://github.com/jaraco/skeleton/actions?query=workflow%3A%22Automated+Tests%22
+   :alt: Automated Tests
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
    :alt: Code style: Black
-
-.. .. image:: https://img.shields.io/appveyor/ci/jaraco/jaracomongodb/master.svg
-..    :target: https://ci.appveyor.com/project/jaraco/jaracomongodb/branch/master
 
 .. image:: https://readthedocs.org/projects/jaracomongodb/badge/?version=latest
    :target: https://jaracomongodb.readthedocs.io/en/latest/?badge=latest
