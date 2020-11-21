@@ -1,3 +1,12 @@
+v11.0.0
+=======
+
+Require Python 3.6 or later.
+
+#26: Removed ``--noprealloc`` and ``--smallfiles`` from
+MongoDBReplicaSet class, restoring compatibility on
+later MongoDB releases.
+
 10.3.0
 ======
 
