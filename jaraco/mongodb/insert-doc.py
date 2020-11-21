@@ -17,7 +17,9 @@ def parse_args():
         "Insert a document from stdin into the specied collection"
     )
     parser.add_argument(
-        'collection', metavar='collection_uri', type=get_collection,
+        'collection',
+        metavar='collection_uri',
+        type=get_collection,
     )
     return parser.parse_args()
 

@@ -14,7 +14,8 @@ from . import service
 
 def pytest_addoption(parser):
     parser.addoption(
-        '--mongod-args', help="Arbitrary arguments to mongod",
+        '--mongod-args',
+        help="Arbitrary arguments to mongod",
     )
 
 

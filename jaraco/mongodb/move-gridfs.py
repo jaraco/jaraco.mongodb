@@ -42,7 +42,8 @@ def get_args():
     parser.add_argument('source_gfs', type=helper.connect_gridfs)
     parser.add_argument('dest_gfs', type=helper.connect_gridfs)
     parser.add_argument(
-        '--include', help="a filter of files (regex) to include",
+        '--include',
+        help="a filter of files (regex) to include",
     )
     parser.add_argument(
         '--delete',
@@ -93,7 +94,10 @@ class FileMove:
         return self.dest_gfs._GridFS__collection
 
     def run(self, bar=progress.TargetProgressBar):
-        files = self.source_coll.files.find(self.filter, batch_size=1,)
+        files = self.source_coll.files.find(
+            self.filter,
+            batch_size=1,
+        )
         limit_files = itertools.islice(files, self.limit)
         count = min(files.count(), self.limit or float('inf'))
         progress = bar(count).iterate if bar else iter

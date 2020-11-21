@@ -218,7 +218,10 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         return dict(
             _id=self.replica_set_name,
             members=[
-                dict(_id=number, host=f'localhost:{instance.port}',)
+                dict(
+                    _id=number,
+                    host=f'localhost:{instance.port}',
+                )
                 for number, instance in enumerate(self.instances)
             ],
         )

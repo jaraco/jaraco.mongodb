@@ -65,4 +65,7 @@ def connect_gridfs(uri, db=None):
     """
     Construct a GridFS instance for a MongoDB URI.
     """
-    return gridfs.GridFS(db or connect_db(uri), collection=get_collection(uri) or 'fs',)
+    return gridfs.GridFS(
+        db or connect_db(uri),
+        collection=get_collection(uri) or 'fs',
+    )

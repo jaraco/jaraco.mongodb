@@ -104,14 +104,18 @@ class Session(cherrypy.lib.sessions.Session):
         Use pymongo TTL index to automatically expire sessions.
         """
         self.collection.create_index(
-            '_expiration_datetime', expireAfterSeconds=0,
+            '_expiration_datetime',
+            expireAfterSeconds=0,
         )
 
     def _exists(self):
         return bool(self.collection.find_one(self.id))
 
     def _load(self):
-        filter = dict(_id=self.id, _expiration_datetime={'$exists': True},)
+        filter = dict(
+            _id=self.id,
+            _expiration_datetime={'$exists': True},
+        )
         projection = dict(_id=False)
         doc = self.collection.find_one(filter, projection)
         if not doc:
@@ -148,13 +152,15 @@ class Session(cherrypy.lib.sessions.Session):
         #  it in the database.
         expiration_datetime = self._make_utc(expiration_datetime)
         data.update(
-            _expiration_datetime=expiration_datetime, _id=self.id,
+            _expiration_datetime=expiration_datetime,
+            _id=self.id,
         )
         try:
             compat.save(self.collection, data)
         except pymongo.errors.InvalidDocument:
             log.warning(
-                "Unable to save session:\n%s", pprint.pformat(data),
+                "Unable to save session:\n%s",
+                pprint.pformat(data),
             )
             raise
 

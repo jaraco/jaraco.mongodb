@@ -50,7 +50,9 @@ def parse_args(*args, **kwargs):
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument(
-        "--help", help="show usage information", action="help",
+        "--help",
+        help="show usage information",
+        action="help",
     )
 
     parser.add_argument(
@@ -62,7 +64,9 @@ def parse_args(*args, **kwargs):
     )
 
     parser.add_argument(
-        '--oplogns', default='local.oplog.rs', help="Source namespace for oplog",
+        '--oplogns',
+        default='local.oplog.rs',
+        help="Source namespace for oplog",
     )
 
     parser.add_argument(
@@ -81,7 +85,11 @@ def parse_args(*args, **kwargs):
         "--window",
         dest="start_ts",
         metavar="WINDOW",
-        type=compose(Timestamp.for_window, delta_from_seconds, pytimeparse.parse,),
+        type=compose(
+            Timestamp.for_window,
+            delta_from_seconds,
+            pytimeparse.parse,
+        ),
         help="""Time window to query, like "3 days" or "24:00"
         (24 hours, 0 minutes).""",
     )
@@ -437,7 +445,11 @@ def _handle(dest, op, args, num):
     if not num % 1000:
         args.resume_file.save(ts)
         logging.info(
-            "%s\t%s\t%s -> %s", num, ts.as_datetime(), op.get('op'), op.get('ns'),
+            "%s\t%s\t%s -> %s",
+            num,
+            ts.as_datetime(),
+            op.get('op'),
+            op.get('ns'),
         )
 
 
@@ -455,7 +467,9 @@ class Oplog(object):
 
     def __init__(self, coll):
         self.coll = coll.with_options(
-            codec_options=bson.CodecOptions(document_class=collections.OrderedDict,),
+            codec_options=bson.CodecOptions(
+                document_class=collections.OrderedDict,
+            ),
         )
 
     def get_latest_ts(self):
@@ -491,7 +505,10 @@ class Oplog(object):
 
 
 class TailingOplog(Oplog):
-    find_params = dict(cursor_type=CursorType.TAILABLE_AWAIT, oplog_replay=True,)
+    find_params = dict(
+        cursor_type=CursorType.TAILABLE_AWAIT,
+        oplog_replay=True,
+    )
 
     def since(self, ts):
         """
