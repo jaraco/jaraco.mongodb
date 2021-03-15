@@ -1,3 +1,8 @@
+v11.0.1
+=======
+
+Rely on PEP 420 for namespace package.
+
 v11.0.0
 =======
 
