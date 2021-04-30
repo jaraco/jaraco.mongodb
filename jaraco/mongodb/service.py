@@ -140,6 +140,18 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         del self.data_dir
 
 
+class ExtantInstance:
+    def __init__(self, uri):
+        self.uri = uri
+
+    def get_connection(self):
+        pymongo = importlib.import_module('pymongo')
+        return pymongo.MongoClient(self.uri)
+
+    def get_uri(self):
+        return self.uri
+
+
 class MongoDBReplicaSet(MongoDBFinder, services.Service):
     replica_set_name = 'test'
 

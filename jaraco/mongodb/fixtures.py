@@ -1,6 +1,7 @@
 # coding: future-fstrings
 
 import shlex
+import os
 
 import pytest
 
@@ -17,6 +18,10 @@ def pytest_addoption(parser):
         '--mongod-args',
         help="Arbitrary arguments to mongod",
     )
+    parser.addoption(
+        '--mongodb-uri',
+        help="URI to an extant MongoDB instance (supersedes ephemeral)",
+    )
 
 
 @pytest.yield_fixture(scope='session')
@@ -24,7 +29,19 @@ def mongodb_instance(request):
     if 'pymongo' not in globals():
         pytest.skip("pymongo not available")
 
-    params_raw = request.config.getoption('mongod_args') or ''
+    yield from _extant_instance(request.config)
+    yield from _ephemeral_instance(request.config)
+
+
+def _extant_instance(config):
+    uri = config.getoption('mongodb_uri') or os.environ.get('MONGODB_URL')
+    if not uri:
+        return
+    yield service.ExtantInstance(uri)
+
+
+def _ephemeral_instance(config):
+    params_raw = config.getoption('mongod_args') or ''
     params = shlex.split(params_raw)
     try:
         instance = service.MongoDBInstance()

@@ -1,3 +1,11 @@
+v11.1.0
+=======
+
+#22: The pytest fixture now honors ``--mongodb-uri`` or
+the environment variable ``MONGODB_URL`` to run tests
+against an existing instance of MongoDB rather than starting
+up a new one.
+
 v11.0.1
 =======
 
