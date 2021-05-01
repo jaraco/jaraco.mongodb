@@ -1,5 +1,3 @@
-# coding: future-fstrings
-
 '''
 Migration support as features in MongoWorld 2016
 From the Polls to the Trolls.

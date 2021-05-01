@@ -1,5 +1,3 @@
-# coding: future-fstrings
-
 import shlex
 import os
 

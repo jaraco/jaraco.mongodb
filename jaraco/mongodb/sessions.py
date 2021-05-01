@@ -1,5 +1,3 @@
-# coding: future-fstrings
-
 """
 A MongoDB-backed CherryPy session store.
 

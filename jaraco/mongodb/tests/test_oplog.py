@@ -1,5 +1,3 @@
-# coding: future-fstrings
-
 import functools
 
 import bson

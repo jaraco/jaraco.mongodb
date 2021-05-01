@@ -1,3 +1,8 @@
+v11.2.0
+=======
+
+Rely on native f-strings and remove dependency on future-fstrings.
+
 v11.1.0
 =======
 

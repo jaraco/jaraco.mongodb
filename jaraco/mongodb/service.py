@@ -1,5 +1,3 @@
-# coding: future-fstrings
-
 import os
 import sys
 import tempfile
