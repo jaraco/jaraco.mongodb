@@ -8,9 +8,13 @@ import re
 import collections
 import datetime
 
+try:
+    from importlib import metadata  # type: ignore
+except ImportError:
+    import importlib_metadata as metadata  # type: ignore
+
 from typing import Dict, Any
 
-import pkg_resources
 import jaraco.logging
 import pytimeparse
 from jaraco.functools import compose
@@ -334,12 +338,7 @@ def main():
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
     jaraco.logging.setup(args, format=log_format)
 
-    logging.info(
-        "{name} {version}".format(
-            name='jaraco.mongodb.oplog',
-            version=pkg_resources.require('jaraco.mongodb')[0].version,
-        )
-    )
+    logging.info(f"jaraco.mongodb.oplog {metadata.version('jaraco.mongodb')}")
     logging.info("going to connect")
 
     src = pymongo.MongoClient(args.source)
