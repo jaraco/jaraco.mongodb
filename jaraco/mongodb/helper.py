@@ -69,3 +69,15 @@ def connect_gridfs(uri, db=None):
         db or connect_db(uri),
         collection=get_collection(uri) or 'fs',
     )
+
+
+def server_version(conn):
+    """
+    >>> conn = getfixture('mongodb_instance').get_connection()
+    >>> ver = server_version(conn)
+    >>> len(ver)
+    3
+    >>> set(map(type, ver))
+    {<class 'int'>}
+    """
+    return tuple(map(int, conn.server_info()['version'].split('.')))
