@@ -22,7 +22,7 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def mongodb_instance(request):
     if 'pymongo' not in globals():
         pytest.skip("pymongo not available")
