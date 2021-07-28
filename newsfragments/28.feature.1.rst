@@ -1,0 +1,1 @@
+``oplog`` ``createIndexes`` support is now only applied on MongoDB 4.4 and later.
