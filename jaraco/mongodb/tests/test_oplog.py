@@ -77,7 +77,6 @@ def replicaset_factory(request):
 
 
 class TestOplogReplication:
-    @pytest.mark.xfail(reason="jaraco/jaraco.mongodb#27")
     def test_index_deletion(self, replicaset_factory):
         """
         A delete index operation should be able to be applied to a replica

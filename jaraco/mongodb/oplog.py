@@ -455,8 +455,28 @@ def apply(db, op):
     Apply operation in db
     """
     dbname = op['ns'].split('.')[0] or "admin"
+    _db = db[dbname]
+    return _apply_index_op(_db, op) or _apply_regular(_db, op)
+
+
+def _apply_index_op(db, op):
+    """
+    Starting with MongoDB 4.2, index operations can no longer
+    be applied. Intercept the application and transform it into
+    a normal create index operation.
+    """
+    if 'createIndexes' not in op['o']:
+        return
+    o = op['o']
+    coll_name = o['createIndexes']
+    key = list(o['key'].items())
+    name = o['name']
+    return db[coll_name].create_index(key, name=name)
+
+
+def _apply_regular(db, op):
     opts = bson.CodecOptions(uuid_representation=bson.binary.STANDARD)
-    db[dbname].command("applyOps", [op], codec_options=opts)
+    db.command("applyOps", [op], codec_options=opts)
 
 
 class Oplog(object):

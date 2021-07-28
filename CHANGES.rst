@@ -1,3 +1,9 @@
+v11.2.1
+=======
+
+#27: In oplog module, once again support createIndex operations
+even on MongoDB 4.4 and later.
+
 v11.2.0
 =======
 
