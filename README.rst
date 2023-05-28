@@ -3,8 +3,8 @@
 
 .. image:: https://img.shields.io/pypi/pyversions/jaraco.mongodb.svg
 
-.. image:: https://github.com/jaraco/skeleton/workflows/tests/badge.svg
-   :target: https://github.com/jaraco/skeleton/actions?query=workflow%3A%22tests%22
+.. image:: https://github.com/PROJECT_PATH/workflows/tests/badge.svg
+   :target: https://github.com/PROJECT_PATH/actions?query=workflow%3A%22tests%22
    :alt: tests
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
