@@ -1,12 +1,17 @@
 import json
-import re
+import pathlib
 import platform
+import re
+import tarfile
+import urllib.request
 
-import requests
+import autocommand
 
 
 def get_download_url():
-    html = requests.get('https://www.mongodb.com/try/download/community').text
+    source = 'https://www.mongodb.com/try/download/community'
+    with urllib.request.urlopen(source) as resp:
+        html = resp.read().decode('utf-8')
     server_data = re.search(
         r'<script id="server-data">\s*window\.__serverData=(.*?)\s*</script>',
         html,
@@ -30,8 +35,9 @@ def get_download_url():
     return platforms[plat_name]['tgz']
 
 
-def install():
-    print(get_download_url())
-
-
-__name__ == '__main__' and install()
+@autocommand.autocommand(__name__)
+def install(target: pathlib.Path = pathlib.Path()):
+    url = get_download_url()
+    with urllib.request.urlopen(url) as resp:
+        with tarfile.open(fileobj=resp, mode='r|*') as obj:
+            obj.extractall(target.expanduser())
