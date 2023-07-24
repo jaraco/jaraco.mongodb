@@ -56,10 +56,16 @@ jobs:
           platform: ubuntu-latest
         - python: pypy3.9
           platform: ubuntu-latest
+        # MongoDB doesn't install on Windows/Mac
+        exclude:
+        - platform: macos-latest
+        - platform: windows-latest
     runs-on: ${{ matrix.platform }}
     continue-on-error: ${{ matrix.python == '3.12' }}
     steps:
       - uses: actions/checkout@v3
+      - name: Install MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
