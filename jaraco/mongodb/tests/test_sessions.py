@@ -3,14 +3,14 @@ import datetime
 import dateutil
 import importlib
 
-import py.test
+import pytest
 
 
-py.test.importorskip("cherrypy")
+pytest.importorskip("cherrypy")
 sessions = importlib.import_module('jaraco.mongodb.sessions')
 
 
-@py.test.fixture(scope='function')
+@pytest.fixture(scope='function')
 def database(request, mongodb_instance):
     """
     Return a MongoDB database suitable for testing auth. Remove the
@@ -60,7 +60,7 @@ class TestSessions(object):
         session = sessions.Session(session_id, database=database)
         assert session['x'] == 3
 
-    @py.test.mark.xfail
+    @pytest.mark.xfail
     def test_numeric_keys(self, database):
         session = sessions.Session(None, database=database, use_modb=True)
         session.acquire_lock()

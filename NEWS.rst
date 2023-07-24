@@ -469,7 +469,7 @@ and ``MongoDBReplicaSet``.
 Allow arbitrary arguments to be included as mongodb
 args with pytest plugin. For example::
 
-    py.test --mongod-args=--storageEngine=wiredTiger
+    pytest --mongod-args=--storageEngine=wiredTiger
 
 3.13
 ====
