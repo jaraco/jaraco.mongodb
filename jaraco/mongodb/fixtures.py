@@ -49,6 +49,7 @@ def _ephemeral_instance(config):
             pymongo.MongoClient(instance.get_connect_hosts())
             yield instance
     except Exception as err:
+        raise
         pytest.skip(f"MongoDB not available ({err})")
     instance.stop()
 
