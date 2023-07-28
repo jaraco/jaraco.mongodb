@@ -5,6 +5,8 @@ import re
 import tarfile
 import urllib.request
 import posixpath
+import zipfile
+import io
 
 import autocommand
 from more_itertools import one
@@ -34,23 +36,53 @@ def get_download_url():
         ('Windows', 'ARM64'): 'Windows x64',
     }
     plat_name = lookup[(platform.system(), platform.machine())]
-    return platforms[plat_name]['tgz']
+    format = 'zip' if 'Windows' in plat_name else 'tgz'
+    return platforms[plat_name][format]
 
 
 class RootFinder(set):
     def __call__(self, info, path):
-        root, _, _ = info.name.partition(posixpath.sep)
-        self.add(root)
+        self.add(self.root(info.name))
         return info
+
+    @staticmethod
+    def root(name):
+        root, _, _ = name.partition(posixpath.sep)
+        return root
+
+    @classmethod
+    def from_names(cls, names):
+        return cls(map(cls.root, names))
+
+
+def _extract_all(resp, target):
+    desig = resp.headers['Content-Type'].lower().replace('/', '_').replace('+', '_')
+    func_name = f'_extract_{desig}'
+    return globals()[func_name](resp, target)
+
+
+def _extract_application_zip(resp, target):
+    data = io.BytesIO(resp.read())
+    with zipfile.ZipFile(data) as obj:
+        roots = RootFinder.from_names(obj.namelist())
+        obj.extractall(
+            target,
+        )
+    return roots
+
+
+def _extract_application_gzip(resp, target):
+    with tarfile.open(fileobj=resp, mode='r|*') as obj:
+        roots = RootFinder()
+        # python/typeshed#10514
+        obj.extractall(target, filter=roots)  # type: ignore
+    return roots
 
 
 def install(target: pathlib.Path = pathlib.Path()):
     url = get_download_url()
     with urllib.request.urlopen(url) as resp:
-        with tarfile.open(fileobj=resp, mode='r|*') as obj:
-            roots = RootFinder()
-            # python/typeshed#10514
-            obj.extractall(target.expanduser(), filter=roots)  # type: ignore
+        roots = _extract_all(resp, target.expanduser())
     return target.joinpath(one(roots))
 
 
