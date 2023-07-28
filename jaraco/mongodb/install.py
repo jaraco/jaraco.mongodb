@@ -4,8 +4,10 @@ import platform
 import re
 import tarfile
 import urllib.request
+import posixpath
 
 import autocommand
+from more_itertools import one
 
 
 def get_download_url():
@@ -35,9 +37,21 @@ def get_download_url():
     return platforms[plat_name]['tgz']
 
 
-@autocommand.autocommand(__name__)
+class RootFinder(set):
+    def __call__(self, info, path):
+        root, _, _ = info.name.partition(posixpath.sep)
+        self.add(root)
+        return info
+
+
 def install(target: pathlib.Path = pathlib.Path()):
     url = get_download_url()
     with urllib.request.urlopen(url) as resp:
         with tarfile.open(fileobj=resp, mode='r|*') as obj:
-            obj.extractall(target.expanduser())
+            roots = RootFinder()
+            # python/typeshed#10514
+            obj.extractall(target.expanduser(), filter=roots)  # type: ignore
+    return target.joinpath(one(roots))
+
+
+autocommand.autocommand(__name__)(install)
