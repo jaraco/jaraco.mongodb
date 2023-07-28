@@ -26,7 +26,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-    args.collection.insert(json.load(sys.stdin))
+    args.collection.insert_one(json.load(sys.stdin))
 
 
 __name__ == '__main__' and main()
