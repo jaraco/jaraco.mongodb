@@ -40,3 +40,8 @@ intersphinx_mapping = {
 
 # Preserve authored syntax for defaults
 autodoc_preserve_defaults = True
+
+intersphinx_mapping.update(
+    cherrypy=('https://docs.cherrypy.dev/en/latest/', None),
+    pymongo=('https://pymongo.readthedocs.io/en/stable/', None),
+)
