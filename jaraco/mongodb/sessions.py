@@ -60,14 +60,17 @@ class Session(cherrypy.lib.sessions.Session):
     """
     A MongoDB-backed CherryPy session store. Takes the following params:
 
-        database: the pymongo Database object.
-        collection_name: The name of the collection to use in the db.
-        codec: An object with 'encode' and 'decode' methods, used to encode
-            objects before saving them to MongoDB and decode them when loaded
-            from MongoDB.
-        lock_timeout: A timedelta or numeric seconds indicating how long
-            to block acquiring a lock. If None (default), acquiring a lock
-            will block indefinitely.
+    database: the pymongo Database object.
+
+    collection_name: The name of the collection to use in the db.
+
+    codec: An object with 'encode' and 'decode' methods, used to encode
+    objects before saving them to MongoDB and decode them when loaded
+    from MongoDB.
+
+    lock_timeout: A timedelta or numeric seconds indicating how long
+    to block acquiring a lock. If None (default), acquiring a lock
+    will block indefinitely.
     """
 
     codec = NullCodec()
