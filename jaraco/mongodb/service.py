@@ -116,7 +116,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         if hasattr(self, 'bind_ip') and '--bind_ip' not in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
-        portend.occupied('localhost', self.port, timeout=3)
+        portend.occupied('localhost', self.port, timeout=10)
         log.info(f'{self} listening on {self.port}')
 
     def get_connection(self):
