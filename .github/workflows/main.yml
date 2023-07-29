@@ -71,6 +71,12 @@ jobs:
       - name: Install tox
         run: |
           python -m pip install tox
+      # needed to run mongodb
+      # https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu-tarball/
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        if: ${{ matrix.platform == 'ubuntu-latest' }}
+        with:
+          packages: libcurl4 libgssapi-krb5-2 libldap-2.5-0 libwrap0 libsasl2-2 libsasl2-modules libsasl2-modules-gssapi-mit snmp openssl liblzma5
       - name: Run
         run: tox
 

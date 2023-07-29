@@ -9,6 +9,8 @@ import shutil
 import functools
 import logging
 import datetime
+import pathlib
+import contextlib
 
 from typing import Dict, Any
 
@@ -18,6 +20,7 @@ from jaraco import services
 from tempora import timing
 from . import manage
 from . import cli
+from . import install
 
 
 log = logging.getLogger(__name__)
@@ -54,6 +57,19 @@ class MongoDBFinder(paths.PathFinder):
     @classmethod
     def find_binary(cls):
         return os.path.join(cls.find_root(), cls.exe)
+
+    @classmethod
+    @contextlib.contextmanager
+    def ensure(cls):
+        try:
+            yield cls.find_root()
+        except RuntimeError:
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                tmp = pathlib.Path(tmp_dir)
+                root = install.install(target=tmp).joinpath('bin')
+                cls.candidate_paths.append(root)
+                yield root
+            cls.candidate_paths.remove(root)
 
 
 class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
