@@ -1,3 +1,13 @@
+v11.4.0
+=======
+
+Features
+--------
+
+- Added ``helpers.server_version``. (#28)
+- ``oplog`` ``createIndexes`` support is now only applied on MongoDB 4.4 and later. (#28)
+
+
 v11.3.0
 =======
 
