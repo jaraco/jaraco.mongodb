@@ -7,6 +7,7 @@ import bson.json_util
 import re
 import collections
 import datetime
+import operator
 
 try:
     from importlib import metadata  # type: ignore
@@ -15,12 +16,15 @@ except ImportError:
 
 from typing import Dict, Any
 
+import cachetools
 import jaraco.logging
 import pytimeparse
 from jaraco.functools import compose
 from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
 from jaraco.ui.cmdline import Extend
+
+from . import helper
 
 
 def delta_from_seconds(seconds):
@@ -456,7 +460,15 @@ def apply(db, op):
     """
     dbname = op['ns'].split('.')[0] or "admin"
     _db = db[dbname]
-    return _apply_index_op(_db, op) or _apply_regular(_db, op)
+    return _get_index_handler(db)(_db, op) or _apply_regular(_db, op)
+
+
+@cachetools.cached({}, key=operator.attrgetter('address'))
+def _get_index_handler(conn):
+    def _bypass(db, op):
+        pass
+
+    return _apply_index_op if helper.server_version(conn) >= (4, 4) else _bypass
 
 
 def _apply_index_op(db, op):
