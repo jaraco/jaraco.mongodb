@@ -56,6 +56,9 @@ jobs:
           platform: ubuntu-latest
         - python: pypy3.9
           platform: ubuntu-latest
+        exclude:
+        # Windows tests disabled due to #32
+        - platform: windows-latest
     runs-on: ${{ matrix.platform }}
     continue-on-error: ${{ matrix.python == '3.12' }}
     steps:
