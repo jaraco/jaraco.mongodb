@@ -1,3 +1,18 @@
+v11.5.0
+=======
+
+Features
+--------
+
+- Added special handling for MongoDB 7 query plan structure (#35)
+
+
+Bugfixes
+--------
+
+- Removed MongoDBInstance.mongod_args, removing default to ephemeralForTest storage engine, which no longer exists (#34)
+
+
 v11.4.1
 =======
 
