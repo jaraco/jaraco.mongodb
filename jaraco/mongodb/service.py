@@ -95,27 +95,14 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
-    mongod_args = (
-        '--storageEngine',
-        'ephemeralForTest',
-    )
-
     process_kwargs: Dict[str, Any] = {}
     """
     keyword arguments to Popen to control the process creation
     """
 
     def merge_mongod_args(self, add_args):
-        merged = list(self.mongod_args)
-
-        if any(arg.startswith('--storageEngine') for arg in add_args):
-            merged.remove('--storageEngine')
-            merged.remove('ephemeralForTest')
-
         self.port, add_args[:] = cli.extract_param('port', add_args, type=int)
-
-        merged.extend(add_args)
-        self.mongod_args = merged
+        self.mongod_args = add_args
 
     def start(self):
         super(MongoDBInstance, self).start()
