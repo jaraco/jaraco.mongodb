@@ -26,6 +26,8 @@ def get_download_url():
         'items'
     ][2]['embeddedComponents'][0]['props']['data'][0]['data'][0]
     best_version = next(ver for ver in versions if versions[ver]['meta']['current'])
+    # pin to MongoDB < 7 due to #34
+    best_version = "6.0.9"
     platforms = versions[best_version]['platforms']
     lookup = {
         ('Darwin', 'arm64'): 'macOS ARM 64',

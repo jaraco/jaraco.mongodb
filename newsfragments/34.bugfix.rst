@@ -1,0 +1,1 @@
+Pin to Mongodb 6.0.9 to prevent installation of breaking 7.0 release
