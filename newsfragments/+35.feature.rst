@@ -1,0 +1,1 @@
+Added special handling for MongoDB 7 query plan structure

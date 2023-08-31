@@ -9,12 +9,19 @@ def _rep_index_info(coll):
     return "Indexes are:\n" + pprint.pformat(index_info)
 
 
+def _mongo7_query_plan(plan):
+    """
+    On MongoDB 7, the query plan is found in a separate field.
+    """
+    return plan.get('queryPlan', plan)
+
+
 def assert_index_used(cur):
     """
     Explain the cursor and ensure that the index was used.
     """
     explanation = compat_explain(cur)
-    plan = explanation['queryPlanner']['winningPlan']
+    plan = _mongo7_query_plan(explanation['queryPlanner']['winningPlan'])
     assert plan['stage'] != 'COLLSCAN'
     assert plan['inputStage']['stage'] == 'IXSCAN'
 
