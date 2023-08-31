@@ -1,3 +1,12 @@
+v11.4.1
+=======
+
+Bugfixes
+--------
+
+- Pin to Mongodb 6.0.9 to prevent installation of breaking 7.0 release (#34)
+
+
 v11.4.0
 =======
 
