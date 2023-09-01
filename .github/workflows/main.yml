@@ -36,6 +36,8 @@ env:
   # Must be "1".
   TOX_PARALLEL_NO_SPINNER: 1
 
+  PYTHONUNBUFFERED: 1
+
 
 jobs:
   test:
