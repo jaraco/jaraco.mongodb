@@ -11,6 +11,7 @@ import logging
 import datetime
 import pathlib
 import contextlib
+import platform
 
 from typing import Dict, Any
 
@@ -104,6 +105,23 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         self.port, add_args[:] = cli.extract_param('port', add_args, type=int)
         self.mongod_args = add_args
 
+    @property
+    def _startup_timeout(self):
+        """
+        Calculate a platform-specific timeout to await MongoDB to start.
+
+        On GitHub Actions on Windows, MongoDB takes forever to
+        start, takes a bit longer on macOS, but starts up fast locally
+        and on other platforms.
+        """
+        GHA = bool(os.environ.get('GITHUB_ACTIONS'))
+        platform_multipliers = dict(
+            Windows=40,
+            Darwin=3,
+        )
+        multiplier = platform_multipliers.get(platform.system(), 1)
+        return 3 * multiplier**GHA
+
     def start(self):
         super(MongoDBInstance, self).start()
         if not hasattr(self, 'port') or not self.port:
@@ -119,7 +137,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         if hasattr(self, 'bind_ip') and '--bind_ip' not in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
-        portend.occupied('localhost', self.port, timeout=10)
+        portend.occupied('localhost', self.port, timeout=self._startup_timeout)
         log.info(f'{self} listening on {self.port}')
 
     def get_connection(self):

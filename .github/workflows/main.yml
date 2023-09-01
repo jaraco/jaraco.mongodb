@@ -26,6 +26,8 @@ env:
     PY_COLORS
     PYTEST_THEME
     PYTEST_THEME_MODE
+    GITHUB_*
+    RUNNER_*
 
   # Suppress noisy pip warnings
   PIP_DISABLE_PIP_VERSION_CHECK: 'true'
@@ -56,9 +58,6 @@ jobs:
           platform: ubuntu-latest
         - python: pypy3.9
           platform: ubuntu-latest
-        exclude:
-        # Windows tests disabled due to #32
-        - platform: windows-latest
     runs-on: ${{ matrix.platform }}
     continue-on-error: ${{ matrix.python == '3.12' }}
     steps:
