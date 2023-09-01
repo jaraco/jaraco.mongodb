@@ -123,7 +123,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         print('running', cmd)
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
         try:
-            portend.occupied('localhost', self.port, timeout=60)
+            portend.occupied('localhost', self.port, timeout=120)
         except Exception:
             print(self.process.returncode)
             raise
