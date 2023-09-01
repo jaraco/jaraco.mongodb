@@ -2,25 +2,8 @@
 Helper functions to augment PyMongo
 """
 
-import warnings
-
 import pymongo
 import gridfs
-
-
-def filter_warnings():
-    warnings.warn(
-        "filter_warnings is deprecated and has no effect; do not call",
-        DeprecationWarning,
-    )
-
-
-def connect(uri, factory=pymongo.MongoClient):
-    """
-    Use the factory to establish a connection to uri.
-    """
-    warnings.warn("do not use. Just call MongoClient directly.", DeprecationWarning)
-    return factory(uri)
 
 
 def connect_db(uri, default_db_name=None, factory=pymongo.MongoClient):
@@ -66,7 +49,7 @@ def connect_gridfs(uri, db=None):
     Construct a GridFS instance for a MongoDB URI.
     """
     return gridfs.GridFS(
-        db or connect_db(uri),
+        db or pymongo.MongoClient(uri).get_database(),
         collection=get_collection(uri) or 'fs',
     )
 
