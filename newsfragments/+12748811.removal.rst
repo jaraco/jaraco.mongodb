@@ -1,0 +1,6 @@
+Require pymongo 3.5.
+
+Dropped deprecated methods in helper:
+
+    - ``helper.filter_warnings``
+    - ``helper.connect``

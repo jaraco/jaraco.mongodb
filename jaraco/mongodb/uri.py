@@ -1,4 +1,4 @@
-from six.moves import urllib
+import urllib.parse
 
 import jaraco.functools
 
@@ -14,8 +14,8 @@ def _add_scheme():
         urllib.parse.uses_netloc,
         urllib.parse.uses_query,
     ]
-    for l in lists:
-        l.append('mongodb')
+    for each in lists:
+        each.append('mongodb')
 
 
 def join(base, new):

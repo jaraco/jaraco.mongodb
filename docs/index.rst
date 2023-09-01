@@ -1,5 +1,9 @@
-Welcome to jaraco.mongodb documentation!
-========================================
+Welcome to |project| documentation!
+===================================
+
+.. sidebar-links::
+   :home:
+   :pypi:
 
 .. toctree::
    :maxdepth: 1
@@ -8,6 +12,11 @@ Welcome to jaraco.mongodb documentation!
 
 
 .. automodule:: jaraco.mongodb
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: jaraco.mongodb.codec
     :members:
     :undoc-members:
     :show-inheritance:

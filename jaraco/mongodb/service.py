@@ -9,13 +9,19 @@ import shutil
 import functools
 import logging
 import datetime
+import pathlib
+import contextlib
+import platform
+
+from typing import Dict, Any
 
 import portend
 from jaraco.services import paths
 from jaraco import services
-from jaraco import timing
+from tempora import timing
 from . import manage
 from . import cli
+from . import install
 
 
 log = logging.getLogger(__name__)
@@ -53,11 +59,24 @@ class MongoDBFinder(paths.PathFinder):
     def find_binary(cls):
         return os.path.join(cls.find_root(), cls.exe)
 
+    @classmethod
+    @contextlib.contextmanager
+    def ensure(cls):
+        try:
+            yield cls.find_root()
+        except RuntimeError:
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                tmp = pathlib.Path(tmp_dir)
+                root = install.install(target=tmp).joinpath('bin')
+                cls.candidate_paths.append(root)
+                yield root
+            cls.candidate_paths.remove(root)
+
 
 class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
     port = 27017
 
-    process_kwargs = {}
+    process_kwargs: Dict[str, Any] = {}
     """
     keyword arguments to Popen to control the process creation
     """
@@ -77,26 +96,31 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
-    mongod_args = (
-        '--storageEngine', 'ephemeralForTest',
-    )
-
-    process_kwargs = {}
+    process_kwargs: Dict[str, Any] = {}
     """
     keyword arguments to Popen to control the process creation
     """
 
     def merge_mongod_args(self, add_args):
-        merged = list(self.mongod_args)
-
-        if any(arg.startswith('--storageEngine') for arg in add_args):
-            merged.remove('--storageEngine')
-            merged.remove('ephemeralForTest')
-
         self.port, add_args[:] = cli.extract_param('port', add_args, type=int)
+        self.mongod_args = add_args
 
-        merged.extend(add_args)
-        self.mongod_args = merged
+    @property
+    def _startup_timeout(self):
+        """
+        Calculate a platform-specific timeout to await MongoDB to start.
+
+        On GitHub Actions on Windows, MongoDB takes forever to
+        start, takes a bit longer on macOS, but starts up fast locally
+        and on other platforms.
+        """
+        GHA = bool(os.environ.get('GITHUB_ACTIONS'))
+        platform_multipliers = dict(
+            Windows=40,
+            Darwin=3,
+        )
+        multiplier = platform_multipliers.get(platform.system(), 1)
+        return 3 * multiplier**GHA
 
     def start(self):
         super(MongoDBInstance, self).start()
@@ -105,14 +129,16 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         self.data_dir = tempfile.mkdtemp()
         cmd = [
             self.find_binary(),
-            '--dbpath', self.data_dir,
-            '--port', str(self.port),
+            '--dbpath',
+            self.data_dir,
+            '--port',
+            str(self.port),
         ] + list(self.mongod_args)
         if hasattr(self, 'bind_ip') and '--bind_ip' not in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
-        portend.occupied('localhost', self.port, timeout=3)
-        log.info('{self} listening on {self.port}'.format(**locals()))
+        portend.occupied('localhost', self.port, timeout=self._startup_timeout)
+        log.info(f'{self} listening on {self.port}')
 
     def get_connection(self):
         pymongo = importlib.import_module('pymongo')
@@ -122,7 +148,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         manage.purge_all_databases(self.get_connection())
 
     def get_connect_hosts(self):
-        return ['localhost:{self.port}'.format(**locals())]
+        return [f'localhost:{self.port}']
 
     def get_uri(self):
         return 'mongodb://' + ','.join(self.get_connect_hosts())
@@ -133,13 +159,24 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         del self.data_dir
 
 
+class ExtantInstance:
+    def __init__(self, uri):
+        self.uri = uri
+
+    def get_connection(self):
+        pymongo = importlib.import_module('pymongo')
+        return pymongo.MongoClient(self.uri)
+
+    def get_uri(self):
+        return self.uri
+
+
 class MongoDBReplicaSet(MongoDBFinder, services.Service):
     replica_set_name = 'test'
 
     mongod_parameters = (
-        '--noprealloc',
-        '--smallfiles',
-        '--oplogSize', '10',
+        '--oplogSize',
+        '10',
     )
 
     def start(self):
@@ -148,7 +185,8 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         self.instances = list(map(self.start_instance, range(3)))
         # initialize the replica set
         self.instances[0].connect().admin.command(
-            'replSetInitiate', self.build_config())
+            'replSetInitiate', self.build_config()
+        )
         # wait until the replica set is initialized
         get_repl_set_status = functools.partial(
             self.instances[0].connect().admin.command, 'replSetGetStatus', 1
@@ -170,29 +208,32 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
 
     def start_instance(self, number):
         port = portend.find_available_local_port()
-        data_dir = os.path.join(self.data_root, 'r{number}'.format(**locals()))
+        data_dir = os.path.join(self.data_root, repr(number))
         os.mkdir(data_dir)
         cmd = [
             self.find_binary(),
-            '--dbpath', data_dir,
-            '--port', str(port),
-            '--replSet', self.replica_set_name,
+            '--dbpath',
+            data_dir,
+            '--port',
+            str(port),
+            '--replSet',
+            self.replica_set_name,
         ] + list(self.mongod_parameters)
         log_file = self.get_log(number)
         process = subprocess.Popen(cmd, stdout=log_file)
         portend.occupied('localhost', port, timeout=50)
-        log.info('{self}:{number} listening on {port}'.format(**locals()))
+        log.info(f'{self}:{number} listening on {port}')
         return InstanceInfo(data_dir, port, process, log_file)
 
     def get_log(self, number):
-        log_name = 'r{number}.log'.format(**locals())
-        log_filename = os.path.join(self.data_root, log_name)
+        log_filename = os.path.join(self.data_root, f'r{number}.log')
         log_file = open(log_filename, 'a')
         return log_file
 
     def is_running(self):
         return hasattr(self, 'instances') and all(
-            instance.process.returncode is None for instance in self.instances)
+            instance.process.returncode is None for instance in self.instances
+        )
 
     def stop(self):
         super(MongoDBReplicaSet, self).stop()
@@ -210,14 +251,14 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
             members=[
                 dict(
                     _id=number,
-                    host='localhost:{instance.port}'.format(**locals()),
-                ) for number, instance in enumerate(self.instances)
-            ]
+                    host=f'localhost:{instance.port}',
+                )
+                for number, instance in enumerate(self.instances)
+            ],
         )
 
     def get_connect_hosts(self):
-        return ['localhost:{instance.port}'.format(**locals())
-                for instance in self.instances]
+        return [f'localhost:{instance.port}' for instance in self.instances]
 
     def get_uri(self):
         return 'mongodb://' + ','.join(self.get_connect_hosts())
@@ -227,13 +268,13 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         return pymongo.MongoClient(self.get_uri())
 
 
-InstanceInfoBase = collections.namedtuple('InstanceInfoBase',
-                                          'path port process log_file')
+InstanceInfoBase = collections.namedtuple(
+    'InstanceInfoBase', 'path port process log_file'
+)
 
 
 class InstanceInfo(InstanceInfoBase):
     def connect(self):
-        hp = 'localhost:{self.port}'.format(**locals())
         pymongo = __import__('pymongo')
         rp = pymongo.ReadPreference.PRIMARY_PREFERRED
-        return pymongo.MongoClient(hp, read_preference=rp)
+        return pymongo.MongoClient(f'localhost:{self.port}', read_preference=rp)

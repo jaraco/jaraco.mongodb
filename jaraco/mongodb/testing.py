@@ -9,16 +9,35 @@ def _rep_index_info(coll):
     return "Indexes are:\n" + pprint.pformat(index_info)
 
 
+def _mongo7_query_plan(plan):
+    """
+    On MongoDB 7, the query plan is found in a separate field.
+    """
+    return plan.get('queryPlan', plan)
+
+
+def assert_index_used(cur):
+    """
+    Explain the cursor and ensure that the index was used.
+    """
+    explanation = compat_explain(cur)
+    plan = _mongo7_query_plan(explanation['queryPlanner']['winningPlan'])
+    assert plan['stage'] != 'COLLSCAN'
+    assert plan['inputStage']['stage'] == 'IXSCAN'
+
+
 def assert_covered(cur):
     """
     Use the best knowledge about Cursor.explain() to ensure that the query
     was covered by an index.
     """
     explanation = compat_explain(cur)
-    tmpl = textwrap.dedent("""
+    tmpl = textwrap.dedent(
+        """
         Query was not covered:
         {explanation}
-        """).lstrip()
+        """
+    ).lstrip()
     report = tmpl.format(explanation=pprint.pformat(explanation))
     report += _rep_index_info(cur.collection)
     stats = explanation['executionStats']
@@ -31,15 +50,18 @@ def assert_distinct_covered(coll, field, query):
     """
     Ensure a distinct query is covered by an index.
     """
-    assert coll.count(), "Unable to assert without a document"
+    est = coll.estimated_document_count()
+    assert est, "Unable to assert without a document"
     db = coll.database
     res = db.command('distinct', coll.name, key=field, query=query)
     assert 'stats' in res, "Stats not supplied. Maybe SERVER-9126?"
     stats = res['stats']
-    tmpl = textwrap.dedent("""
+    tmpl = textwrap.dedent(
+        """
         Distinct query was not covered:
         {explanation}
-        """).lstrip()
+        """
+    ).lstrip()
     report = tmpl.format(explanation=pprint.pformat(stats))
     report += _rep_index_info(coll)
     assert stats['nscannedObjects'] == 0, report

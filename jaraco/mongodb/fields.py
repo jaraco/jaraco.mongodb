@@ -13,22 +13,19 @@ honoring `Restrictions on Field Names
 '$leading dollar'
 """
 
-from __future__ import unicode_literals
-
-
 import re
 
 
 def encode(text):
-	text = text.replace('\\', '\\\\')
-	text = re.sub(r'^\$', '\\$', text)
-	return text.replace('.', '\\D')
+    text = text.replace('\\', '\\\\')
+    text = re.sub(r'^\$', '\\$', text)
+    return text.replace('.', '\\D')
 
 
 def unescape(match):
-	char = match.group(1)
-	return '.' if char == 'D' else char
+    char = match.group(1)
+    return '.' if char == 'D' else char
 
 
 def decode(encoded):
-	return re.sub(r'\\(.)', unescape, encoded)
+    return re.sub(r'\\(.)', unescape, encoded)

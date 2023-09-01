@@ -1,13 +1,143 @@
+v11.5.0
+=======
+
+Features
+--------
+
+- Added special handling for MongoDB 7 query plan structure (#35)
+
+
+Bugfixes
+--------
+
+- Removed MongoDBInstance.mongod_args, removing default to ephemeralForTest storage engine, which no longer exists (#34)
+
+
+v11.4.1
+=======
+
+Bugfixes
+--------
+
+- Pin to Mongodb 6.0.9 to prevent installation of breaking 7.0 release (#34)
+
+
+v11.4.0
+=======
+
+Features
+--------
+
+- Added ``helpers.server_version``. (#28)
+- ``oplog`` ``createIndexes`` support is now only applied on MongoDB 4.4 and later. (#28)
+
+
+v11.3.0
+=======
+
+Features
+--------
+
+- Require Python 3.8 or later.
+
+
+v11.2.1
+=======
+
+#27: In oplog module, once again support createIndex operations
+even on MongoDB 4.4 and later.
+
+``mongodb_instance`` now uses preferred simple ``fixture``
+instead of deprecated ``yield_fixture``.
+
+v11.2.0
+=======
+
+Rely on native f-strings and remove dependency on future-fstrings.
+
+v11.1.0
+=======
+
+#22: The pytest fixture now honors ``--mongodb-uri`` or
+the environment variable ``MONGODB_URL`` to run tests
+against an existing instance of MongoDB rather than starting
+up a new one.
+
+v11.0.1
+=======
+
+Rely on PEP 420 for namespace package.
+
+v11.0.0
+=======
+
+Require Python 3.6 or later.
+
+#26: Removed ``--noprealloc`` and ``--smallfiles`` from
+MongoDBReplicaSet class, restoring compatibility on
+later MongoDB releases.
+
+10.3.0
+======
+
+Added ``jaraco.mongodb.sampling`` with the new
+``estimate`` function for estimating the count of
+objects matching a query.
+
+10.2.0
+======
+
+Remove dependency on ``namespace_format`` from
+(otherwise pinned) ``jaraco.text`` and instead rely
+on ``future-fstrings`` to provide for f-strings on
+supported Python versions.
+
+10.1.3
+======
+
+#25: Pin dependency on jaraco.text 2.x to avoid error.
+
+10.1.2
+======
+
+Fixed DeprecationWarning in assert_distinct_covered.
+
+10.1.1
+======
+
+Fix a couple of deprecation warnings, including an emergent
+one on recent pytest versions.
+
+10.1
+====
+
+Add ``codec`` module with support for parsing dates from
+JSON input, suitable for making queries.
+
 10.0
 ====
 
-Require pymongo 3.5.
+Switch to `pkgutil namespace technique
+<https://packaging.python.org/guides/packaging-namespace-packages/#pkgutil-style-namespace-packages>`_
+for the ``jaraco`` namespace.
 
-Drop deprecated methods in helper:
+9.4
+===
 
-    - ``helper.filter_warnings``
-    - ``helper.connect``
-    - ``helper.connect_db``
+``create_database_in_shard`` now also reports the 'nodes'
+on which the database was created.
+
+9.3
+===
+
+Added ``testing.assert_index_used`` function.
+
+9.2.1
+=====
+
+Removed deprecation of ``helper.connect_db``, as the
+upstream implementation still doesn't provide for a
+nice 'default'.
 
 9.2
 ===
@@ -382,7 +512,7 @@ and ``MongoDBReplicaSet``.
 Allow arbitrary arguments to be included as mongodb
 args with pytest plugin. For example::
 
-    py.test --mongod-args=--storageEngine=wiredTiger
+    pytest --mongod-args=--storageEngine=wiredTiger
 
 3.13
 ====

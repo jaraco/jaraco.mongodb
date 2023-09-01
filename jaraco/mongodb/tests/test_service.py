@@ -2,11 +2,12 @@ import datetime
 
 import pymongo
 import pytest
-from jaraco import timing
+from tempora import timing
 
 from jaraco.mongodb import service
 
 
+@pytest.mark.xfail(reason="#31")
 def test_MongoDBReplicaSet_writable():
     rs = service.MongoDBReplicaSet()
     rs.start()

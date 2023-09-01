@@ -3,14 +3,23 @@
 
 .. image:: https://img.shields.io/pypi/pyversions/jaraco.mongodb.svg
 
-.. image:: https://img.shields.io/travis/jaraco/jaraco.mongodb/master.svg
-   :target: https://travis-ci.org/jaraco/jaraco.mongodb
+.. image:: https://github.com/PROJECT_PATH/workflows/tests/badge.svg
+   :target: https://github.com/PROJECT_PATH/actions?query=workflow%3A%22tests%22
+   :alt: tests
 
-.. .. image:: https://img.shields.io/appveyor/ci/jaraco/jaracomongodb/master.svg
-..    :target: https://ci.appveyor.com/project/jaraco/jaracomongodb/branch/master
+.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json
+    :target: https://github.com/astral-sh/ruff
+    :alt: Ruff
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+   :alt: Code style: Black
 
 .. image:: https://readthedocs.org/projects/jaracomongodb/badge/?version=latest
    :target: https://jaracomongodb.readthedocs.io/en/latest/?badge=latest
+
+.. image:: https://img.shields.io/badge/skeleton-2023-informational
+   :target: https://blog.jaraco.com/skeleton
 
 Migration Manager
 =================
@@ -18,8 +27,8 @@ Migration Manager
 ``jaraco.mongodb.migration`` implements the Migration Manager as featured
 at the `MongoWorld 2016 <https://www.mongodb.com/world16>`_ presentation
 `From the Polls to the Trolls
-<https://rawgit.com/yougov/mongoworld-2016/merged/index.html>`_. Use
-it to load documents of various schema versions into a target version that
+<https://combinatronics.com/yougov/mongoworld-2016/merged/index.html#/>`_.
+Use it to load documents of various schema versions into a target version that
 your application expects.
 
 sessions

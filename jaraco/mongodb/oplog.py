@@ -1,5 +1,3 @@
-from __future__ import unicode_literals, absolute_import
-
 import argparse
 import time
 import json
@@ -9,16 +7,24 @@ import bson.json_util
 import re
 import collections
 import datetime
+import operator
 
-import six
+try:
+    from importlib import metadata  # type: ignore
+except ImportError:
+    import importlib_metadata as metadata  # type: ignore
 
-import pkg_resources
+from typing import Dict, Any
+
+import cachetools
 import jaraco.logging
 import pytimeparse
 from jaraco.functools import compose
 from pymongo.cursor import CursorType
 from jaraco.itertools import always_iterable
 from jaraco.ui.cmdline import Extend
+
+from . import helper
 
 
 def delta_from_seconds(seconds):
@@ -42,8 +48,10 @@ def parse_args(*args, **kwargs):
     >>> renames = parse_args(['--rename', 'a=b', '--rename', 'b=c']).rename
     >>> len(renames)
     2
+
+    "..." below should be "jaraco." but for pytest-dev/pytest#3396
     >>> type(renames)
-    <class 'jaraco.mongodb.oplog.Renamer'>
+    <class '...mongodb.oplog.Renamer'>
     """
     parser = argparse.ArgumentParser(add_help=False)
 
@@ -54,19 +62,22 @@ def parse_args(*args, **kwargs):
     )
 
     parser.add_argument(
-        "--source", metavar="host[:port]",
+        "--source",
+        metavar="host[:port]",
         help="""Hostname of the mongod server from which oplog
         operations are going to be pulled. Called "--from"
         in mongooplog.""",
     )
 
     parser.add_argument(
-        '--oplogns', default='local.oplog.rs',
+        '--oplogns',
+        default='local.oplog.rs',
         help="Source namespace for oplog",
     )
 
     parser.add_argument(
-        "--dest", metavar="host[:port]",
+        "--dest",
+        metavar="host[:port]",
         help="""
         Hostname of the mongod server (or replica set as
         <set name>/s1,s2) to which oplog operations
@@ -76,7 +87,8 @@ def parse_args(*args, **kwargs):
     )
 
     parser.add_argument(
-        "-w", "--window",
+        "-w",
+        "--window",
         dest="start_ts",
         metavar="WINDOW",
         type=compose(
@@ -89,7 +101,9 @@ def parse_args(*args, **kwargs):
     )
 
     parser.add_argument(
-        "-f", "--follow", action="store_true",
+        "-f",
+        "--follow",
+        action="store_true",
         help="""Wait for new data in oplog. Makes the utility
         polling oplog forever (until interrupted). New data
         is going to be applied immediately with at most one
@@ -97,7 +111,9 @@ def parse_args(*args, **kwargs):
     )
 
     parser.add_argument(
-        "--ns", nargs="*", default=[],
+        "--ns",
+        nargs="*",
+        default=[],
         action=Extend,
         help="""Process only these namespaces, ignoring all others.
         Space separated list of strings in form of ``dname``
@@ -106,7 +122,10 @@ def parse_args(*args, **kwargs):
     )
 
     parser.add_argument(
-        "-x", "--exclude", nargs="*", default=[],
+        "-x",
+        "--exclude",
+        nargs="*",
+        default=[],
         action=Extend,
         help="""List of space separated namespaces which should be
         ignored. Can be in form of ``dname`` or ``dbname.collection``.
@@ -115,7 +134,9 @@ def parse_args(*args, **kwargs):
     )
 
     parser.add_argument(
-        "--rename", nargs="*", default=[],
+        "--rename",
+        nargs="*",
+        default=[],
         metavar="ns_old=ns_new",
         type=RenameSpec.from_spec,
         action=Extend,
@@ -128,7 +149,8 @@ def parse_args(*args, **kwargs):
     )
 
     parser.add_argument(
-        "--dry-run", default=False,
+        "--dry-run",
+        default=False,
         action="store_true",
         help="Suppress application of ops.",
     )
@@ -199,10 +221,8 @@ class RenameSpec(object):
         db, sep, coll = ns.partition('.')
         return (
             op.get('op') == 'c'
-            and
-            op['ns'] == db + '.$cmd'
-            and
-            op['o'].get('create', None) == coll
+            and op['ns'] == db + '.$cmd'
+            and op['o'].get('create', None) == coll
         )
 
     @staticmethod
@@ -213,15 +233,12 @@ class RenameSpec(object):
             and (
                 # seems command can happen in admin or the db
                 op['ns'] == 'admin.$cmd'
-                or
-                op['ns'] == db + '.$cmd'
+                or op['ns'] == db + '.$cmd'
             )
-            and
-            'renameCollection' in op['o']
+            and 'renameCollection' in op['o']
             and (
                 op['o']['renameCollection'].startswith(ns)
-                or
-                op['o']['to'].startswith(ns)
+                or op['o']['to'].startswith(ns)
             )
         )
 
@@ -263,6 +280,7 @@ class Renamer(list):
         """
         for rename in self:
             rename(op)
+
     __call__ = invoke
 
     @classmethod
@@ -297,10 +315,7 @@ def _full_rename(args):
     Return True only if the arguments passed specify exact namespaces
     and to conduct a rename of every namespace.
     """
-    return (
-        args.ns and
-        all(map(args.rename.affects, args.ns))
-    )
+    return args.ns and all(map(args.rename.affects, args.ns))
 
 
 def _resolve_shard(client):
@@ -327,10 +342,7 @@ def main():
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
     jaraco.logging.setup(args, format=log_format)
 
-    logging.info("{name} {version}".format(
-        name='jaraco.mongodb.oplog',
-        version=pkg_resources.require('jaraco.mongodb')[0].version,
-    ))
+    logging.info(f"jaraco.mongodb.oplog {metadata.version('jaraco.mongodb')}")
     logging.info("going to connect")
 
     src = pymongo.MongoClient(args.source)
@@ -339,7 +351,8 @@ def main():
     if dest and _same_instance(src, dest) and not _full_rename(args):
         logging.error(
             "source and destination hosts can be the same only "
-            "when both --ns and --rename arguments are given")
+            "when both --ns and --rename arguments are given"
+        )
         raise SystemExit(1)
 
     logging.info("connected")
@@ -376,9 +389,9 @@ def main():
 
 def applies_to_ns(op, ns):
     return (
-        op['ns'].startswith(ns) or
-        RenameSpec._matching_create_command(op, ns) or
-        RenameSpec._matching_renameCollection_command(op, ns)
+        op['ns'].startswith(ns)
+        or RenameSpec._matching_create_command(op, ns)
+        or RenameSpec._matching_renameCollection_command(op, ns)
     )
 
 
@@ -424,8 +437,8 @@ def _handle(dest, op, args, num):
     try:
         args.dry_run or apply(dest, op)
     except pymongo.errors.OperationFailure as e:
-        tmpl = '{e!r} applying {nice_op}'
-        msg = tmpl.format(nice_op=NiceRepr(op), **locals())
+        nice_op = NiceRepr(op)
+        msg = f'{e!r} applying {nice_op}'
         logging.warning(msg)
 
     # Update status
@@ -434,7 +447,8 @@ def _handle(dest, op, args, num):
         args.resume_file.save(ts)
         logging.info(
             "%s\t%s\t%s -> %s",
-            num, ts.as_datetime(),
+            num,
+            ts.as_datetime(),
             op.get('op'),
             op.get('ns'),
         )
@@ -445,12 +459,40 @@ def apply(db, op):
     Apply operation in db
     """
     dbname = op['ns'].split('.')[0] or "admin"
+    _db = db[dbname]
+    return _get_index_handler(db)(_db, op) or _apply_regular(_db, op)
+
+
+@cachetools.cached({}, key=operator.attrgetter('address'))
+def _get_index_handler(conn):
+    def _bypass(db, op):
+        pass
+
+    return _apply_index_op if helper.server_version(conn) >= (4, 4) else _bypass
+
+
+def _apply_index_op(db, op):
+    """
+    Starting with MongoDB 4.2, index operations can no longer
+    be applied. Intercept the application and transform it into
+    a normal create index operation.
+    """
+    if 'createIndexes' not in op['o']:
+        return
+    o = op['o']
+    coll_name = o['createIndexes']
+    key = list(o['key'].items())
+    name = o['name']
+    return db[coll_name].create_index(key, name=name)
+
+
+def _apply_regular(db, op):
     opts = bson.CodecOptions(uuid_representation=bson.binary.STANDARD)
-    db[dbname].command("applyOps", [op], codec_options=opts)
+    db.command("applyOps", [op], codec_options=opts)
 
 
 class Oplog(object):
-    find_params = {}
+    find_params: Dict[str, Any] = {}
 
     def __init__(self, coll):
         self.coll = coll.with_options(
@@ -551,7 +593,7 @@ class Timestamp(bson.timestamp.Timestamp):
         return cls(utcnow - window, 0)
 
 
-class ResumeFile(six.text_type):
+class ResumeFile(str):
     def save(self, ts):
         """
         Save timestamp to file.

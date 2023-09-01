@@ -3,14 +3,14 @@ import datetime
 import dateutil
 import importlib
 
-import py.test
+import pytest
 
 
-py.test.importorskip("cherrypy")
+pytest.importorskip("cherrypy")
 sessions = importlib.import_module('jaraco.mongodb.sessions')
 
 
-@py.test.fixture(scope='function')
+@pytest.fixture(scope='function')
 def database(request, mongodb_instance):
     """
     Return a MongoDB database suitable for testing auth. Remove the
@@ -23,18 +23,18 @@ def database(request, mongodb_instance):
 
 class TestSessions(object):
     def test_time_conversion(self):
-        local_time = datetime.datetime.now().replace(
-            microsecond=0)
+        local_time = datetime.datetime.now().replace(microsecond=0)
         local_time = sessions.Session._make_aware(local_time)
         utc_aware = datetime.datetime.utcnow().replace(
-            tzinfo=dateutil.tz.tzutc(),
-            microsecond=0)
+            tzinfo=dateutil.tz.tzutc(), microsecond=0
+        )
         assert local_time == utc_aware
 
     def test_time_conversion2(self):
         local_time = datetime.datetime.now().replace(microsecond=0)
-        round_local = sessions.Session._make_local(sessions.Session._make_utc(
-            local_time))
+        round_local = sessions.Session._make_local(
+            sessions.Session._make_utc(local_time)
+        )
         assert round_local == local_time
         assert round_local.tzinfo is None
 
@@ -60,7 +60,7 @@ class TestSessions(object):
         session = sessions.Session(session_id, database=database)
         assert session['x'] == 3
 
-    @py.test.mark.xfail
+    @pytest.mark.xfail
     def test_numeric_keys(self, database):
         session = sessions.Session(None, database=database, use_modb=True)
         session.acquire_lock()
@@ -68,7 +68,6 @@ class TestSessions(object):
         session.save()
         session_id = session.id
         del session
-        session = sessions.Session(
-            session_id, database=database, use_modb=True)
+        session = sessions.Session(session_id, database=database, use_modb=True)
         assert 3 in session
         assert session[3] == 9
