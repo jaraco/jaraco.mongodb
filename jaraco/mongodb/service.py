@@ -119,6 +119,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         if hasattr(self, 'bind_ip') and '--bind_ip' not in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
         cmd.extend(['--bind_ip_all', '--ipv6'])
+        print('running', cmd)
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
         try:
             portend.occupied('localhost', self.port, timeout=10)
