@@ -62,6 +62,7 @@ class MongoDBFinder(paths.PathFinder):
     @contextlib.contextmanager
     def ensure(cls):
         try:
+            raise RuntimeError()
             yield cls.find_root()
         except RuntimeError:
             with tempfile.TemporaryDirectory() as tmp_dir:
