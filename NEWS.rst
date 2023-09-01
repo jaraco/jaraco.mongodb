@@ -1,3 +1,12 @@
+v11.5.1
+=======
+
+Bugfixes
+--------
+
+- Extended the timeout dramatically on Windows, but only when GITHUB_ACTIONS is configured. (#32)
+
+
 v11.5.0
 =======
 
