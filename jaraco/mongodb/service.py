@@ -62,7 +62,6 @@ class MongoDBFinder(paths.PathFinder):
     @contextlib.contextmanager
     def ensure(cls):
         try:
-            raise RuntimeError()
             yield cls.find_root()
         except RuntimeError:
             with tempfile.TemporaryDirectory() as tmp_dir:
@@ -125,6 +124,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         try:
             portend.occupied('localhost', self.port, timeout=120)
         except Exception:
+            subprocess.Popen(cmd[:1] + ['--version'])
             print(self.process.returncode)
             raise
         log.info(f'{self} listening on {self.port}')
