@@ -1,3 +1,17 @@
+v12.0.0
+=======
+
+Deprecations and Removals
+-------------------------
+
+- Require pymongo 3.5.
+
+  Dropped deprecated methods in helper:
+
+      - ``helper.filter_warnings``
+      - ``helper.connect`` (#12748811)
+
+
 v11.5.1
 =======
 
