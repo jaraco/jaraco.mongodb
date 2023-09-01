@@ -68,7 +68,7 @@ class MongoDBFinder(paths.PathFinder):
             with tempfile.TemporaryDirectory() as tmp_dir:
                 tmp = pathlib.Path(tmp_dir)
                 root = install.install(target=tmp).joinpath('bin')
-                cls.candidate_paths.append(root)
+                cls.candidate_paths.insert(0, root)
                 yield root
             cls.candidate_paths.remove(root)
 
