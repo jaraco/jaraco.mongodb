@@ -110,6 +110,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         On GitHub Actions on Windows, MongoDB takes forever to
         start, but starts up fast locally and on other platforms.
         """
+        assert os.environ.get('GITHUB_ACTIONS')
         slow = (
             os.environ.get('GITHUB_ACTIONS')
             and os.environ.get('RUNNER_OS') == 'Windows'
