@@ -104,6 +104,18 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         self.port, add_args[:] = cli.extract_param('port', add_args, type=int)
         self.mongod_args = add_args
 
+    @property
+    def _startup_timeout(self):
+        """
+        On GitHub Actions on Windows, MongoDB takes forever to
+        start, but starts up fast locally and on other platforms.
+        """
+        slow = (
+            os.environ.get('GITHUB_ACTIONS')
+            and os.environ.get('RUNNER_OS') == 'Windows'
+        )
+        return 120 if slow else 10
+
     def start(self):
         super(MongoDBInstance, self).start()
         if not hasattr(self, 'port') or not self.port:
@@ -119,7 +131,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         if hasattr(self, 'bind_ip') and '--bind_ip' not in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
-        portend.occupied('localhost', self.port, timeout=10)
+        portend.occupied('localhost', self.port, timeout=self._startup_timeout)
         log.info(f'{self} listening on {self.port}')
 
     def get_connection(self):
