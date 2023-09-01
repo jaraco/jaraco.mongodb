@@ -118,9 +118,10 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         ] + list(self.mongod_args)
         if hasattr(self, 'bind_ip') and '--bind_ip' not in cmd:
             cmd.extend(['--bind_ip', self.bind_ip])
+        cmd.extend(['--bind_ip_all', '--ipv6'])
         self.process = subprocess.Popen(cmd, **self.process_kwargs)
         try:
-            portend.occupied('127.0.0.1', self.port, timeout=10)
+            portend.occupied('localhost', self.port, timeout=10)
         except Exception:
             print(self.process.returncode)
             raise
