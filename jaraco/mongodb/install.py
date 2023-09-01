@@ -32,7 +32,7 @@ def get_download_url():
         ('Darwin', 'x86_64'): 'macOS x64',
         ('Linux', 'x86_64'): 'Ubuntu 22.04 x64',
         ('Linux', 'aarch64'): 'Ubuntu 22.04 ARM 64',
-        ('Windows', 'x86_64'): 'Windows x64',
+        ('Windows', 'AMD64'): 'Windows x64',
         ('Windows', 'ARM64'): 'Windows x64',
     }
     plat_name = lookup[(platform.system(), platform.machine())]
