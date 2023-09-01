@@ -11,6 +11,7 @@ import logging
 import datetime
 import pathlib
 import contextlib
+import platform
 
 from typing import Dict, Any
 
@@ -111,10 +112,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         start, but starts up fast locally and on other platforms.
         """
         assert os.environ.get('GITHUB_ACTIONS')
-        slow = (
-            os.environ.get('GITHUB_ACTIONS')
-            and os.environ.get('RUNNER_OS') == 'Windows'
-        )
+        slow = os.environ.get('GITHUB_ACTIONS') and platform.system() == 'Windows'
         return 120 if slow else 10
 
     def start(self):

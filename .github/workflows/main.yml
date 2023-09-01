@@ -26,10 +26,6 @@ env:
     PY_COLORS
     PYTEST_THEME
     PYTEST_THEME_MODE
-    GITHUB_ACTIONS
-    RUNNER_OS
-    GITHUB_*
-    RUNNER_*
 
   # Suppress noisy pip warnings
   PIP_DISABLE_PIP_VERSION_CHECK: 'true'
@@ -78,8 +74,10 @@ jobs:
         if: ${{ matrix.platform == 'ubuntu-latest' }}
         with:
           packages: libcurl4 libgssapi-krb5-2 libldap-2.5-0 libwrap0 libsasl2-2 libsasl2-modules libsasl2-modules-gssapi-mit snmp openssl liblzma5
+      - name: env
+        run: env
       - name: Run
-        run: tox
+        run: tox c -k pass_env
 
   docs:
     runs-on: ubuntu-latest
