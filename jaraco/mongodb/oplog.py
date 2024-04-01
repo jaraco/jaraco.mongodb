@@ -232,8 +232,7 @@ class RenameSpec(object):
             op.get('op') == 'c'
             and (
                 # seems command can happen in admin or the db
-                op['ns'] == 'admin.$cmd'
-                or op['ns'] == db + '.$cmd'
+                op['ns'] == 'admin.$cmd' or op['ns'] == db + '.$cmd'
             )
             and 'renameCollection' in op['o']
             and (

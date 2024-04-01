@@ -58,5 +58,5 @@ def upsert_and_fetch(coll, doc, **kwargs):
         {"$setOnInsert": doc},
         upsert=True,
         return_document=pymongo.ReturnDocument.AFTER,
-        **kwargs
+        **kwargs,
     )
