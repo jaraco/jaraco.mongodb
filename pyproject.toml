@@ -1,5 +1,77 @@
 [build-system]
-requires = ["setuptools>=56", "setuptools_scm[toml]>=3.4.1"]
+requires = ["setuptools>=61.2", "setuptools_scm[toml]>=3.4.1"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "jaraco.mongodb"
+authors = [
+	{ name = "Jason R. Coombs", email = "jaraco@jaraco.com" },
+]
+description = "Routines and classes supporting MongoDB environments"
+readme = "README.rst"
+classifiers = [
+	"Development Status :: 5 - Production/Stable",
+	"Intended Audience :: Developers",
+	"License :: OSI Approved :: MIT License",
+	"Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3 :: Only",
+	"Framework :: Pytest",
+]
+requires-python = ">=3.8"
+dependencies = [
+	"pymongo>=3.5",
+	"python-dateutil",
+	"jaraco.services>=2",
+	"portend",
+	"jaraco.itertools>=2",
+	"jaraco.functools>=2",
+	"jaraco.ui>=2",
+	"jaraco.context>=2",
+	"more_itertools",
+	"jaraco.logging>=2",
+	"tempora",
+	"pytimeparse",
+	"jaraco.collections>=2",
+	'importlib_metadata; python_version < "3.8"',
+	"autocommand",
+	"cachetools",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/jaraco/jaraco.mongodb"
+
+[project.optional-dependencies]
+testing = [
+	# upstream
+	"pytest >= 6, != 8.1.1",
+	"pytest-checkdocs >= 2.4",
+	"pytest-cov",
+	"pytest-mypy",
+	"pytest-enabler >= 2.2",
+	"pytest-ruff >= 0.2.1",
+
+	# local
+	"cherrypy",
+	"types-python-dateutil",
+	"types-cachetools",
+]
+docs = [
+	# upstream
+	"sphinx >= 3.5",
+	"jaraco.packaging >= 9.3",
+	"rst.linker >= 1.9",
+	"furo",
+	"sphinx-lint",
+
+	# local
+	"cherrypy",
+]
+
+[project.entry-points]
+pytest11 = {MongoDB = "jaraco.mongodb.fixtures"}
+
+[project.entry-points.pmxbot_handlers]
+"create in MongoDB shard" = "jaraco.mongodb.pmxbot"
 
 [tool.setuptools_scm]
