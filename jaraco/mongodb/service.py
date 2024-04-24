@@ -124,7 +124,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         """
         GHA = bool(os.environ.get('GITHUB_ACTIONS'))
         platform_multipliers = dict(
-            Windows=40,
+            Windows=60,
             Darwin=3,
         )
         multiplier = platform_multipliers.get(platform.system(), 1)
