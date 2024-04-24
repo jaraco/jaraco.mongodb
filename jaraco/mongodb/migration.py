@@ -138,5 +138,7 @@ class Manager:
         try:
             (match,) = matches
         except ValueError:
-            raise ValueError(f"No migration from {source_ver} to {target_ver}")
+            raise ValueError(
+                f"No migration from {source_ver} to {target_ver}"
+            ) from None
         return match
