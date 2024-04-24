@@ -1,7 +1,9 @@
 import builtins
 
+from typing import Mapping
 
-def estimate(coll, filter={}, sample=1):
+
+def estimate(coll, filter: Mapping = {}, sample=1):
     """
     Estimate the number of documents in the collection
     matching the filter.

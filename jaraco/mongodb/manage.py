@@ -1,7 +1,9 @@
 import re
 
+from typing import Container
 
-def all_databases(client, exclude=['local']):
+
+def all_databases(client, exclude: Container = ['local']):
     """
     Yield all databases except excluded (default
     excludes 'local').
