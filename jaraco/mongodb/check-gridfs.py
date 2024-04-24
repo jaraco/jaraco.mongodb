@@ -2,10 +2,10 @@
 Script to check a GridFS instance for corrupted records.
 """
 
-import argparse
 import logging
 import sys
 
+import autocommand
 import pymongo
 from more_itertools.recipes import consume
 
@@ -15,17 +15,6 @@ from jaraco.mongodb import helper
 from jaraco.ui import progress
 
 log = logging.getLogger()
-
-
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--depth',
-        default=1024,
-        help="Bytes to read into each file during check",
-    )
-    parser.add_argument('db', type=helper.connect_gridfs)
-    return parser.parse_args()
 
 
 class FileChecker:
@@ -54,15 +43,14 @@ class FileChecker:
         log.error("Failed to read %s (%s)", trap.filename, exc)
 
 
-def run():
+@autocommand.autocommand(__name__)
+def run(
+    db: helper.connect_gridfs,  # type: ignore
+    depth: (int, 'Bytes to read into each file during check') = 1024,  # type: ignore # noqa: F722
+):
     logging.basicConfig(stream=sys.stderr)
-    args = get_args()
 
-    checker = FileChecker(args.db, args.depth)
+    checker = FileChecker(db, depth)
     counter = checker.run()
 
     print("Encountered", counter.count, "errors")
-
-
-if __name__ == '__main__':
-    run()

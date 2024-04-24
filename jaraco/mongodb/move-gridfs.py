@@ -18,12 +18,12 @@ True
 ['test.txt']
 """
 
-import argparse
 import itertools
 import logging
 import signal
 import sys
 
+import autocommand
 import bson
 import dateutil.parser
 from more_itertools.recipes import consume
@@ -32,29 +32,6 @@ from jaraco.mongodb import helper
 from jaraco.ui import progress
 
 log = logging.getLogger()
-
-
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('source_gfs', type=helper.connect_gridfs)
-    parser.add_argument('dest_gfs', type=helper.connect_gridfs)
-    parser.add_argument(
-        '--include',
-        help="a filter of files (regex) to include",
-    )
-    parser.add_argument(
-        '--delete',
-        default=False,
-        action="store_true",
-        help="delete files after moving",
-    )
-    parser.add_argument('--limit', type=int)
-    parser.add_argument(
-        '--limit-date',
-        type=dateutil.parser.parse,
-        help="only move files older than this date",
-    )
-    return parser.parse_args()
 
 
 class FileMove:
@@ -138,11 +115,17 @@ class SignalTrap:
         self.iterable = iter([])
 
 
-def run():
+def run(
+    source_gfs: helper.connect_gridfs,
+    dest_gfs: helper.connect_gridfs,
+    include: (str, "a filter of files (regex) to include") = None,  # noqa: F722
+    delete: (bool, "delete files after moving") = False,  # noqa: F722
+    limit: int = None,
+    limit_date: (dateutil.parser.parse, 'only move files older than this date') = None,  # noqa: F722
+):
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)
-    args = get_args()
 
-    mover = FileMove(**vars(args))
+    mover = FileMove(**locals())
     mover.ensure_indexes()
     mover.run()
 
