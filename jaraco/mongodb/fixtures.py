@@ -46,12 +46,14 @@ def _ephemeral_instance(config):
         with instance.ensure():
             instance.merge_mongod_args(params)
             instance.start()
-            pymongo.MongoClient(instance.get_connect_hosts())
-            yield instance
+            try:
+                pymongo.MongoClient(instance.get_connect_hosts())
+                yield instance
+            finally:
+                instance.stop()
     except Exception as err:
         raise
         pytest.skip(f"MongoDB not available ({err})")
-    instance.stop()
 
 
 @pytest.fixture(scope='session')
