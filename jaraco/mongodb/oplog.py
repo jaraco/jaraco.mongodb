@@ -176,7 +176,7 @@ def parse_args(*args, **kwargs):
     return args
 
 
-class RenameSpec(object):
+class RenameSpec:
     @classmethod
     def from_spec(cls, string_spec):
         """
@@ -190,7 +190,7 @@ class RenameSpec(object):
         self.new_ns = new_ns
         self.old_db, sep, self.old_coll = self.old_ns.partition('.')
         self.new_db, sep, self.new_coll = self.new_ns.partition('.')
-        self.regex = re.compile(r"^{0}(\.|$)".format(re.escape(self.old_ns)))
+        self.regex = re.compile(rf"^{re.escape(self.old_ns)}(\.|$)")
 
         # ugly hack: append a period so the regex can match dot
         # or end of string; requires .rstrip operation in __call__ also.
@@ -396,7 +396,7 @@ def applies_to_ns(op, ns):
     )
 
 
-class NiceRepr(object):
+class NiceRepr:
     """
     Adapt a Python representation of a MongoDB object
     to make it appear nicely when rendered as a
@@ -492,7 +492,7 @@ def _apply_regular(db, op):
     db.command("applyOps", [op], codec_options=opts)
 
 
-class Oplog(object):
+class Oplog:
     find_params: Dict[str, Any] = {}
 
     def __init__(self, coll):
@@ -520,8 +520,7 @@ class Oplog(object):
             # todo: trap InvalidDocument errors:
             # except bson.errors.InvalidDocument as e:
             #  logging.info(repr(e))
-            for doc in cursor:
-                yield doc
+            yield from cursor
             if not cursor.alive:
                 break
             time.sleep(1)
@@ -545,7 +544,7 @@ class TailingOplog(Oplog):
         Tail the oplog, starting from ts.
         """
         while True:
-            items = super(TailingOplog, self).since(ts)
+            items = super().since(ts)
             for doc in items:
                 yield doc
                 ts = doc['ts']
@@ -610,7 +609,7 @@ class ResumeFile(str):
             return Timestamp.load(f)
 
 
-class NullResumeFile(object):
+class NullResumeFile:
     def save(self, ts):
         pass
 

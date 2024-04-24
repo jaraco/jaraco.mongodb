@@ -20,7 +20,7 @@ def database(request, mongodb_instance):
     return database
 
 
-class TestSessions(object):
+class TestSessions:
     def test_time_conversion(self):
         local_time = datetime.datetime.now().replace(microsecond=0)
         local_time = sessions.Session._make_aware(local_time)

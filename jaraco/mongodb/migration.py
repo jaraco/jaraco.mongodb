@@ -14,7 +14,7 @@ from typing import Callable, Set
 from more_itertools import recipes
 
 
-class Manager(object):
+class Manager:
     """
     A manager for facilitating the registration of migration functions
     and applying those migrations to documents.

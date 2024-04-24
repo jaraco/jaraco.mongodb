@@ -47,7 +47,7 @@ class LockTimeout(RuntimeError):
     pass
 
 
-class NullCodec(object):
+class NullCodec:
     def decode(self, data):
         return data
 
@@ -78,7 +78,7 @@ class Session(cherrypy.lib.sessions.Session):
     def __init__(self, id, **kwargs):
         kwargs.setdefault('collection_name', 'sessions')
         kwargs.setdefault('lock_timeout', None)
-        super(Session, self).__init__(id, **kwargs)
+        super().__init__(id, **kwargs)
         self.setup_expiration()
         if isinstance(self.lock_timeout, (int, float)):
             self.lock_timeout = datetime.timedelta(seconds=self.lock_timeout)

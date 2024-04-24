@@ -89,7 +89,7 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
     @services.Subprocess.PortFree()
     def start(self):
-        super(MongoDBService, self).start()
+        super().start()
         # start the daemon
         mongodb_data = os.path.join(sys.prefix, 'var', 'lib', 'mongodb')
         cmd = [
@@ -129,7 +129,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         return 3 * multiplier**GHA
 
     def start(self):
-        super(MongoDBInstance, self).start()
+        super().start()
         if not hasattr(self, 'port') or not self.port:
             self.port = portend.find_available_local_port()
         self.data_dir = tempfile.mkdtemp()
@@ -160,7 +160,7 @@ class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
         return 'mongodb://' + ','.join(self.get_connect_hosts())
 
     def stop(self):
-        super(MongoDBInstance, self).stop()
+        super().stop()
         shutil.rmtree(self.data_dir)
         del self.data_dir
 
@@ -186,7 +186,7 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
     )
 
     def start(self):
-        super(MongoDBReplicaSet, self).start()
+        super().start()
         self.data_root = tempfile.mkdtemp()
         self.instances = list(map(self.start_instance, range(3)))
         # initialize the replica set
@@ -242,7 +242,7 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         )
 
     def stop(self):
-        super(MongoDBReplicaSet, self).stop()
+        super().stop()
         for instance in self.instances:
             if instance.process.returncode is None:
                 instance.process.terminate()
