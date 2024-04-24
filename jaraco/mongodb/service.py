@@ -72,6 +72,14 @@ class MongoDBFinder(paths.PathFinder):
                 yield root
             cls.candidate_paths.remove(root)
 
+    @contextlib.contextmanager
+    def run(self):
+        self.start()
+        try:
+            yield
+        finally:
+            self.stop()
+
 
 class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
     port = 27017
