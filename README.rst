@@ -27,6 +27,17 @@ at the `MongoWorld 2016 <https://www.mongodb.com/world16>`_ presentation
 Use it to load documents of various schema versions into a target version that
 your application expects.
 
+install
+=======
+
+``jaraco.mongodb.install`` makes it super easy to get a download of the
+community version of MongoDB on any platform:
+
+    py -m jaraco.mongodb.install
+
+By default, it will install to the current directory. Use ``--target`` to
+install to another location.
+
 sessions
 ========
 
@@ -179,3 +190,18 @@ Tests produce alot of output. Succesful execution ends with line like this::
 
 These tests are run as part of the continuous integration and release acceptance
 tests in Travis.
+
+Fixtures
+========
+
+``jaraco.mongodb`` provides some pretty sophisticated pytest fixtures.
+
+``mongodb_instance`` is a running MongoDB instance with a PyMongo connection
+ready to use. It attempts to locate an existing MongoDB install, or if it
+cannot find one, it downloads the community edition and installs it to a
+temporary directory for the test session.
+
+This fixture makes it straightforward to run scripts like
+`this example in pip-run <https://github.com/jaraco/pip-run/blob/main/examples/test-mongodb-covered-query.py>`_
+that can fully validate an expectation about MongoDB behavior on any
+platform without any dependency but pip-run (and of course Python).
