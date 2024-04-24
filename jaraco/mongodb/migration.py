@@ -7,10 +7,9 @@ for migrating documents to a target version through
 a series of migration functions.
 '''
 
-import re
 import itertools
-
-from typing import Set, Callable
+import re
+from typing import Callable, Set
 
 from more_itertools import recipes
 

@@ -2,18 +2,17 @@
 Script to check a GridFS instance for corrupted records.
 """
 
-import sys
-import logging
 import argparse
+import logging
+import sys
 
 import pymongo
-from jaraco.ui import progress
 from more_itertools.recipes import consume
-from jaraco.itertools import Counter
 
-from jaraco.mongodb import helper
 from jaraco.context import ExceptionTrap
-
+from jaraco.itertools import Counter
+from jaraco.mongodb import helper
+from jaraco.ui import progress
 
 log = logging.getLogger()
 

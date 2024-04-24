@@ -1,8 +1,9 @@
-import time
-import re
 import argparse
+import re
+import time
 
 from jaraco.mongodb import helper
+
 from .compat import query_or_command
 
 

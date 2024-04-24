@@ -1,5 +1,5 @@
-import shlex
 import os
+import shlex
 
 import pytest
 

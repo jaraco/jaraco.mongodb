@@ -1,5 +1,5 @@
-import shlex
 import contextlib
+import shlex
 
 import pmxbot.storage
 

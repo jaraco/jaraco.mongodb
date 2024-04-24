@@ -18,19 +18,18 @@ True
 ['test.txt']
 """
 
-import sys
-import logging
 import argparse
 import itertools
+import logging
 import signal
+import sys
 
 import bson
 import dateutil.parser
-from jaraco.ui import progress
 from more_itertools.recipes import consume
 
 from jaraco.mongodb import helper
-
+from jaraco.ui import progress
 
 log = logging.getLogger()
 

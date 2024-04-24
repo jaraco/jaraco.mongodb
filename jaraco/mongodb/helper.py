@@ -2,8 +2,8 @@
 Helper functions to augment PyMongo
 """
 
-import pymongo
 import gridfs
+import pymongo
 
 
 def connect_db(uri, default_db_name=None, factory=pymongo.MongoClient):

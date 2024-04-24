@@ -22,11 +22,12 @@ over an HTTP connection and you don't have the luxury of Javascript
 expressions like you see in the Mongo shell or Compass.
 """
 
-import json
-import functools
 import collections
+import functools
+import json
 
 import dateutil.parser
+
 from jaraco.functools import compose
 
 

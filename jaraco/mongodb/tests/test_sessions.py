@@ -1,10 +1,9 @@
-import functools
 import datetime
-import dateutil
+import functools
 import importlib
 
+import dateutil
 import pytest
-
 
 pytest.importorskip("cherrypy")
 sessions = importlib.import_module('jaraco.mongodb.sessions')

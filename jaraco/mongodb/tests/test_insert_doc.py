@@ -1,6 +1,6 @@
-import sys
-import subprocess
 import json
+import subprocess
+import sys
 
 
 def test_insert_doc_command(mongodb_instance):

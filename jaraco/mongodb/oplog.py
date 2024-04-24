@@ -1,26 +1,28 @@
 import argparse
-import time
-import json
-import logging
-import pymongo
-import bson.json_util
-import re
 import collections
 import datetime
+import json
+import logging
 import operator
+import re
+import time
+
+import bson.json_util
+import pymongo
 
 try:
     from importlib import metadata  # type: ignore
 except ImportError:
     import importlib_metadata as metadata  # type: ignore
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 import cachetools
-import jaraco.logging
 import pytimeparse
-from jaraco.functools import compose
 from pymongo.cursor import CursorType
+
+import jaraco.logging
+from jaraco.functools import compose
 from jaraco.itertools import always_iterable
 from jaraco.ui.cmdline import Extend
 

@@ -4,18 +4,17 @@ Script to repair broken GridFS files. It handles
 - Removing files with missing chunks.
 """
 
-import sys
-import logging
 import argparse
+import logging
+import sys
 
 import gridfs
-from jaraco.ui import progress
 from more_itertools.recipes import consume
-from jaraco.itertools import Counter
 
-from jaraco.mongodb import helper
 from jaraco.context import ExceptionTrap
-
+from jaraco.itertools import Counter
+from jaraco.mongodb import helper
+from jaraco.ui import progress
 
 log = logging.getLogger()
 

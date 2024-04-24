@@ -1,7 +1,6 @@
-import sys
-import json
-
 import argparse
+import json
+import sys
 
 import pymongo.uri_parser
 

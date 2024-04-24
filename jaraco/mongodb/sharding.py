@@ -1,5 +1,5 @@
-import socket
 import operator
+import socket
 
 import pymongo
 

@@ -30,16 +30,15 @@ to encode more complex objects in the session::
 """
 
 import datetime
-import time
 import logging
 import pprint
+import time
 
-import pymongo.errors
 import cherrypy
 import dateutil.tz
+import pymongo.errors
 
-from . import timers
-from . import compat
+from . import compat, timers
 
 log = logging.getLogger(__name__)
 

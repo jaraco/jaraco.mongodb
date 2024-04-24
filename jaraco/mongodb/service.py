@@ -1,28 +1,26 @@
+import collections
+import contextlib
+import datetime
+import functools
+import glob
+import importlib
+import logging
 import os
+import pathlib
+import platform
+import shutil
+import subprocess
 import sys
 import tempfile
-import subprocess
-import glob
-import collections
-import importlib
-import shutil
-import functools
-import logging
-import datetime
-import pathlib
-import contextlib
-import platform
-
-from typing import Dict, Any
+from typing import Any, Dict
 
 import portend
-from jaraco.services import paths
-from jaraco import services
 from tempora import timing
-from . import manage
-from . import cli
-from . import install
 
+from jaraco import services
+from jaraco.services import paths
+
+from . import cli, install, manage
 
 log = logging.getLogger(__name__)
 

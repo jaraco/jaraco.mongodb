@@ -2,10 +2,9 @@ import functools
 
 import bson
 import pytest
-import jaraco.itertools
 
-from jaraco.mongodb import oplog
-from jaraco.mongodb import service
+import jaraco.itertools
+from jaraco.mongodb import oplog, service
 
 
 class TestReplacer:

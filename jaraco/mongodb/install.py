@@ -1,12 +1,12 @@
+import io
 import json
 import pathlib
 import platform
+import posixpath
 import re
 import tarfile
 import urllib.request
-import posixpath
 import zipfile
-import io
 
 import autocommand
 from more_itertools import one

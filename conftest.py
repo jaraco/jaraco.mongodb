@@ -2,7 +2,6 @@ import random
 
 import pytest
 
-
 collect_ignore = [
     'jaraco/mongodb/pmxbot.py',
     # disable move-gridfs check, as it causes output capturing
