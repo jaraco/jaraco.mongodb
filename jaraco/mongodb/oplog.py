@@ -40,12 +40,11 @@ def parse_args(*args, **kwargs):
     It should be possible for one to specify '--ns', '-x', and '--rename'
     multiple times:
 
-    >>> args = parse_args(['--ns', 'foo', 'bar', '--ns', 'baz'])
-    >>> args.ns
+    >>> parse_args(['--ns', 'foo', 'bar', '--ns', 'baz']).ns
     ['foo', 'bar', 'baz']
 
-    >>> parse_args(['-x', '--exclude']).exclude
-    []
+    >>> parse_args(['-x', 'foo', 'bar', '--exclude', 'baz']).exclude
+    ['foo', 'bar', 'baz']
 
     >>> renames = parse_args(['--rename', 'a=b', '--rename', 'b=c']).rename
     >>> type(renames)
