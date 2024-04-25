@@ -1,3 +1,12 @@
+v12.1.0
+=======
+
+Features
+--------
+
+- Deprecated MongoDBService.
+
+
 v12.0.1
 =======
 
