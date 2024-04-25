@@ -338,7 +338,6 @@ def _load_dest(host):
 
 def main():
     args = build_parser().parse_args()
-    args.start_ts = args.start_ts or args.resume_file.read()
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
     jaraco.logging.setup(args, format=log_format)
 
@@ -357,7 +356,7 @@ def main():
 
     logging.info("connected")
 
-    start = args.start_ts
+    start = args.start_ts or args.resume_file.read()
     if not start:
         logging.error("Resume file or window required")
         raise SystemExit(2)
