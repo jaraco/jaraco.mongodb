@@ -55,6 +55,12 @@ def parse_args(*args, **kwargs):
     {<class 'jaraco.mongodb.oplog.RenameSpec'>}
 
     """
+    args = build_parser().parse_args(*args, **kwargs)
+    args.start_ts = args.start_ts or args.resume_file.read()
+    return args
+
+
+def build_parser():
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument(
@@ -168,11 +174,7 @@ def parse_args(*args, **kwargs):
 
     jaraco.logging.add_arguments(parser)
 
-    args = parser.parse_args(*args, **kwargs)
-
-    args.start_ts = args.start_ts or args.resume_file.read()
-
-    return args
+    return parser
 
 
 class RenameSpec:
