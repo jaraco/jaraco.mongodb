@@ -34,8 +34,12 @@ def delta_from_seconds(seconds):
 
 
 def parse_args(*args, **kwargs):
+    return build_parser().parse_args(*args, **kwargs)
+
+
+def build_parser():
     """
-    Parse the args for the command.
+    Build the argument parser.
 
     It should be possible for one to specify '--ns', '-x', and '--rename'
     multiple times:
@@ -53,14 +57,7 @@ def parse_args(*args, **kwargs):
     2
     >>> set(map(type, renames))
     {<class 'jaraco.mongodb.oplog.RenameSpec'>}
-
     """
-    args = build_parser().parse_args(*args, **kwargs)
-    args.start_ts = args.start_ts or args.resume_file.read()
-    return args
-
-
-def build_parser():
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument(
@@ -340,7 +337,8 @@ def _load_dest(host):
 
 
 def main():
-    args = parse_args()
+    args = build_parser().parse_args()
+    args.start_ts = args.start_ts or args.resume_file.read()
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
     jaraco.logging.setup(args, format=log_format)
 
