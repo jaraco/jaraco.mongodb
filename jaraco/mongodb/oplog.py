@@ -51,9 +51,8 @@ def parse_args(*args, **kwargs):
     >>> len(renames)
     2
 
-    "..." below should be "jaraco." but for pytest-dev/pytest#3396
     >>> type(renames)
-    <class '...mongodb.oplog.Renamer'>
+    <class 'jaraco.mongodb.oplog.Renamer'>
     """
     parser = argparse.ArgumentParser(add_help=False)
 
