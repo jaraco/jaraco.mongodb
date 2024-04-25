@@ -48,11 +48,13 @@ def parse_args(*args, **kwargs):
     []
 
     >>> renames = parse_args(['--rename', 'a=b', '--rename', 'b=c']).rename
-    >>> len(renames)
-    2
-
     >>> type(renames)
     <class 'jaraco.mongodb.oplog.Renamer'>
+    >>> len(renames)
+    2
+    >>> set(map(type, renames))
+    {<class 'jaraco.mongodb.oplog.RenameSpec'>}
+
     """
     parser = argparse.ArgumentParser(add_help=False)
 
@@ -137,7 +139,7 @@ def parse_args(*args, **kwargs):
     parser.add_argument(
         "--rename",
         nargs="*",
-        default=[],
+        default=Renamer(),
         metavar="ns_old=ns_new",
         type=RenameSpec.from_spec,
         action=Extend,
@@ -168,7 +170,6 @@ def parse_args(*args, **kwargs):
     jaraco.logging.add_arguments(parser)
 
     args = parser.parse_args(*args, **kwargs)
-    args.rename = Renamer(args.rename)
 
     args.start_ts = args.start_ts or args.resume_file.read()
 
