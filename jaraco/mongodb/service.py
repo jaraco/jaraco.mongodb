@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import warnings
 from typing import Any, Dict
 
 import portend
@@ -89,6 +90,11 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
     @services.Subprocess.PortFree()
     def start(self):
+        warnings.warn(
+            "MongoDBService is deprecated. File a bug with jaraco.mongodb if you are still using it.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super().start()
         # start the daemon
         mongodb_data = os.path.join(sys.prefix, 'var', 'lib', 'mongodb')
