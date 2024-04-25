@@ -4,10 +4,10 @@ Script to repair broken GridFS files. It handles
 - Removing files with missing chunks.
 """
 
-import argparse
 import logging
 import sys
 
+import autocommand
 import gridfs
 from more_itertools.recipes import consume
 
@@ -17,12 +17,6 @@ from jaraco.mongodb import helper
 from jaraco.ui import progress
 
 log = logging.getLogger()
-
-
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('db', type=helper.connect_gridfs)
-    return parser.parse_args()
 
 
 class FileRepair:
@@ -61,15 +55,11 @@ class FileRepair:
         self.gfs.delete(spec)
 
 
-def run():
+@autocommand.autocommand(__name__)
+def run(db: helper.connect_gridfs):  # type: ignore
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)
-    args = get_args()
 
-    repair = FileRepair(args.db)
+    repair = FileRepair(db)
     counter = repair.run()
 
     log.info("Removed %s corrupt files.", counter.count)
-
-
-if __name__ == '__main__':
-    run()
