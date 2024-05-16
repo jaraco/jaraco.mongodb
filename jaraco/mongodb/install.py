@@ -65,9 +65,7 @@ def _extract_application_zip(resp, target):
     data = io.BytesIO(resp.read())
     with zipfile.ZipFile(data) as obj:
         roots = RootFinder.from_names(obj.namelist())
-        obj.extractall(
-            target,
-        )
+        obj.extractall(target)
     return roots
 
 
