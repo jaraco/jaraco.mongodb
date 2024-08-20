@@ -6,14 +6,10 @@ import logging
 import operator
 import re
 import time
+from importlib import metadata
 
 import bson.json_util
 import pymongo
-
-try:
-    from importlib import metadata  # type: ignore
-except ImportError:
-    import importlib_metadata as metadata  # type: ignore
 
 from typing import Any, Dict
 
