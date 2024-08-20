@@ -42,4 +42,4 @@ def maybe_date(obj):
 smart_hook = compose(maybe_date, collections.OrderedDict)
 
 
-decode = functools.partial(json.loads, object_pairs_hook=smart_hook)
+decode = functools.partial(json.loads, object_pairs_hook=smart_hook)  # type: ignore
