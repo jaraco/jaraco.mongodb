@@ -4,12 +4,17 @@ import pathlib
 import platform
 import posixpath
 import re
-import tarfile
+import sys
 import urllib.request
 import zipfile
 
 import autocommand
 from more_itertools import one
+
+if sys.version_info > (3, 12):
+    import tarfile
+else:
+    from backports import tarfile
 
 
 def get_download_url():

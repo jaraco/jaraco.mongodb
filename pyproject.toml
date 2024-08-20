@@ -35,6 +35,7 @@ dependencies = [
 	'importlib_metadata; python_version < "3.8"',
 	"autocommand",
 	"cachetools",
+	"backports.tarfile; python_version < '3.12'",
 ]
 dynamic = ["version"]
 
