@@ -1,5 +1,4 @@
 import builtins
-
 from typing import Mapping
 
 
