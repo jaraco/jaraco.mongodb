@@ -45,17 +45,11 @@ Source = "https://github.com/jaraco/jaraco.mongodb"
 test = [
 	# upstream
 	"pytest >= 6, != 8.1.*",
-	"pytest-checkdocs >= 2.4",
-	"pytest-cov",
-	"pytest-mypy",
-	"pytest-enabler >= 2.2",
-	"pytest-ruff >= 0.2.1; sys_platform != 'cygwin'",
 
 	# local
 	"cherrypy",
-	"types-python-dateutil",
-	"types-cachetools",
 ]
+
 doc = [
 	# upstream
 	"sphinx >= 3.5",
@@ -67,6 +61,29 @@ doc = [
 	# local
 	"cherrypy",
 ]
+
+check = [
+	"pytest-checkdocs >= 2.4",
+	"pytest-ruff >= 0.2.1; sys_platform != 'cygwin'",
+]
+
+cover = [
+	"pytest-cov",
+]
+
+enabler = [
+	"pytest-enabler >= 2.2",
+]
+
+type = [
+	# upstream
+	"pytest-mypy",
+
+	# local
+	"types-python-dateutil",
+	"types-cachetools",
+]
+
 
 [project.entry-points]
 pytest11 = {MongoDB = "jaraco.mongodb.fixtures"}
