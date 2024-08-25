@@ -91,4 +91,9 @@ pytest11 = {MongoDB = "jaraco.mongodb.fixtures"}
 [project.entry-points.pmxbot_handlers]
 "create in MongoDB shard" = "jaraco.mongodb.pmxbot"
 
+
 [tool.setuptools_scm]
+
+
+[tool.pytest-enabler.mypy]
+# Disabled due to jaraco/skeleton#143
