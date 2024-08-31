@@ -239,7 +239,7 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
 
     def get_log(self, number):
         log_filename = os.path.join(self.data_root, f'r{number}.log')
-        log_file = open(log_filename, 'a')
+        log_file = open(log_filename, 'a', encoding='utf-8')
         return log_file
 
     def is_running(self):
