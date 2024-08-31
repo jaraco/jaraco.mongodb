@@ -93,7 +93,3 @@ pytest11 = {MongoDB = "jaraco.mongodb.fixtures"}
 
 
 [tool.setuptools_scm]
-
-
-[tool.pytest-enabler.mypy]
-# Disabled due to jaraco/skeleton#143

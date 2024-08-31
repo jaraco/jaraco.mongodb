@@ -56,7 +56,7 @@ class FileRepair:
 
 
 @autocommand.autocommand(__name__)
-def run(db: helper.connect_gridfs):  # type: ignore
+def run(db: helper.connect_gridfs):
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
     repair = FileRepair(db)

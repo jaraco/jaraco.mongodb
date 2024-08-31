@@ -45,8 +45,8 @@ class FileChecker:
 
 @autocommand.autocommand(__name__)
 def run(
-    db: helper.connect_gridfs,  # type: ignore
-    depth: (int, 'Bytes to read into each file during check') = 1024,  # type: ignore # noqa: F722
+    db: helper.connect_gridfs,
+    depth: (int, 'Bytes to read into each file during check') = 1024,  # noqa: F722
 ):
     logging.basicConfig(stream=sys.stderr)
 
