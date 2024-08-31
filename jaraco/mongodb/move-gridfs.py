@@ -115,6 +115,7 @@ class SignalTrap:
         self.iterable = iter([])
 
 
+@autocommand.autocommand(__name__)
 def run(
     source_gfs: helper.connect_gridfs,
     dest_gfs: helper.connect_gridfs,
@@ -128,7 +129,3 @@ def run(
     mover = FileMove(**locals())
     mover.ensure_indexes()
     mover.run()
-
-
-if __name__ == '__main__':
-    run()
