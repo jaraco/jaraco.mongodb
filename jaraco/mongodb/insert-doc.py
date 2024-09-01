@@ -12,8 +12,8 @@ def get_collection(uri: str) -> pymongo.collection.Collection:
 
 
 @autocommand.autocommand(__name__)
-def main(collection: get_collection):  # type: ignore
+def main(collection: get_collection):
     """
     Insert a document from stdin into the specified collection.
     """
-    collection.insert_one(json.load(sys.stdin))  # type: ignore
+    collection.insert_one(json.load(sys.stdin))  # type: ignore[attr-defined]

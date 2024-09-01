@@ -18,12 +18,13 @@ True
 ['test.txt']
 """
 
+from __future__ import annotations
+
 import itertools
 import logging
 import signal
 import sys
 
-import autocommand
 import bson
 import dateutil.parser
 from more_itertools.recipes import consume
@@ -121,7 +122,7 @@ def run(
     dest_gfs: helper.connect_gridfs,
     include: (str, "a filter of files (regex) to include") = None,  # noqa: F722
     delete: (bool, "delete files after moving") = False,  # noqa: F722
-    limit: int = None,
+    limit: int = None,  # type: ignore[assignment] jaraco/jaraco.mongodb#42#discussion_r1739885173
     limit_date: (dateutil.parser.parse, 'only move files older than this date') = None,  # noqa: F722
 ):
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)

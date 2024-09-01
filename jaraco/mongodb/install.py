@@ -77,8 +77,7 @@ def _extract_application_zip(resp, target):
 def _extract_application_gzip(resp, target):
     with tarfile.open(fileobj=resp, mode='r|*') as obj:
         roots = RootFinder()
-        # python/typeshed#10514
-        obj.extractall(target, filter=roots)  # type: ignore
+        obj.extractall(target, filter=roots)
     return roots
 
 
