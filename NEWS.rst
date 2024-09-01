@@ -1,3 +1,12 @@
+v12.1.2
+=======
+
+Bugfixes
+--------
+
+- Move tests out of the package.
+
+
 v12.1.1
 =======
 
