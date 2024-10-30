@@ -17,7 +17,7 @@ classifiers = [
 	"Programming Language :: Python :: 3 :: Only",
 	"Framework :: Pytest",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
 	"pymongo>=3.5",
 	"python-dateutil",
