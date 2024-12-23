@@ -36,6 +36,5 @@ def create_db_in_shard(db_name, shard, client=None):
         if not res.get('ok'):
             raise RuntimeError(str(res))
     return (
-        f"Successfully created {db_name} in {shard} via {client.nodes} "
-        f"from {hostname}"
+        f"Successfully created {db_name} in {shard} via {client.nodes} from {hostname}"
     )
