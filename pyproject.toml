@@ -24,7 +24,7 @@ dependencies = [
 	"portend",
 	"jaraco.itertools>=2",
 	"jaraco.functools>=2",
-	"jaraco.ui>=2",
+	"jaraco.ui>=2.4",
 	"jaraco.context>=2",
 	"more_itertools",
 	"jaraco.logging>=2",
