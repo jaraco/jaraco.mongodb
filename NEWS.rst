@@ -1,3 +1,12 @@
+v12.2.0
+=======
+
+Features
+--------
+
+- Migrated from autocommand to typer for CLI handling. (#43)
+
+
 v12.1.3
 =======
 
