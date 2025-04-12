@@ -2,6 +2,7 @@ import json
 import sys
 
 import autocommand
+import pymongo.collection
 import pymongo.uri_parser
 
 
