@@ -6,15 +6,17 @@ Script to repair broken GridFS files. It handles
 
 import logging
 import sys
+from typing import Annotated
 
-import autocommand
 import gridfs
+import typer
 from more_itertools.recipes import consume
 
 from jaraco.context import ExceptionTrap
 from jaraco.itertools import Counter
 from jaraco.mongodb import helper
 from jaraco.ui import progress
+from jaraco.ui.main import main
 
 log = logging.getLogger()
 
@@ -55,8 +57,8 @@ class FileRepair:
         self.gfs.delete(spec)
 
 
-@autocommand.autocommand(__name__)
-def run(db: helper.connect_gridfs):
+@main
+def run(db: Annotated[gridfs.GridFS, typer.Argument(parser=helper.connect_gridfs)]):
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
     repair = FileRepair(db)
