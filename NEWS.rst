@@ -1,3 +1,12 @@
+v12.3.0
+=======
+
+Features
+--------
+
+- Replaced removed current_op with aggregation query. (#44)
+
+
 v12.2.0
 =======
 
