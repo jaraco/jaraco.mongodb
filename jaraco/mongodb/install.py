@@ -11,7 +11,7 @@ import zipfile
 import autocommand
 from more_itertools import one
 
-if sys.version_info > (3, 12):
+if sys.version_info >= (3, 12):
     import tarfile
 else:
     from backports import tarfile

@@ -9,7 +9,7 @@ a series of migration functions.
 
 import itertools
 import re
-from typing import Callable, Set
+from typing import Callable
 
 from more_itertools import recipes
 
@@ -57,7 +57,7 @@ class Manager:
     """
 
     version_attribute_name = 'version'
-    _upgrade_funcs: Set[Callable] = set()
+    _upgrade_funcs: set[Callable] = set()
 
     def __init__(self, target_version):
         self.target_version = target_version

@@ -25,6 +25,7 @@ import logging
 import signal
 import sys
 
+import autocommand
 import bson
 import dateutil.parser
 from more_itertools.recipes import consume

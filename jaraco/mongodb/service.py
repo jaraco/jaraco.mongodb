@@ -1,4 +1,3 @@
-import collections
 import contextlib
 import datetime
 import functools
@@ -12,8 +11,9 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import typing
 import warnings
-from typing import Any, Dict
+from typing import Any
 
 import portend
 from tempora import timing
@@ -83,7 +83,7 @@ class MongoDBFinder(paths.PathFinder):
 class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
     port = 27017
 
-    process_kwargs: Dict[str, Any] = {}
+    process_kwargs: dict[str, Any] = {}
     """
     keyword arguments to Popen to control the process creation
     """
@@ -108,7 +108,7 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
-    process_kwargs: Dict[str, Any] = {}
+    process_kwargs: dict[str, Any] = {}
     """
     keyword arguments to Popen to control the process creation
     """
@@ -280,12 +280,12 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
         return pymongo.MongoClient(self.get_uri())
 
 
-InstanceInfoBase = collections.namedtuple(
-    'InstanceInfoBase', 'path port process log_file'
-)
+class InstanceInfo(typing.NamedTuple):
+    path: str
+    port: int
+    process: subprocess.Popen
+    log_file: str
 
-
-class InstanceInfo(InstanceInfoBase):
     def connect(self):
         pymongo = __import__('pymongo')
         rp = pymongo.ReadPreference.PRIMARY_PREFERRED

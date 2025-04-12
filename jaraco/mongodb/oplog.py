@@ -7,7 +7,7 @@ import operator
 import re
 import time
 from importlib import metadata
-from typing import Any, Dict
+from typing import Any
 
 import bson.json_util
 import cachetools
@@ -485,7 +485,7 @@ def _apply_regular(db, op):
 
 
 class Oplog:
-    find_params: Dict[str, Any] = {}
+    find_params: dict[str, Any] = {}
 
     def __init__(self, coll):
         self.coll = coll.with_options(
