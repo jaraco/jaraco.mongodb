@@ -1,5 +1,5 @@
 import builtins
-from typing import Mapping
+from collections.abc import Mapping
 
 
 def estimate(coll, filter: Mapping = {}, sample=1):

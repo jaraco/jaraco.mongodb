@@ -7,13 +7,11 @@ import operator
 import re
 import time
 from importlib import metadata
-
-import bson.json_util
-import pymongo
-
 from typing import Any, Dict
 
+import bson.json_util
 import cachetools
+import pymongo
 import pytimeparse
 from pymongo.cursor import CursorType
 

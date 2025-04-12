@@ -1,5 +1,5 @@
 import re
-from typing import Container
+from collections.abc import Container
 
 
 def all_databases(client, exclude: Container = ['local']):
