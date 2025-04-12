@@ -3,10 +3,12 @@ Helper functions to augment PyMongo
 """
 
 import gridfs
-import pymongo
+import pymongo.database
 
 
-def connect_db(uri, default_db_name=None, factory=pymongo.MongoClient):
+def connect_db(
+    uri, default_db_name=None, factory=pymongo.MongoClient
+) -> pymongo.database.Database:
     """
     Use pymongo to parse a uri (possibly including database name) into
     a connected database object.
