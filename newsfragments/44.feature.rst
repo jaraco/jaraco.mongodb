@@ -1,0 +1,1 @@
+Replaced removed current_op with aggregation query.
