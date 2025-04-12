@@ -4,6 +4,7 @@ Helper functions to augment PyMongo
 
 import gridfs
 import pymongo.database
+import pymongo.uri_parser
 
 
 def connect_db(
