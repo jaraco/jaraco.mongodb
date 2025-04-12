@@ -31,7 +31,6 @@ dependencies = [
 	"tempora",
 	"pytimeparse",
 	"jaraco.collections>=2",
-	"autocommand",
 	"cachetools",
 	"backports.tarfile; python_version < '3.12'",
 ]
