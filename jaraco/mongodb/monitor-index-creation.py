@@ -16,7 +16,8 @@ def is_index_op(op):
 @autocommand.autocommand(__name__)
 def run(db: helper.connect_db):
     while True:
-        ops = db.current_op()['inprog']  # type: ignore[attr-defined]
+        # broken on PyMongo 4 (#44)
+        ops = db.current_op()['inprog']  # type: ignore[index]
         index_op = next(filter(is_index_op, ops), None)
         if not index_op:
             print("No index operations in progress")
