@@ -1,9 +1,12 @@
 import json
 import sys
+from typing import Annotated
 
-import autocommand
 import pymongo.collection
 import pymongo.uri_parser
+import typer
+
+from jaraco.ui.main import main
 
 
 def get_collection(uri: str) -> pymongo.collection.Collection:
@@ -12,9 +15,13 @@ def get_collection(uri: str) -> pymongo.collection.Collection:
     return client[parsed['database']][parsed['collection']]
 
 
-@autocommand.autocommand(__name__)
-def main(collection: get_collection):
+@main
+def run(
+    collection: Annotated[
+        pymongo.collection.Collection, typer.Argument(parser=get_collection)
+    ],
+):
     """
     Insert a document from stdin into the specified collection.
     """
-    collection.insert_one(json.load(sys.stdin))  # type: ignore[attr-defined]
+    collection.insert_one(json.load(sys.stdin))

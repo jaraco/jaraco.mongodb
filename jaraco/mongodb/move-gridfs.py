@@ -20,18 +20,22 @@ True
 
 from __future__ import annotations
 
+import datetime
 import itertools
 import logging
 import signal
 import sys
+from typing import Annotated
 
-import autocommand
 import bson
 import dateutil.parser
+import gridfs
+import typer
 from more_itertools.recipes import consume
 
 from jaraco.mongodb import helper
 from jaraco.ui import progress
+from jaraco.ui.main import main
 
 log = logging.getLogger()
 
@@ -117,14 +121,21 @@ class SignalTrap:
         self.iterable = iter([])
 
 
-@autocommand.autocommand(__name__)
+@main
 def run(
-    source_gfs: helper.connect_gridfs,
-    dest_gfs: helper.connect_gridfs,
-    include: (str, "a filter of files (regex) to include") = None,  # noqa: F722
-    delete: (bool, "delete files after moving") = False,  # noqa: F722
-    limit: int = None,  # type: ignore[assignment] jaraco/jaraco.mongodb#42#discussion_r1739885173
-    limit_date: (dateutil.parser.parse, 'only move files older than this date') = None,  # noqa: F722
+    source_gfs: Annotated[gridfs.GridFS, typer.Argument(parser=helper.connect_gridfs)],
+    dest_gfs: Annotated[gridfs.GridFS, typer.Argument(parser=helper.connect_gridfs)],
+    include: Annotated[
+        str | None, typer.Option(help="a filter of files (regex) to include")
+    ] = None,
+    delete: Annotated[bool, typer.Option(help="delete files after moving")] = False,
+    limit: int | None = None,
+    limit_date: Annotated[
+        datetime.datetime | None,
+        typer.Option(
+            parser=dateutil.parser.parse, help='only move files older than this date'
+        ),
+    ] = None,
 ):
     logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 

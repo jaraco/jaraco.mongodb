@@ -1,9 +1,12 @@
 import re
 import time
+from typing import Annotated
 
-import autocommand
+import pymongo.database
+import typer
 
 from jaraco.mongodb import helper
+from jaraco.ui.main import main
 
 from .compat import query_or_command
 
@@ -13,10 +16,13 @@ def is_index_op(op):
     return 'createIndexes' in cmd
 
 
-@autocommand.autocommand(__name__)
-def run(db: helper.connect_db):
+@main
+def run(
+    db: Annotated[pymongo.database.Database, typer.Argument(parser=helper.connect_db)],
+):
     while True:
-        ops = db.current_op()['inprog']  # type: ignore[attr-defined]
+        # broken on PyMongo 4 (#44)
+        ops = db.current_op()['inprog']  # type: ignore[index]
         index_op = next(filter(is_index_op, ops), None)
         if not index_op:
             print("No index operations in progress")
