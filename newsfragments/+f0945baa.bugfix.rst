@@ -1,1 +1,0 @@
-Fix AttributeError in reference to pymongo.uri_parser.

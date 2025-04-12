@@ -1,3 +1,12 @@
+v12.3.1
+=======
+
+Bugfixes
+--------
+
+- Fix AttributeError in reference to pymongo.uri_parser.
+
+
 v12.3.0
 =======
 
