@@ -44,7 +44,7 @@ def get_collection(uri):
     return pymongo.uri_parser.parse_uri(uri)['collection']
 
 
-def connect_gridfs(uri, db=None):
+def connect_gridfs(uri, db=None) -> gridfs.GridFS:
     """
     Construct a GridFS instance for a MongoDB URI.
     """
