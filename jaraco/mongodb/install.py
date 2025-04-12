@@ -8,8 +8,9 @@ import sys
 import urllib.request
 import zipfile
 
-import autocommand
 from more_itertools import one
+
+from jaraco.ui.main import main
 
 if sys.version_info >= (3, 12):
     import tarfile
@@ -81,11 +82,9 @@ def _extract_application_gzip(resp, target):
     return roots
 
 
+@main
 def install(target: pathlib.Path = pathlib.Path()):
     url = get_download_url()
     with urllib.request.urlopen(url) as resp:
         roots = _extract_all(resp, target.expanduser())
     return target.joinpath(one(roots))
-
-
-autocommand.autocommand(__name__)(install)
