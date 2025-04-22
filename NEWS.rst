@@ -1,3 +1,12 @@
+v12.4.0
+=======
+
+Features
+--------
+
+- Require dnspython[wmi] to avoid DNS timeouts on Windows.Closes coherent-oss/coherent.deps#15; Workaround for rthalley/dnspython#15.
+
+
 v12.3.1
 =======
 
