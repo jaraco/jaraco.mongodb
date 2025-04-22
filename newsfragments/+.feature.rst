@@ -1,0 +1,1 @@
+Require dnspython[wmi] to avoid DNS timeouts on Windows.Closes coherent-oss/coherent.deps#15; Workaround for rthalley/dnspython#15.
