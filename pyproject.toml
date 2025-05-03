@@ -17,6 +17,7 @@ classifiers = [
 	"Framework :: Pytest",
 ]
 requires-python = ">=3.9"
+license = "MIT"
 dependencies = [
 	"pymongo>=3.5",
 	"python-dateutil",
