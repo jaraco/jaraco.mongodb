@@ -41,15 +41,11 @@ def _extant_instance(config):
 def _ephemeral_instance(config):
     params_raw = config.getoption('mongod_args') or ''
     params = shlex.split(params_raw)
-    try:
-        instance = service.MongoDBInstance()
-        instance.merge_mongod_args(params)
-        with instance.ensure(), instance.run():
-            pymongo.MongoClient(instance.get_connect_hosts())
-            yield instance
-    except Exception as err:
-        raise
-        pytest.skip(f"MongoDB not available ({err})")
+    instance = service.MongoDBInstance()
+    instance.merge_mongod_args(params)
+    with instance.ensure(), instance.run():
+        pymongo.MongoClient(instance.get_connect_hosts())
+        yield instance
 
 
 @pytest.fixture(scope='session')

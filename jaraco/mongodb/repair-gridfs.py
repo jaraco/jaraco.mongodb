@@ -46,7 +46,7 @@ class FileRepair:
         return trap
 
     def handle_trap(self, trap):
-        cls, exc, tb = trap.exc_info
+        _cls, exc, _tb = trap.exc_info
         spec = dict(filename=trap.filename)
         for file_doc in self.gfs._GridFS__files.find(spec):
             self.backup_coll.files.insert(file_doc)

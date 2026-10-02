@@ -13,7 +13,7 @@ import sys
 import tempfile
 import typing
 import warnings
-from typing import Any
+from typing import Any, ClassVar
 
 import portend
 from jaraco.services import paths
@@ -45,14 +45,14 @@ class MongoDBFinder(paths.PathFinder):
 
     # allow the environment to stipulate where mongodb must
     #  be found.
-    env_paths = [
+    env_paths: ClassVar[list[str]] = [
         os.path.join(os.environ[key], 'bin')
         for key in ['MONGODB_HOME']
         if key in os.environ
     ]
     candidate_paths = env_paths or heuristic_paths
     exe = 'mongod'
-    args = ['--version']
+    args: ClassVar[list[str]] = ['--version']
 
     @classmethod
     def find_binary(cls):
@@ -83,7 +83,7 @@ class MongoDBFinder(paths.PathFinder):
 class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
     port = 27017
 
-    process_kwargs: dict[str, Any] = {}
+    process_kwargs: ClassVar[dict[str, Any]] = {}
     """
     keyword arguments to Popen to control the process creation
     """
@@ -108,7 +108,7 @@ class MongoDBService(MongoDBFinder, services.Subprocess, services.Service):
 
 
 class MongoDBInstance(MongoDBFinder, services.Subprocess, services.Service):
-    process_kwargs: dict[str, Any] = {}
+    process_kwargs: ClassVar[dict[str, Any]] = {}
     """
     keyword arguments to Popen to control the process creation
     """
@@ -239,7 +239,7 @@ class MongoDBReplicaSet(MongoDBFinder, services.Service):
 
     def get_log(self, number):
         log_filename = os.path.join(self.data_root, f'r{number}.log')
-        log_file = open(log_filename, 'a', encoding='utf-8')
+        log_file = open(log_filename, 'a', encoding='utf-8')  # noqa: SIM115
         return log_file
 
     def is_running(self):

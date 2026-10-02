@@ -22,15 +22,17 @@ def database(request, mongodb_instance):
 
 class TestSessions:
     def test_time_conversion(self):
-        local_time = datetime.datetime.now().replace(microsecond=0)
-        local_time = sessions.Session._make_aware(local_time)
-        utc_aware = datetime.datetime.utcnow().replace(
-            tzinfo=dateutil.tz.tzutc(), microsecond=0
+        local_time = datetime.datetime.now(dateutil.tz.tzlocal()).replace(
+            tzinfo=None, microsecond=0
         )
+        local_time = sessions.Session._make_aware(local_time)
+        utc_aware = datetime.datetime.now(dateutil.tz.tzutc()).replace(microsecond=0)
         assert local_time == utc_aware
 
     def test_time_conversion2(self):
-        local_time = datetime.datetime.now().replace(microsecond=0)
+        local_time = datetime.datetime.now(dateutil.tz.tzlocal()).replace(
+            tzinfo=None, microsecond=0
+        )
         round_local = sessions.Session._make_local(
             sessions.Session._make_utc(local_time)
         )

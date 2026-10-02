@@ -7,7 +7,7 @@ import operator
 import re
 import time
 from importlib import metadata
-from typing import Any
+from typing import Any, ClassVar
 
 import bson.json_util
 import cachetools
@@ -20,6 +20,8 @@ from jaraco.ui.cmdline import Extend
 from pymongo.cursor import CursorType
 
 from . import helper
+
+log = logging.getLogger(__name__)
 
 
 def delta_from_seconds(seconds):
@@ -179,8 +181,8 @@ class RenameSpec:
     def __init__(self, old_ns, new_ns):
         self.old_ns = old_ns
         self.new_ns = new_ns
-        self.old_db, sep, self.old_coll = self.old_ns.partition('.')
-        self.new_db, sep, self.new_coll = self.new_ns.partition('.')
+        self.old_db, _sep, self.old_coll = self.old_ns.partition('.')
+        self.new_db, _sep, self.new_coll = self.new_ns.partition('.')
         self.regex = re.compile(rf"^{re.escape(self.old_ns)}(\.|$)")
 
         # ugly hack: append a period so the regex can match dot
@@ -194,7 +196,7 @@ class RenameSpec:
         self._handle_renameCollection(op)
         if self.regex.match(op['ns']):
             ns = self.regex.sub(self.new_ns, op['ns']).rstrip(".")
-            logging.debug("renaming %s to %s", op['ns'], ns)
+            log.debug("renaming %s to %s", op['ns'], ns)
             op['ns'] = ns
         if op['ns'].endswith('.system.indexes'):
             # index operation; update ns in the op also.
@@ -211,7 +213,7 @@ class RenameSpec:
 
     @staticmethod
     def _matching_create_command(op, ns):
-        db, sep, coll = ns.partition('.')
+        db, _sep, coll = ns.partition('.')
         return (
             op.get('op') == 'c'
             and op['ns'] == db + '.$cmd'
@@ -220,7 +222,7 @@ class RenameSpec:
 
     @staticmethod
     def _matching_renameCollection_command(op, ns):
-        db, sep, coll = ns.partition('.')
+        db, _sep, _coll = ns.partition('.')
         return (
             op.get('op') == 'c'
             and (
@@ -242,7 +244,7 @@ class RenameSpec:
                 # todo, this is a mirror of the code in __call__; refactor
                 if self.regex.match(cmd[key]):
                     ns = self.regex.sub(self.new_ns, cmd[key]).rstrip(".")
-                    logging.debug("renaming %s to %s", cmd[key], ns)
+                    log.debug("renaming %s to %s", cmd[key], ns)
                     cmd[key] = ns
 
     def affects(self, ns):
@@ -334,27 +336,27 @@ def main():
     log_format = '%(asctime)s - %(levelname)s - %(message)s'
     jaraco.logging.setup(args, format=log_format)
 
-    logging.info(f"jaraco.mongodb.oplog {metadata.version('jaraco.mongodb')}")
-    logging.info("going to connect")
+    log.info(f"jaraco.mongodb.oplog {metadata.version('jaraco.mongodb')}")
+    log.info("going to connect")
 
     src = pymongo.MongoClient(args.source)
     dest = _load_dest(args.dest)
 
     if dest and _same_instance(src, dest) and not _full_rename(args):
-        logging.error(
+        log.error(
             "source and destination hosts can be the same only "
             "when both --ns and --rename arguments are given"
         )
         raise SystemExit(1)
 
-    logging.info("connected")
+    log.info("connected")
 
     start = args.start_ts or args.resume_file.read()
     if not start:
-        logging.error("Resume file or window required")
+        log.error("Resume file or window required")
         raise SystemExit(2)
 
-    logging.info("starting from %s (%s)", start, start.as_datetime())
+    log.info("starting from %s (%s)", start, start.as_datetime())
     db_name, sep, coll_name = args.oplogns.partition('.')
     oplog_coll = src[db_name][coll_name]
     num = 0
@@ -363,20 +365,20 @@ def main():
     generator = class_(oplog_coll)
 
     if not generator.has_ops_before(start):
-        logging.warning("No ops before start time; oplog may be overrun")
+        log.warning("No ops before start time; oplog may be overrun")
 
     try:
         for num, doc in enumerate(generator.since(start)):
             _handle(dest, doc, args, num)
             last_handled = doc
-        logging.info("all done")
+        log.info("all done")
     except KeyboardInterrupt:
-        logging.info("Got Ctrl+C, exiting...")
+        log.info("Got Ctrl+C, exiting...")
     finally:
         if 'last_handled' in locals():
             last = last_handled['ts']
             args.resume_file.save(last)
-            logging.info("last ts was %s (%s)", last, last.as_datetime())
+            log.info("last ts was %s (%s)", last, last.as_datetime())
 
 
 def applies_to_ns(op, ns):
@@ -420,24 +422,24 @@ def _handle(dest, op, args, num):
     included = any(applies_to_ns(op, ns) for ns in args.ns)
 
     if excluded or (args.ns and not included):
-        logging.log(logging.DEBUG - 1, "skipping %s", op)
+        log.log(logging.DEBUG - 1, "skipping %s", op)
         return
 
     args.rename(op)
 
-    logging.debug("applying op %s", NiceRepr(op))
+    log.debug("applying op %s", NiceRepr(op))
     try:
         args.dry_run or apply(dest, op)
     except pymongo.errors.OperationFailure as e:
         nice_op = NiceRepr(op)
         msg = f'{e!r} applying {nice_op}'
-        logging.warning(msg)
+        log.warning(msg)
 
     # Update status
     ts = op['ts']
     if not num % 1000:
         args.resume_file.save(ts)
-        logging.info(
+        log.info(
             "%s\t%s\t%s -> %s",
             num,
             ts.as_datetime(),
@@ -484,7 +486,7 @@ def _apply_regular(db, op):
 
 
 class Oplog:
-    find_params: dict[str, Any] = {}
+    find_params: ClassVar[dict[str, Any]] = {}
 
     def __init__(self, coll):
         self.coll = coll.with_options(
@@ -510,7 +512,7 @@ class Oplog:
         while True:
             # todo: trap InvalidDocument errors:
             # except bson.errors.InvalidDocument as e:
-            #  logging.info(repr(e))
+            #  log.info(repr(e))
             yield from cursor
             if not cursor.alive:
                 break
@@ -525,7 +527,7 @@ class Oplog:
 
 
 class TailingOplog(Oplog):
-    find_params = dict(
+    find_params: ClassVar[dict[str, Any]] = dict(
         cursor_type=CursorType.TAILABLE_AWAIT,
         oplog_replay=True,
     )
@@ -580,7 +582,7 @@ class Timestamp(bson.timestamp.Timestamp):
         Given a timedelta window, return a timestamp representing
         that time.
         """
-        utcnow = datetime.datetime.utcnow()
+        utcnow = datetime.datetime.now(datetime.timezone.utc)
         return cls(utcnow - window, 0)
 
 

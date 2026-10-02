@@ -61,7 +61,7 @@ def make_replicaset(request):
         r_set.start()
         r_set.get_connection()
         request.addfinalizer(r_set.stop)
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         pytest.skip(f"MongoDB not available ({err})")
     return r_set
 
@@ -88,7 +88,7 @@ class TestOplogReplication:
         for op in source_oplog.since(before_ts):
             oplog.apply(dest, op)
 
-        id_index, foo_index = dest.index_deletion_test.stuff.list_indexes()
+        _id_index, _foo_index = dest.index_deletion_test.stuff.list_indexes()
 
         after_ts = source_oplog.get_latest_ts()
         source.index_deletion_test.stuff.drop_index("foo_1")

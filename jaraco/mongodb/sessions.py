@@ -84,7 +84,7 @@ class Session(cherrypy.lib.sessions.Session):
             self.lock_timeout = datetime.timedelta(seconds=self.lock_timeout)
         if not isinstance(self.lock_timeout, (datetime.timedelta, type(None))):
             msg = "Lock timeout must be numeric seconds or a timedelta instance."
-            raise ValueError(msg)
+            raise TypeError(msg)
 
     @classmethod
     def install(cls):
@@ -186,7 +186,9 @@ class Session(cherrypy.lib.sessions.Session):
             else timers.NeverExpires()
         )
         while not lock_timer.expired():
-            locked_spec = {'$set': dict(locked=datetime.datetime.utcnow())}
+            locked_spec = {
+                '$set': dict(locked=datetime.datetime.now(datetime.timezone.utc))
+            }
             res = self.collection.update_one(unlocked_spec, locked_spec)
             if res.raw_result['updatedExisting']:
                 # we have the lock
