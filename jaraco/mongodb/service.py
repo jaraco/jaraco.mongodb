@@ -16,10 +16,10 @@ import warnings
 from typing import Any
 
 import portend
+from jaraco.services import paths
 from tempora import timing
 
 from jaraco import services
-from jaraco.services import paths
 
 from . import cli, install, manage
 

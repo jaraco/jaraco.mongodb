@@ -139,7 +139,8 @@ class Session(cherrypy.lib.sessions.Session):
         (also naive).
         """
         return (
-            utc_datetime.replace(tzinfo=dateutil.tz.tzutc())
+            utc_datetime
+            .replace(tzinfo=dateutil.tz.tzutc())
             .astimezone(dateutil.tz.tzlocal())
             .replace(tzinfo=None)
         )

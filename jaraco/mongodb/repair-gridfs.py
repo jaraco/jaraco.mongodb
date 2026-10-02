@@ -10,13 +10,13 @@ from typing import Annotated
 
 import gridfs
 import typer
-from more_itertools.recipes import consume
-
 from jaraco.context import ExceptionTrap
 from jaraco.itertools import Counter
-from jaraco.mongodb import helper
 from jaraco.ui import progress
 from jaraco.ui.main import main
+from more_itertools.recipes import consume
+
+from jaraco.mongodb import helper
 
 log = logging.getLogger()
 

@@ -1,7 +1,6 @@
 import functools
 
 import pymongo.collection
-
 from jaraco.collections import Projection
 
 

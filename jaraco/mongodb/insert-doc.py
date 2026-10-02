@@ -5,7 +5,6 @@ from typing import Annotated
 import pymongo.collection
 import pymongo.uri_parser
 import typer
-
 from jaraco.ui.main import main
 
 

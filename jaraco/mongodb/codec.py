@@ -27,7 +27,6 @@ import functools
 import json
 
 import dateutil.parser
-
 from jaraco.functools import compose
 
 

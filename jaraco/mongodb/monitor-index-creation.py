@@ -4,9 +4,9 @@ from typing import Annotated
 
 import pymongo.database
 import typer
+from jaraco.ui.main import main
 
 from jaraco.mongodb import helper
-from jaraco.ui.main import main
 
 from .compat import query_or_command
 

@@ -8,9 +8,8 @@ import sys
 import urllib.request
 import zipfile
 
-from more_itertools import one
-
 from jaraco.ui.main import main
+from more_itertools import one
 
 if sys.version_info >= (3, 12):
     import tarfile

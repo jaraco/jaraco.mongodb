@@ -1,9 +1,9 @@
 import functools
 
 import bson
+import jaraco.itertools
 import pytest
 
-import jaraco.itertools
 from jaraco.mongodb import oplog, service
 
 

@@ -9,7 +9,7 @@ a series of migration functions.
 
 import itertools
 import re
-from typing import Callable
+from collections.abc import Callable
 
 from more_itertools import recipes
 

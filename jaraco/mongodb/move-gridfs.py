@@ -31,11 +31,11 @@ import bson
 import dateutil.parser
 import gridfs
 import typer
+from jaraco.ui import progress
+from jaraco.ui.main import main
 from more_itertools.recipes import consume
 
 from jaraco.mongodb import helper
-from jaraco.ui import progress
-from jaraco.ui.main import main
 
 log = logging.getLogger()
 

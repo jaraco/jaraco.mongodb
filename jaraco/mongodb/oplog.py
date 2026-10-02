@@ -11,14 +11,13 @@ from typing import Any
 
 import bson.json_util
 import cachetools
+import jaraco.logging
 import pymongo
 import pytimeparse
-from pymongo.cursor import CursorType
-
-import jaraco.logging
 from jaraco.functools import compose
 from jaraco.itertools import always_iterable
 from jaraco.ui.cmdline import Extend
+from pymongo.cursor import CursorType
 
 from . import helper
 
