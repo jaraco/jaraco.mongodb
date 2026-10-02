@@ -40,7 +40,7 @@ dependencies = [
 	"cachetools",
 	"backports.tarfile; python_version < '3.12'",
 	# workaround for rthalley/dnspython#1191
-	"dnspython[wmi]",
+	"dnspython[wmi]; platform_system == 'Windows'",
 ]
 dynamic = ["version"]
 
