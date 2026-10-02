@@ -1,3 +1,12 @@
+v12.4.1
+=======
+
+Bugfixes
+--------
+
+- Only require dnspython[wmi] on Windows, avoiding pywin32 resolution failures on other platforms. (#46)
+
+
 v12.4.0
 =======
 

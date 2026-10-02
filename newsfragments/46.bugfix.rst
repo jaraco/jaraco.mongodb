@@ -1,1 +1,0 @@
-Only require dnspython[wmi] on Windows, avoiding pywin32 resolution failures on other platforms.
