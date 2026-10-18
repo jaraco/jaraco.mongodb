@@ -1,3 +1,12 @@
+v12.4.2
+=======
+
+Bugfixes
+--------
+
+- Replaced the ``dnspython[wmi]`` requirement on Windows with dnspython's own Win32 nameserver lookup, removing the dependency on pywin32, which isn't available for free-threaded Python. (#47)
+
+
 v12.4.1
 =======
 
