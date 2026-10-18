@@ -39,8 +39,8 @@ dependencies = [
 	"jaraco.collections>=2",
 	"cachetools",
 	"backports.tarfile; python_version < '3.12'",
-	# workaround for rthalley/dnspython#1191
-	"dnspython[wmi]; platform_system == 'Windows'",
+	# Win32 config method for rthalley/dnspython#1191; see jaraco/jaraco.mongodb#47
+	"dnspython >= 2.8; platform_system == 'Windows'",
 ]
 dynamic = ["version"]
 
